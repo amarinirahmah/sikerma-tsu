@@ -24,14 +24,20 @@ class AuthController extends Controller
             'role' => $request->role
         ]);
 
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
             'message' => 'Akun berhasil dibuat',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
             'user' => $user
         ]);
     }
     
     public function login (Request $request)
     {
+        \Log::info('Login API terpanggil');
+
         $request->validate([
             'email' => 'required|email',
             'password' => 'required'
@@ -39,16 +45,20 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
 
-        if ($user && Hash::check($request->password, $user->password)) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Berhasil login',
-                'user' => $user,
-                'role' => $user->role
-            ]);
+                'message' => 'Login gagal',
+            ], 401);
         }
 
+        $token = $user->createToken('auth_token')->plainTextToken;
+
         return response()->json([
-            'message' => 'Data salah!'
-        ],401);
+            'message' => 'Login berhasil',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user,
+            'role' => $user->role,
+        ]);
     }
 }
