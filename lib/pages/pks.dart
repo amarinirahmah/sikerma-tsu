@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/app_drawer.dart';
 import 'package:file_picker/file_picker.dart';
 
-class PKSPage extends StatefulWidget {
-  const PKSPage({super.key});
+class UploadPKSPage extends StatefulWidget {
+  const UploadPKSPage({super.key});
 
   @override
-  State<PKSPage> createState() => _PKSPageState();
+  State<UploadPKSPage> createState() => _PKSPageState();
 }
 
-class _PKSPageState extends State<PKSPage> {
+class _PKSPageState extends State<UploadPKSPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nomorPKSController = TextEditingController();
   final TextEditingController _nomorMoUController = TextEditingController();
@@ -95,17 +95,6 @@ class _PKSPageState extends State<PKSPage> {
               child: Column(
                 children: [
                   TextFormField(
-                    controller: _nomorPKSController,
-                    decoration: const InputDecoration(
-                      labelText: "Nomor PKS",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator:
-                        (value) =>
-                            value!.isEmpty ? "Nomor PKS wajib diisi" : null,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
                     controller: _nomorMoUController,
                     decoration: const InputDecoration(
                       labelText: "Nomor MoU",
@@ -116,6 +105,18 @@ class _PKSPageState extends State<PKSPage> {
                             value!.isEmpty ? "Nomor MoU wajib diisi" : null,
                   ),
                   const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _nomorPKSController,
+                    decoration: const InputDecoration(
+                      labelText: "Nomor PKS",
+                      border: OutlineInputBorder(),
+                    ),
+                    validator:
+                        (value) =>
+                            value!.isEmpty ? "Nomor PKS wajib diisi" : null,
+                  ),
+                  const SizedBox(height: 16),
+
                   TextFormField(
                     controller: _judulController,
                     decoration: const InputDecoration(

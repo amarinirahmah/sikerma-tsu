@@ -5,49 +5,53 @@ class AppDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      child: ListView(
-        padding: EdgeInsets.zero,
+    return Container(
+      width: 250,
+      color: Colors.blue[800],
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blue),
-            child: Text(
-              'Menu',
-              style: TextStyle(color: Colors.white, fontSize: 24),
+          // Header logo/brand
+          Container(
+            padding: const EdgeInsets.all(16),
+            alignment: Alignment.centerLeft,
+            child: const Text(
+              'SIKERMA TSU',
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
-          ListTile(
-            title: const Text('Dashboard'),
-            onTap: () {
-              Navigator.pushNamed(context, '/dashboard');
-            },
-          ),
-          ListTile(
-            title: const Text('Data MoU'),
-            onTap: () {
-              Navigator.pushNamed(context, '/mou');
-            },
-          ),
-          ListTile(
-            title: const Text('Data PKS'),
-            onTap: () {
-              Navigator.pushNamed(context, '/pks');
-            },
-          ),
-          ListTile(
-            title: const Text('Progres Kerja Sama'),
-            onTap: () {
-              Navigator.pushNamed(context, '/progres');
-            },
-          ),
-          ListTile(
-            title: const Text('Notifikasi'),
-            onTap: () {
-              Navigator.pushNamed(context, '/notifikasi');
-            },
+          const Divider(color: Colors.white24),
+
+          // Menu List
+          Expanded(
+            child: ListView(
+              children: [
+                _buildMenuItem(context, 'Dashboard', '/dashboard'),
+                _buildMenuItem(context, 'Daftar MoU', '/mou'),
+                _buildMenuItem(context, 'Upload MoU', '/uploadmou'),
+                _buildMenuItem(context, 'Daftar PKS', '/pks'),
+                _buildMenuItem(context, 'Upload PKS', '/uploadpks'),
+                _buildMenuItem(context, 'Progres Kerja Sama', '/progres'),
+                _buildMenuItem(context, 'Notifikasi', '/notifikasi'),
+              ],
+            ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildMenuItem(BuildContext context, String title, String route) {
+    return ListTile(
+      title: Text(title, style: const TextStyle(color: Colors.white)),
+      hoverColor: Colors.blue[700],
+      onTap: () {
+        Navigator.pushNamed(context, route);
+      },
     );
   }
 }

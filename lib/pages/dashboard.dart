@@ -7,13 +7,18 @@ class AdminDashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard')),
-      drawer: const AppDrawer(),
-      body: const Center(
-        child: Text(
-          'Selamat datang di Sikerma TSU!',
-          style: TextStyle(fontSize: 24),
-        ),
+      body: Row(
+        children: const [
+          AppDrawer(), // Sidebar tetap di kiri
+          Expanded(
+            child: Center(
+              child: Text(
+                'Selamat datang di Sikerma TSU!',
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

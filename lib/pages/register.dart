@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/models/user.dart';
+import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -9,10 +13,29 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  String _selectedRole = 'User';
+  final TextEditingController name = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
+  String role = 'User';
+
+  User? userModel;
+
+  Future registerUser(name, email, password, role) async {
+    User userModel;
+    final response = await http.post(
+      Uri.parse("http://192.168.100.236/api/register"),
+      body: {
+        "name": name.toString(),
+        "email": email.toString(),
+        "password": password.toString(),
+        "role": role.toString(),
+      },
+    );
+
+    userModel = User.fromJson(jsonDecode(response.body)[0]);
+    print(userModel);
+    print(Exception);
+  }
 
   void _register() {
     if (_formKey.currentState!.validate()) {
@@ -47,7 +70,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 24),
                     TextFormField(
-                      controller: _nameController,
+                      controller: name,
                       decoration: const InputDecoration(
                         labelText: 'Name',
                         border: OutlineInputBorder(),
@@ -57,7 +80,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
-                      controller: _emailController,
+                      controller: email,
                       decoration: const InputDecoration(
                         labelText: 'Email',
                         border: OutlineInputBorder(),
@@ -68,7 +91,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
-                      controller: _passwordController,
+                      controller: password,
                       decoration: const InputDecoration(
                         labelText: 'Password',
                         border: OutlineInputBorder(),
@@ -80,7 +103,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 16),
                     DropdownButtonFormField<String>(
-                      value: _selectedRole,
+                      value: role,
                       items:
                           ['Admin', 'User', 'Pimpinan']
                               .map(
@@ -92,7 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               .toList(),
                       onChanged: (value) {
                         setState(() {
-                          _selectedRole = value!;
+                          role = value!;
                         });
                       },
                       decoration: const InputDecoration(

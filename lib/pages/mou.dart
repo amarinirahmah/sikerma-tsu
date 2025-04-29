@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/app_drawer.dart';
 import 'package:file_picker/file_picker.dart';
 
-class MoUPage extends StatefulWidget {
-  const MoUPage({super.key});
+class UploadMoUPage extends StatefulWidget {
+  const UploadMoUPage({super.key});
 
   @override
-  State<MoUPage> createState() => _MoUPageState();
+  State<UploadMoUPage> createState() => _MoUPageState();
 }
 
-class _MoUPageState extends State<MoUPage> {
+class _MoUPageState extends State<UploadMoUPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nomorController = TextEditingController();
   final TextEditingController _mitraController = TextEditingController();

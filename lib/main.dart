@@ -7,6 +7,10 @@ import 'pages/pks.dart';
 import 'pages/daftar_progres.dart';
 import 'pages/daftar_notifikasi.dart';
 import 'pages/detail_progres.dart';
+import 'pages/daftar_mou.dart';
+import 'pages/detail_mou.dart';
+import 'pages/daftar_pks.dart';
+import 'pages/detail_pks.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,11 +30,15 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/dashboard': (context) => const AdminDashboardPage(),
-        '/mou': (context) => const MoUPage(),
-        '/pks': (context) => const PKSPage(),
+        '/uploadmou': (context) => const UploadMoUPage(),
+        '/uploadpks': (context) => const UploadPKSPage(),
         '/progres': (context) => const ProgressPage(),
         '/notifikasi': (context) => const NotificationPage(),
         '/detailprogres': (context) => const DetailProgressPage(),
+        '/mou': (context) => const MoUPage(),
+        '/detailmou': (context) => const DetailMoUPage(),
+        '/pks': (context) => const PKSPage(),
+        '/detailpks': (context) => const DetailPKSPage(),
       },
     );
   }
