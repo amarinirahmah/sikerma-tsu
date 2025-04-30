@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import '../widgets/app_drawer.dart';
-import '../widgets/app_bar.dart';
+import 'app_bar.dart';
+import 'app_drawer.dart';
 
-class AdminDashboardPage extends StatefulWidget {
-  const AdminDashboardPage({super.key});
+class MainLayout extends StatefulWidget {
+  final Widget child;
+
+  const MainLayout({super.key, required this.child});
 
   @override
-  State<AdminDashboardPage> createState() => _AdminDashboardPageState();
+  State<MainLayout> createState() => _MainLayoutState();
 }
 
-class _AdminDashboardPageState extends State<AdminDashboardPage> {
+class _MainLayoutState extends State<MainLayout> {
   bool isDrawerVisible = true;
 
   @override
@@ -19,6 +21,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
         bool isDesktop = constraints.maxWidth >= 800;
 
         return Scaffold(
+          drawer: isDesktop ? null : const Drawer(child: AppDrawer()),
           appBar: CustomAppBar(
             isDesktop: isDesktop,
             onMenuPressed: () {
@@ -31,18 +34,10 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
               }
             },
           ),
-          drawer: isDesktop ? null : const Drawer(child: AppDrawer()),
           body: Row(
             children: [
               if (isDesktop && isDrawerVisible) const AppDrawer(),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    'Isi Halaman Dashboard',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-              ),
+              Expanded(child: widget.child),
             ],
           ),
         );
