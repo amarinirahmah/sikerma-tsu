@@ -57,6 +57,45 @@ class AuthController extends Controller
             'user' => $user
         ]);
     }
+
+    public function updateuser(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'sometimes|required',
+            'email' => 'sometimes|required|email|unique:user,email,' . $id,
+            'password' => 'sometimes|required',
+            'role' => 'sometimes|required|in:superadmin,admin,user,pimpinan',
+        ]);
+
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(['message' => 'Data user tidak ditemukan.']);
+        }
+        if ($request->has('name')) {
+            $user->name = $request->name;
+        }
+        if ($request->has('email')) {
+            $user->email = $request->email;
+        }
+        if ($request->has('role')) {
+            $user->role = $request->role;
+        }
+        if ($request->has('password')) {
+            $user->password = Hash::make($request->password);
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'Data user berhasil diupdate.',
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role,
+            ]
+        ]);
+    }
     
     public function login (Request $request)
     {
@@ -83,6 +122,23 @@ class AuthController extends Controller
             'token_type' => 'Bearer',
             'user' => $user,
             'role' => $user->role,
+        ]);
+    }
+
+    public function deleteuser($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'Data User tidak ditemukan'
+            ], 404);
+        }
+
+        $user->delete();
+
+        return response()->json([
+            'message' => 'Data User berhasil dihapus'
         ]);
     }
 }

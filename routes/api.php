@@ -10,7 +10,12 @@ use Illuminate\Support\Facades\Auth;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::middleware('auth:sanctum', 'role:superadmin')->post('/registerbysuperadmin', [AuthController::class, 'registerbysuperadmin']);
+// Route::middleware('auth:sanctum', 'role:superadmin')->post('/registerbysuperadmin', [AuthController::class, 'registerbysuperadmin']);
+Route::middleware('auth:sanctum', 'role:superadmin')->group(function () {
+    Route::post('/registerbysuperadmin', [AuthController::class, 'registerbysuperadmin']);
+    Route::put('/updateuser/{id}', [AuthController::class, 'updateuser']);
+    Route::delete('/deleteuser/{id}', [AuthController::class, 'deleteuser']);
+});
 Route::post('/registeruser', [AuthController::class, 'registeruser']);
 Route::post('/login', [AuthController::class, 'login']);
 // Route::post('/uploadmou', [DataController::class, 'uploadmou']);
