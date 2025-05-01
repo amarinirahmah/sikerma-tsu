@@ -28,6 +28,7 @@ class _MainLayoutState extends State<MainLayout> {
         bool isDesktop = constraints.maxWidth >= 800;
 
         return Scaffold(
+          backgroundColor: const Color.fromARGB(255, 236, 236, 236),
           drawer: isDesktop ? null : const Drawer(child: AppDrawer()),
           appBar: CustomAppBar(
             isDesktop: isDesktop,

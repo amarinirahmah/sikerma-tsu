@@ -8,7 +8,7 @@ class AppDrawer extends StatelessWidget {
     return SafeArea(
       child: Container(
         width: 250,
-        color: Colors.blue[800],
+        color: Colors.teal,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -34,7 +34,7 @@ class AppDrawer extends StatelessWidget {
   Widget _buildMenuItem(BuildContext context, String title, String route) {
     return ListTile(
       title: Text(title, style: const TextStyle(color: Colors.white)),
-      hoverColor: Colors.blue[700],
+      hoverColor: Colors.yellow,
       onTap: () {
         Navigator.pop(context); // Tutup drawer jika sedang terbuka
         Navigator.pushNamed(context, route);

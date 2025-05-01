@@ -126,65 +126,68 @@ class _LoginPageState extends State<LoginPage> {
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          child: Card(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      "Login",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: 400),
+            child: Card(
+              color: Colors.white,
+              elevation: 1,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Tiga Serangkai University",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    TextFormField(
-                      controller: email,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
+                      const SizedBox(height: 24),
+                      TextFormField(
+                        controller: email,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator:
+                            (value) =>
+                                value!.isEmpty ? 'Email wajib diisi' : null,
                       ),
-                      validator:
-                          (value) =>
-                              value!.isEmpty ? 'Email wajib diisi' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: password,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: password,
+                        decoration: const InputDecoration(
+                          labelText: 'Password',
+                          border: OutlineInputBorder(),
+                        ),
+                        obscureText: true,
+                        validator:
+                            (value) =>
+                                value!.isEmpty ? 'Password wajib diisi' : null,
                       ),
-                      obscureText: true,
-                      validator:
-                          (value) =>
-                              value!.isEmpty ? 'Password wajib diisi' : null,
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          loginUser(email.text, password.text);
-                        }
-                      },
-                      child: const Text("Login"),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/register');
-                      },
-                      child: const Text("Belum punya akun? Register"),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            loginUser(email.text, password.text);
+                          }
+                        },
+                        child: const Text("Login"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/register');
+                        },
+                        child: const Text("Belum punya akun? Register"),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../widgets/app_drawer.dart';
-import '../widgets/app_bar.dart';
 import '../widgets/main_layout.dart';
 
 class AdminDashboardPage extends StatelessWidget {

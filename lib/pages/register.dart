@@ -74,113 +74,112 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
-    // name.addListener(() {
-    //   setState(() {
-    //     submit=name.text.isNotEmpty;
-    //   });
-    // }
-    // );
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
-          child: Card(
-            margin: const EdgeInsets.symmetric(horizontal: 24),
-            elevation: 8,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: 400, // Menetapkan lebar maksimal Card
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      "Register",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
+            child: Card(
+              margin: const EdgeInsets.symmetric(horizontal: 24),
+              elevation: 8,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Text(
+                        "Register",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    TextFormField(
-                      controller: name,
-                      decoration: const InputDecoration(
-                        labelText: 'Name',
-                        border: OutlineInputBorder(),
+                      const SizedBox(height: 24),
+                      TextFormField(
+                        controller: name,
+                        decoration: const InputDecoration(
+                          labelText: 'Name',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator:
+                            (value) =>
+                                value!.isEmpty ? 'Nama wajib diisi' : null,
                       ),
-                      validator:
-                          (value) => value!.isEmpty ? 'Nama wajib diisi' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: email,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        border: OutlineInputBorder(),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: email,
+                        decoration: const InputDecoration(
+                          labelText: 'Email',
+                          border: OutlineInputBorder(),
+                        ),
+                        validator:
+                            (value) =>
+                                value!.isEmpty ? 'Email wajib diisi' : null,
                       ),
-                      validator:
-                          (value) =>
-                              value!.isEmpty ? 'Email wajib diisi' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: password,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        border: OutlineInputBorder(),
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: password,
+                        decoration: const InputDecoration(
+                          labelText: 'Password',
+                          border: OutlineInputBorder(),
+                        ),
+                        obscureText: true,
+                        validator:
+                            (value) =>
+                                value!.isEmpty ? 'Password wajib diisi' : null,
                       ),
-                      obscureText: true,
-                      validator:
-                          (value) =>
-                              value!.isEmpty ? 'Password wajib diisi' : null,
-                    ),
-                    const SizedBox(height: 16),
-                    DropdownButtonFormField<String>(
-                      value: role,
-                      items:
-                          ['admin', 'user', 'pimpinan']
-                              .map(
-                                (role) => DropdownMenuItem(
-                                  value: role,
-                                  child: Text(role),
-                                ),
-                              )
-                              .toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          role = value!;
-                        });
-                      },
-                      decoration: const InputDecoration(
-                        labelText: 'Role',
-                        border: OutlineInputBorder(),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String>(
+                        value: role,
+                        items:
+                            ['admin', 'user', 'pimpinan', 'super admin']
+                                .map(
+                                  (role) => DropdownMenuItem(
+                                    value: role,
+                                    child: Text(role),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            role = value!;
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Role',
+                          border: OutlineInputBorder(),
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 24),
-                    ElevatedButton(
-                      // onPressed: submit ? () => submitData : null,
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          registerUser(
-                            name.text,
-                            email.text,
-                            password.text,
-                            role,
-                          );
-                        }
-                        _showBerhasil();
-                      },
-                      child: const Text("Register"),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/login');
-                      },
-                      child: const Text("Sudah punya akun? Login"),
-                    ),
-                  ],
+                      const SizedBox(height: 24),
+                      ElevatedButton(
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {
+                            registerUser(
+                              name.text,
+                              email.text,
+                              password.text,
+                              role,
+                            );
+                          }
+                          _showBerhasil();
+                        },
+                        child: const Text("Register"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/login');
+                        },
+                        child: const Text("Sudah punya akun? Login"),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
