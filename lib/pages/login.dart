@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/models/user.dart';
+import 'package:http/http.dart' as http;
+import 'package:sikermatsu/pages/dashboard.dart';
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -9,13 +13,112 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController email = TextEditingController();
+  final TextEditingController password = TextEditingController();
 
-  void _login() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
+  // bool submit = false;
+  String token = '';
+  Map<String, dynamic>? user;
+  // User? userModel;
+
+  Future loginUser(email, password) async {
+    User userModel;
+    final response = await http.post(
+      Uri.parse("http://192.168.100.236:8000/api/login"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "email": email.toString(),
+        "password": password.toString(),
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print("Response Data: $data");
+      setState(() {
+        token = data['token'];
+        user = data['user'];
+      });
+
+      await fetchUserData();
+
+      if (user != null && user!['name'] != null) {
+        _showBerhasil();
+      } else {
+        _showGagal("Login gagal. Periksa email atau password.");
+      }
     }
+
+    // userModel = User.fromJson(jsonDecode(response.body)[0]);
+    // print(userModel);
+    // print(Exception);
+  }
+
+  Future<void> fetchUserData() async {
+    final response = await http.get(
+      Uri.parse("http://192.168.100.236:8000/api/user"),
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer $token",
+      },
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        user = jsonDecode(response.body);
+      });
+    } else {
+      _showGagal("Gagal mengambil data user.");
+    }
+  }
+
+  // void _login() {
+  //   if (_formKey.currentState!.validate()) {
+  //     Navigator.pushReplacementNamed(context, '/dashboard');
+  //   }
+  // }
+
+  Future<void> _showBerhasil() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Berhasil!'),
+          content: Text(
+            "Selamat datang, ${user?['name']?.toString() ?? 'Pengguna'}",
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(builder: (context) => AdminDashboardPage()),
+                );
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showGagal(String message) async {
+    return showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Tutup'),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -45,7 +148,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 24),
                     TextFormField(
-                      controller: _emailController,
+                      controller: email,
                       decoration: const InputDecoration(
                         labelText: 'Email',
                         border: OutlineInputBorder(),
@@ -56,7 +159,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 16),
                     TextFormField(
-                      controller: _passwordController,
+                      controller: password,
                       decoration: const InputDecoration(
                         labelText: 'Password',
                         border: OutlineInputBorder(),
@@ -68,7 +171,11 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: _login,
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          loginUser(email.text, password.text);
+                        }
+                      },
                       child: const Text("Login"),
                     ),
                     TextButton(

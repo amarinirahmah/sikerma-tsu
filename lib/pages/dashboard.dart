@@ -1,52 +1,29 @@
 import 'package:flutter/material.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/app_bar.dart';
+import '../widgets/main_layout.dart';
 
-class AdminDashboardPage extends StatefulWidget {
+class AdminDashboardPage extends StatelessWidget {
   const AdminDashboardPage({super.key});
 
   @override
-  State<AdminDashboardPage> createState() => _AdminDashboardPageState();
-}
-
-class _AdminDashboardPageState extends State<AdminDashboardPage> {
-  bool isDrawerVisible = true;
-
-  @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        bool isDesktop = constraints.maxWidth >= 800;
-
-        return Scaffold(
-          appBar: CustomAppBar(
-            isDesktop: isDesktop,
-            onMenuPressed: () {
-              if (isDesktop) {
-                setState(() {
-                  isDrawerVisible = !isDrawerVisible;
-                });
-              } else {
-                Scaffold.of(context).openDrawer();
-              }
-            },
-          ),
-          drawer: isDesktop ? null : const Drawer(child: AppDrawer()),
-          body: Row(
-            children: [
-              if (isDesktop && isDrawerVisible) const AppDrawer(),
-              Expanded(
-                child: Center(
-                  child: Text(
-                    'Isi Halaman Dashboard',
-                    style: Theme.of(context).textTheme.titleLarge,
-                  ),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
+    return MainLayout(
+      title: 'Dashboard',
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.logout),
+          onPressed: () {
+            Navigator.pushReplacementNamed(context, '/login');
+          },
+        ),
+      ],
+      child: Center(
+        child: Text(
+          'Isi Halaman Dashboard',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+      ),
     );
   }
 }

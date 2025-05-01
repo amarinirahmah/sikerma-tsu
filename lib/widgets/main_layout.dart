@@ -4,8 +4,15 @@ import 'app_drawer.dart';
 
 class MainLayout extends StatefulWidget {
   final Widget child;
+  final String title;
+  final List<Widget>? actions;
 
-  const MainLayout({super.key, required this.child});
+  const MainLayout({
+    super.key,
+    required this.child,
+    this.title = '',
+    this.actions,
+  });
 
   @override
   State<MainLayout> createState() => _MainLayoutState();
@@ -33,6 +40,8 @@ class _MainLayoutState extends State<MainLayout> {
                 Scaffold.of(context).openDrawer();
               }
             },
+            title: widget.title,
+            actions: widget.actions,
           ),
           body: Row(
             children: [

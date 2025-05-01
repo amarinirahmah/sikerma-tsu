@@ -1,77 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/widgets/app_drawer.dart';
+import 'package:sikermatsu/widgets/main_layout.dart';
+import 'package:sikermatsu/widgets/table.dart';
 
 class MoUPage extends StatelessWidget {
   const MoUPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Contoh data dummy untuk daftar MoU
     final List<Map<String, dynamic>> daftarMou = [
       {
-        'namaMitra': 'PT Maju Jaya',
-        'tanggalMulai': '2024-01-01',
-        'tanggalBerakhir': '2025-01-01',
-        'status': 'Aktif',
+        'Nama Mitra': 'PT Maju Jaya',
+        'Tanggal Mulai': '2024-01-01',
+        'Tanggal Berakhir': '2025-01-01',
+        'Status': 'Aktif',
       },
       {
-        'namaMitra': 'CV Sukses Makmur',
-        'tanggalMulai': '2023-06-15',
-        'tanggalBerakhir': '2024-06-14',
-        'status': 'Nonaktif',
+        'Nama Mitra': 'CV Sukses Makmur',
+        'Tanggal Mulai': '2023-06-15',
+        'Tanggal Berakhir': '2024-06-14',
+        'Status': 'Nonaktif',
+      },
+      {
+        'Nama Mitra': 'PT Maju Jaya',
+        'Tanggal Mulai': '2024-01-01',
+        'Tanggal Berakhir': '2025-01-01',
+        'Status': 'Aktif',
+      },
+      {
+        'Nama Mitra': 'CV Sukses Makmur',
+        'Tanggal Mulai': '2023-06-15',
+        'Tanggal Berakhir': '2024-06-14',
+        'Status': 'Nonaktif',
+      },
+      {
+        'Nama Mitra': 'PT Maju Jaya',
+        'Tanggal Mulai': '2024-01-01',
+        'Tanggal Berakhir': '2025-01-01',
+        'Status': 'Aktif',
+      },
+      {
+        'Nama Mitra': 'CV Sukses Makmur',
+        'Tanggal Mulai': '2023-06-15',
+        'Tanggal Berakhir': '2024-06-14',
+        'Status': 'Nonaktif',
+      },
+      {
+        'Nama Mitra': 'PT Maju Jaya',
+        'Tanggal Mulai': '2024-01-01',
+        'Tanggal Berakhir': '2025-01-01',
+        'Status': 'Aktif',
+      },
+      {
+        'Nama Mitra': 'CV Sukses Makmur Sukses Mantap',
+        'Tanggal Mulai': '2023-06-15',
+        'Tanggal Berakhir': '2024-06-14',
+        'Status': 'Nonaktif',
       },
     ];
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('Daftar MoU')),
-      drawer: const AppDrawer(), // Tetap pakai AppDrawer
-      body: SingleChildScrollView(
+    return MainLayout(
+      title: 'Daftar MoU',
+      child: ListView(
         padding: const EdgeInsets.all(16),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1000), // Maksimal lebar
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Nama Mitra')),
-                DataColumn(label: Text('Tanggal Mulai')),
-                DataColumn(label: Text('Tanggal Berakhir')),
-                DataColumn(label: Text('Status')),
-                DataColumn(label: Text('Detail')),
-              ],
-              rows:
-                  daftarMou.map((mou) {
-                    return DataRow(
-                      cells: [
-                        DataCell(Text(mou['namaMitra'])),
-                        DataCell(Text(mou['tanggalMulai'])),
-                        DataCell(Text(mou['tanggalBerakhir'])),
-                        DataCell(
-                          Text(
-                            mou['status'],
-                            style: TextStyle(
-                              color:
-                                  mou['status'] == 'Aktif'
-                                      ? Colors.green
-                                      : Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        DataCell(
-                          ElevatedButton(
-                            onPressed: () {
-                              // Aksi saat tombol Detail ditekan
-                              Navigator.pushNamed(context, '/detailmou');
-                            },
-                            child: const Text('Detail'),
-                          ),
-                        ),
-                      ],
-                    );
-                  }).toList(),
+        children: [
+          Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1000),
+              child: TableData(
+                title: 'Daftar MoU',
+                columns: [
+                  'Nama Mitra',
+                  'Tanggal Mulai',
+                  'Tanggal Berakhir',
+                  'Status',
+                ],
+                data: daftarMou,
+                actionLabel: 'Detail',
+                onActionPressed: (context, rowData) {
+                  Navigator.pushNamed(context, '/detailmou');
+                },
+              ),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

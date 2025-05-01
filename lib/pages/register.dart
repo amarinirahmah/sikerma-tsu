@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/models/user.dart';
+import 'package:sikermatsu/pages/login.dart';
 import 'package:http/http.dart' as http;
 
 class RegisterPage extends StatefulWidget {
@@ -16,14 +17,15 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
-  String role = 'User';
+  String role = 'user';
+  // bool submit = false;
 
   User? userModel;
 
   Future registerUser(name, email, password, role) async {
     User userModel;
     final response = await http.post(
-      Uri.parse("http://192.168.100.236/api/register"),
+      Uri.parse("http://192.168.100.236:8000/api/register"),
       body: {
         "name": name.toString(),
         "email": email.toString(),
@@ -37,14 +39,47 @@ class _RegisterPageState extends State<RegisterPage> {
     print(Exception);
   }
 
-  void _register() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacementNamed(context, '/dashboard');
-    }
+  // void _register() {
+  //   if (_formKey.currentState!.validate()) {
+  //     Navigator.pushReplacementNamed(context, '/dashboard');
+  //   }
+  // }
+
+  Future<void> _showBerhasil() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Berhasil!'),
+          content: const SingleChildScrollView(
+            child: ListBody(children: <Widget>[Text("Register berhasil")]),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) => LoginPage()))
+                    .then((value) {
+                      setState(() {});
+                    });
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    // name.addListener(() {
+    //   setState(() {
+    //     submit=name.text.isNotEmpty;
+    //   });
+    // }
+    // );
     return Scaffold(
       body: Center(
         child: SingleChildScrollView(
@@ -105,7 +140,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     DropdownButtonFormField<String>(
                       value: role,
                       items:
-                          ['Admin', 'User', 'Pimpinan']
+                          ['admin', 'user', 'pimpinan']
                               .map(
                                 (role) => DropdownMenuItem(
                                   value: role,
@@ -125,7 +160,18 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                     const SizedBox(height: 24),
                     ElevatedButton(
-                      onPressed: _register,
+                      // onPressed: submit ? () => submitData : null,
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          registerUser(
+                            name.text,
+                            email.text,
+                            password.text,
+                            role,
+                          );
+                        }
+                        _showBerhasil();
+                      },
                       child: const Text("Register"),
                     ),
                     TextButton(
