@@ -9,13 +9,40 @@ use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function registeruser(Request $request)
     {
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:user',
             'password' => 'required',
-            'role' => 'required|in:admin,user,pimpinan'
+            // 'role' => 'required|in:admin,user,pimpinan'
+        ]);
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'user',
+            // 'role' => $request->role
+        ]);
+
+        $token = $user->createToken('auth_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Akun berhasil dibuat',
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+            'user' => $user
+        ]);
+    }
+
+    public function registerbysuperadmin(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:user',
+            'password' => 'required',
+            'role' => 'required|in:admin,user,pimpinan',
         ]);
 
         $user = User::create([
@@ -25,12 +52,8 @@ class AuthController extends Controller
             'role' => $request->role
         ]);
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
         return response()->json([
-            'message' => 'Akun berhasil dibuat',
-            'access_token' => $token,
-            'token_type' => 'Bearer',
+            'message' => 'Akun berhasil dibuat oleh superadmin',
             'user' => $user
         ]);
     }

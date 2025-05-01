@@ -10,10 +10,19 @@ use Illuminate\Support\Facades\Auth;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
-Route::post('/register', [AuthController::class, 'register']);
+Route::middleware('auth:sanctum', 'role:superadmin')->post('/registerbysuperadmin', [AuthController::class, 'registerbysuperadmin']);
+Route::post('/registeruser', [AuthController::class, 'registeruser']);
 Route::post('/login', [AuthController::class, 'login']);
-Route::post('/upload', [DataController::class, 'uploaddata']);
-
+// Route::post('/uploadmou', [DataController::class, 'uploadmou']);
+// Route::post('/uploadpks', [DataController::class, 'uploadpks']);
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::post('/uploadmou', [DataController::class, 'uploadmou']);
+    Route::post('/uploadpks', [DataController::class, 'uploadpks']);
+    Route::put('/updatemou/{id}', [DataController::class, 'updatemou']);
+    Route::put('/updatepks/{id}', [DataController::class, 'updatepks']);
+    Route::delete('/deletemou/{id}', [DataController::class, 'deletemou']);
+    Route::delete('/deletepks/{id}', [DataController::class, 'deletepks']);
+});
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {
         return $request->user();
