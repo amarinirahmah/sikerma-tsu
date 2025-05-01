@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/widgets/app_drawer.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:sikermatsu/widgets/main_layout.dart';
+import 'package:sikermatsu/widgets/upload_card.dart';
 
 class UploadMoUPage extends StatefulWidget {
   const UploadMoUPage({super.key});
 
   @override
-  State<UploadMoUPage> createState() => _MoUPageState();
+  State<UploadMoUPage> createState() => _UploadMoUPageState();
 }
 
-class _MoUPageState extends State<UploadMoUPage> {
+class _UploadMoUPageState extends State<UploadMoUPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _nomorController = TextEditingController();
-  final TextEditingController _mitraController = TextEditingController();
-  final TextEditingController _judulController = TextEditingController();
-  final TextEditingController _tujuanController = TextEditingController();
+  final _nomorController = TextEditingController();
+  final _mitraController = TextEditingController();
+  final _judulController = TextEditingController();
+  final _tujuanController = TextEditingController();
 
   DateTime? _tanggalMulai;
   DateTime? _tanggalBerakhir;
@@ -30,6 +31,7 @@ class _MoUPageState extends State<UploadMoUPage> {
     if (picked != null) {
       setState(() {
         _tanggalMulai = picked;
+        _tanggalBerakhir = null;
       });
     }
   }
@@ -62,12 +64,9 @@ class _MoUPageState extends State<UploadMoUPage> {
         _tanggalMulai != null &&
         _tanggalBerakhir != null &&
         _fileName != null) {
-      // Simpan atau proses data di sini
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Data MoU berhasil diunggah!")),
       );
-
-      // Reset form jika perlu
       _formKey.currentState!.reset();
       setState(() {
         _tanggalMulai = null;
@@ -83,109 +82,97 @@ class _MoUPageState extends State<UploadMoUPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Data Kerja Sama MoU")),
-      drawer: const AppDrawer(), // Memanggil AppDrawer di sini
-      body: SingleChildScrollView(
+    return MainLayout(
+      title: "Upload MoU",
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Center(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 600), // Lebar maksimum form
+            constraints: const BoxConstraints(maxWidth: 700),
             child: Form(
               key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    controller: _nomorController,
-                    decoration: const InputDecoration(
-                      labelText: "Nomor MoU",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator:
-                        (value) =>
-                            value!.isEmpty ? "Nomor MoU wajib diisi" : null,
+              child: UploadCard(
+                onSubmit: _submitForm,
+                fields: [
+                  buildField("Nomor MoU", _nomorController),
+                  buildField("Nama Mitra", _mitraController),
+                  buildField("Judul Kerja Sama", _judulController),
+                  buildDateRow(
+                    "Tanggal Mulai",
+                    _tanggalMulai,
+                    _pickTanggalMulai,
                   ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _mitraController,
-                    decoration: const InputDecoration(
-                      labelText: "Nama Mitra",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator:
-                        (value) =>
-                            value!.isEmpty ? "Nama mitra wajib diisi" : null,
+                  buildDateRow(
+                    "Tanggal Berakhir",
+                    _tanggalBerakhir,
+                    _pickTanggalBerakhir,
                   ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _judulController,
-                    decoration: const InputDecoration(
-                      labelText: "Judul Kerja Sama",
-                      border: OutlineInputBorder(),
-                    ),
-                    validator:
-                        (value) =>
-                            value!.isEmpty
-                                ? "Judul kerja sama wajib diisi"
-                                : null,
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: _pickTanggalMulai,
-                          child: Text(
-                            _tanggalMulai == null
-                                ? "Pilih Tanggal Mulai"
-                                : "Mulai: ${_tanggalMulai!.toLocal()}".split(
-                                  ' ',
-                                )[0],
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: _pickTanggalBerakhir,
-                          child: Text(
-                            _tanggalBerakhir == null
-                                ? "Pilih Tanggal Berakhir"
-                                : "Berakhir: ${_tanggalBerakhir!.toLocal()}"
-                                    .split(' ')[0],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _tujuanController,
-                    decoration: const InputDecoration(
-                      labelText: "Tujuan",
-                      border: OutlineInputBorder(),
-                    ),
-                    maxLines: 3,
-                    validator:
-                        (value) => value!.isEmpty ? "Tujuan wajib diisi" : null,
-                  ),
-                  const SizedBox(height: 16),
-                  ElevatedButton.icon(
-                    onPressed: _pickFile,
-                    icon: const Icon(Icons.attach_file),
-                    label: Text(_fileName ?? "Upload File MoU"),
-                  ),
-                  const SizedBox(height: 24),
-                  ElevatedButton(
-                    onPressed: _submitForm,
-                    child: const Text("Upload Data MoU"),
-                  ),
+                  buildField("Tujuan", _tujuanController, maxLines: 3),
+                  buildFileRow(),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget buildField(
+    String label,
+    TextEditingController controller, {
+    int maxLines = 1,
+  }) {
+    return Row(
+      crossAxisAlignment:
+          maxLines > 1 ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+      children: [
+        SizedBox(width: 130, child: Text(label)),
+        const SizedBox(width: 16),
+        Expanded(
+          child: TextFormField(
+            controller: controller,
+            decoration: const InputDecoration(border: OutlineInputBorder()),
+            maxLines: maxLines,
+            validator: (value) => value!.isEmpty ? "$label wajib diisi" : null,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildDateRow(String label, DateTime? date, VoidCallback onTap) {
+    return Row(
+      children: [
+        SizedBox(width: 130, child: Text(label)),
+        const SizedBox(width: 16),
+        Expanded(
+          child: OutlinedButton(
+            onPressed: onTap,
+            child: Text(
+              date == null
+                  ? "Pilih Tanggal"
+                  : "${date.toLocal()}".split(' ')[0],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildFileRow() {
+    return Row(
+      children: [
+        const SizedBox(width: 130, child: Text("Upload File")),
+        const SizedBox(width: 16),
+        Expanded(
+          child: ElevatedButton.icon(
+            onPressed: _pickFile,
+            icon: const Icon(Icons.attach_file),
+            label: Text(_fileName ?? "Pilih File MoU"),
+          ),
+        ),
+      ],
     );
   }
 }
