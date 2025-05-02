@@ -141,4 +141,30 @@ class AuthController extends Controller
             'message' => 'Data User berhasil dihapus'
         ]);
     }
+
+    public function getalluser()
+    {
+        $users = User::all();
+
+        return response()->json([
+            'message' => 'Data semua user berhasil ditampilkan',
+            'data' => $users
+        ]);
+    }
+    
+    public function getuserid($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User tidak ditemukan'
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Data user berhasil ditampilkan',
+            'data' => $user
+        ]);
+    }
 }

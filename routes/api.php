@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\Auth;
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
-
-// Route::middleware('auth:sanctum', 'role:superadmin')->post('/registerbysuperadmin', [AuthController::class, 'registerbysuperadmin']);
+Route::middleware(['auth:sanctum', 'role:admin,superadmin'])->group(function () {
+    Route::get('/users', [AuthController::class, 'getalluser']);
+    Route::get('/users/{id}', [AuthController::class, 'getuserid']);
+});
 Route::middleware('auth:sanctum', 'role:superadmin')->group(function () {
     Route::post('/registerbysuperadmin', [AuthController::class, 'registerbysuperadmin']);
     Route::put('/updateuser/{id}', [AuthController::class, 'updateuser']);

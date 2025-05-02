@@ -19,7 +19,7 @@ class RoleMiddleware
 
         if (!$user || !in_array($user->role, $roles)) {
             return response()->json([
-                'message' => 'Akses ditolak',
+                'message' => 'Akses ditolak. Anda tidak memiliki izin.',
             ], 403);
         }
         return $next($request);
