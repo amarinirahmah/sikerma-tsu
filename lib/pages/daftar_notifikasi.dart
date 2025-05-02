@@ -1,48 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/widgets/app_drawer.dart';
+import 'package:sikermatsu/widgets/main_layout.dart';
+import 'package:sikermatsu/widgets/table.dart';
 
 class NotificationPage extends StatelessWidget {
   const NotificationPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // Anggap data notifikasi kosong (ini bisa digantikan dengan data yang sesuai)
-    List<Map<String, String>> notifikasiData = [];
+    // Data dummy notifikasi
+    List<Map<String, dynamic>> notifikasiData = [
+      {'Nomor': '1', 'Notifikasi': 'Pengajuan kerja sama berhasil dikirim.'},
+      {'Nomor': '2', 'Notifikasi': 'Laporan kemajuan telah diperbarui.'},
+    ];
 
-    return Scaffold(
-      appBar: AppBar(title: const Text("Daftar Notifikasi")),
-      drawer: const AppDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child:
-              notifikasiData.isEmpty
-                  ? Center(
-                    child: Text(
-                      "Belum ada notifikasi",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  )
-                  : DataTable(
-                    columns: const [
-                      DataColumn(label: Text('Nomor')),
-                      DataColumn(label: Text('Notifikasi')),
-                    ],
-                    rows:
-                        notifikasiData.map((data) {
-                          return DataRow(
-                            cells: [
-                              DataCell(Text(data['nomor'] ?? '')),
-                              DataCell(Text(data['notifikasi'] ?? '')),
-                            ],
-                          );
-                        }).toList(),
-                  ),
-        ),
-      ),
+    return MainLayout(
+      title: 'Daftar Notifikasi',
+      child:
+          notifikasiData.isEmpty
+              ? const Center(
+                child: Text(
+                  "Belum ada notifikasi",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              )
+              : TableData(
+                title: 'Notifikasi',
+                columns: const ['Nomor', 'Notifikasi'],
+                data: notifikasiData,
+                actionLabel: 'Send',
+                onActionPressed: (_, __) {},
+              ),
     );
   }
 }

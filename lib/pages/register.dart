@@ -75,6 +75,7 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 236, 236, 236),
       body: Center(
         child: SingleChildScrollView(
           child: ConstrainedBox(
@@ -83,9 +84,10 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             child: Card(
               margin: const EdgeInsets.symmetric(horizontal: 24),
-              elevation: 8,
+              color: Colors.white,
+              elevation: 1,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
+                borderRadius: BorderRadius.circular(4),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(24),
