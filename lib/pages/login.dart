@@ -180,6 +180,13 @@ class _LoginPageState extends State<LoginPage> {
                           }
                         },
                         child: const Text("Login"),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.teal,
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ),
                       ),
                       TextButton(
                         onPressed: () {

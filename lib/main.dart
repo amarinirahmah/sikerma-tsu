@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/login.dart';
-import 'pages/register.dart';
+import 'pages/super_admin.dart';
 import 'pages/dashboard.dart';
 import 'pages/mou.dart';
 import 'pages/pks.dart';
@@ -11,6 +11,7 @@ import 'pages/daftar_mou.dart';
 import 'pages/detail_mou.dart';
 import 'pages/daftar_pks.dart';
 import 'pages/detail_pks.dart';
+import 'pages/register.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,11 +25,12 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Sikerma TSU',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(primarySwatch: Colors.teal),
       initialRoute: '/login',
       routes: {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
+        '/superadmin': (context) => const SuperAdminPage(),
         '/dashboard': (context) => const AdminDashboardPage(),
         '/uploadmou': (context) => const UploadMoUPage(),
         '/uploadpks': (context) => const UploadPKSPage(),

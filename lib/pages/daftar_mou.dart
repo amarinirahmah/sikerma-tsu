@@ -59,30 +59,20 @@ class MoUPage extends StatelessWidget {
     ];
 
     return MainLayout(
-      title: 'Daftar MoU',
-      child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Center(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 1000),
-              child: TableData(
-                title: 'Daftar MoU',
-                columns: [
-                  'Nama Mitra',
-                  'Tanggal Mulai',
-                  'Tanggal Berakhir',
-                  'Status',
-                ],
-                data: daftarMou,
-                actionLabel: 'Detail',
-                onActionPressed: (context, rowData) {
-                  Navigator.pushNamed(context, '/detailmou');
-                },
-              ),
-            ),
-          ),
+      title: 'Daftar Mou',
+      child: TableData(
+        title: 'Daftar Mou',
+        columns: const [
+          'Nama Mitra',
+          'Tanggal Mulai',
+          'Tanggal Berakhir',
+          'Status',
         ],
+        data: daftarMou,
+        actionLabel: 'Detail',
+        onActionPressed: (BuildContext context, Map<String, dynamic> rowData) {
+          Navigator.pushNamed(context, '/detailmou');
+        },
       ),
     );
   }

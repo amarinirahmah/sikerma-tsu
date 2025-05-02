@@ -42,7 +42,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           actions ??
           [
             IconButton(
-              icon: const Icon(Icons.logout),
+              icon: const Icon(Icons.person),
               tooltip: 'Logout',
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/login');

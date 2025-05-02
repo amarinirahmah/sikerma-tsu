@@ -57,6 +57,12 @@ class AppDrawer extends StatelessWidget {
                     '/notifikasi',
                     icon: Icons.notifications,
                   ),
+                  _buildMenuItem(
+                    context,
+                    'Admin',
+                    '/superadmin',
+                    icon: Icons.accessibility,
+                  ),
                 ],
               ),
             ),
