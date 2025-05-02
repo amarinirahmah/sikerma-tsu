@@ -15,13 +15,48 @@ class AppDrawer extends StatelessWidget {
             Expanded(
               child: ListView(
                 children: [
-                  _buildMenuItem(context, 'Dashboard', '/dashboard'),
-                  _buildMenuItem(context, 'Daftar MoU', '/mou'),
-                  _buildMenuItem(context, 'Upload MoU', '/uploadmou'),
-                  _buildMenuItem(context, 'Daftar PKS', '/pks'),
-                  _buildMenuItem(context, 'Upload PKS', '/uploadpks'),
-                  _buildMenuItem(context, 'Progres Kerja Sama', '/progres'),
-                  _buildMenuItem(context, 'Notifikasi', '/notifikasi'),
+                  _buildMenuItem(
+                    context,
+                    'Dashboard',
+                    '/dashboard',
+                    icon: Icons.dashboard,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    'Daftar MoU',
+                    '/mou',
+                    icon: Icons.description,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    'Upload MoU',
+                    '/uploadmou',
+                    icon: Icons.upload_file,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    'Daftar PKS',
+                    '/pks',
+                    icon: Icons.library_books,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    'Upload PKS',
+                    '/uploadpks',
+                    icon: Icons.drive_folder_upload,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    'Progres Kerja Sama',
+                    '/progres',
+                    icon: Icons.timeline,
+                  ),
+                  _buildMenuItem(
+                    context,
+                    'Notifikasi',
+                    '/notifikasi',
+                    icon: Icons.notifications,
+                  ),
                 ],
               ),
             ),
@@ -31,14 +66,42 @@ class AppDrawer extends StatelessWidget {
     );
   }
 
-  Widget _buildMenuItem(BuildContext context, String title, String route) {
-    return ListTile(
-      title: Text(title, style: const TextStyle(color: Colors.white)),
-      hoverColor: Colors.yellow,
-      onTap: () {
-        Navigator.pop(context); // Tutup drawer jika sedang terbuka
-        Navigator.pushNamed(context, route);
-      },
+  Widget _buildMenuItem(
+    BuildContext context,
+    String title,
+    String route, {
+    IconData icon = Icons.circle,
+  }) {
+    final currentRoute = ModalRoute.of(context)?.settings.name;
+    final isSelected = currentRoute == route;
+
+    return Container(
+      decoration:
+          isSelected
+              ? BoxDecoration(
+                color: Colors.amber.shade700.withOpacity(0.3),
+                border: const Border(
+                  left: BorderSide(color: Colors.white, width: 4),
+                ),
+              )
+              : null,
+      child: ListTile(
+        leading: Icon(
+          icon,
+          color: isSelected ? Colors.white : Colors.white70,
+          size: 20,
+        ),
+        title: Text(title, style: const TextStyle(color: Colors.white)),
+        selected: isSelected,
+        selectedTileColor: Colors.transparent,
+        hoverColor: Colors.amber.shade300.withOpacity(0.2),
+        onTap: () {
+          if (!isSelected) {
+            Navigator.pop(context);
+            Navigator.pushNamed(context, route);
+          }
+        },
+      ),
     );
   }
 }
