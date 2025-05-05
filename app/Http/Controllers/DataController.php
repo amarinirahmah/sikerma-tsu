@@ -5,12 +5,19 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\DataMou;
 use App\Models\DataPks;
+use App\Models\pkl;
 use App\Models\User;
 use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Auth;
 
 class DataController extends Controller
 {
+    public function getmou()
+    {
+        $data = DataMou::all();
+        return response()->json($data);
+    }
+
     public function uploadmou(Request $request)
     {
         // $user = auth()->user();
@@ -150,6 +157,12 @@ class DataController extends Controller
         return response()->json([
             'message' => 'Data MOU berhasil dihapus'
         ]);
+    }
+
+    public function getpks()
+    {
+        $data = DataPks::all();
+        return response()->json($data);
     }
 
     public function uploadpks(Request $request)
@@ -295,6 +308,168 @@ class DataController extends Controller
 
         return response()->json([
             'message' => 'Data PKS berhasil dihapus'
+        ]);
+    }
+
+    public function getpkl()
+    {
+        $data = pkl::all();
+        return response()->json($data);
+    }
+
+    public function uploadpkl(Request $request)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'nisn' => 'required|unique:pkl,nisn',
+            'sekolah' => 'required',
+            'nama' => 'required',
+            'gender' => 'required|in:laki-laki,perempuan',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_berakhir' => 'required|date',
+            'file_pkl' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
+            'telpemail' => 'required',
+            'alamat' => 'required',
+        ]);
+
+        $filePath = null;
+        // $fileType = null;
+
+        if ($request->hasFile('file_pkl')) {
+            $file = $request->file('file_pkl');
+            $filePath = $file->store('pkl_files', 'public');
+            // $fileType = $file->getClientMimeType();
+        }
+
+        try{
+            $data = pkl::create([
+                'nisn' => $request->nisn,
+                'sekolah' => $request->sekolah,
+                'nama' => $request->nama,
+                'gender' => $request->gender,
+                'tanggal_mulai' => $request->tanggal_mulai,
+                'tanggal_berakhir' => $request->tanggal_berakhir,
+                'file_pkl' => $filePath,
+                'telpemail' => $request->telpemail,
+                'alamat' => $request->alamat,
+                // 'file_type' => $fileType,
+            ]);
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'action' => 'Pengajuan PKL',
+                'description' => 'Pengajuan Kegiatan PKL dengan nomor NISN ' . $request->nisn,
+            ]);
+            
+            return response()->json([
+                'message' => 'Berhasil mengisi pengajuan PKL',
+                'data' => $data,
+            ]);
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return response()->json([
+                    'message' => 'NISN ' . $request->nisn . 'sudah melakukan pengajuan PKL.',
+                ], 409);
+            }
+            return response()->json([
+                'message' => 'Terjadi kesalahan saat menyimpan data',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updatepkl(Request $request, $id)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $request->validate([
+            'nisn' => 'sometimes|required',
+            'sekolah' => 'sometimes|required',
+            'nama' => 'sometimes|required',
+            'gender' => 'sometimes|required|in:laki-laki,perempuan',
+            'tanggal_mulai' => 'sometimes|required|date',
+            'tanggal_berakhir' => 'sometimes|required|date',
+            'file_pkl' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
+            'telpemail' => 'sometimes|required',
+            'alamat' => 'sometimes|required',
+        ]);
+
+        $pkl = pkl::find($id);
+        if(!$pkl) {
+            return response()->json(['message' => 'Data PKL tidak ditemukan'], 404);
+        }
+
+        $original = $pkl->getOriginal();
+        
+        if ($request->hasFile('file_pkl')) {
+            $file = $request->file('file_pkl');
+            $filePath = $file->store('pkl_files','public');
+            $pkl->file_pkl = $filePath;
+        }
+
+        $pkl->fill($request->except('file_pkl'));
+        $changes = $pkl->getDirty();
+
+        $pkl->save();
+
+        $detailChanges = [];
+        foreach ($changes as $field => $newVal) {
+            $oldVal = $original[$field] ?? '-';
+            $detailChanges[] = "$field: '$oldVal'→'$newVal'";
+        }
+
+        $changedFields = implode(', ', array_keys($changes));
+
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'Update PKL',
+            'description' => 'Memperbarui data PKL. Perubahan: ' . implode(', ', $detailChanges),
+        ]);
+
+        $pkl->fill($request->except('file_pkl'))->save();
+
+        return response()->json([
+            'message' => 'Data PKL berhasil diupdate',
+            'data' => $pkl
+        ]);
+    }
+
+    public function deletepkl(Request $request, $id)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        $pkl = pkl::find($id);
+
+        if (!$pkl) {
+            return response()->json([
+                'message' => 'Data PKL tidak ditemukan'
+            ], 404);
+        }
+
+        if ($pkl->file_pkl) {
+            \Storage::disk('public')->delete($pkl->file_pkl);
+        }
+
+        $pkl->delete();
+
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'Hapus Pengajuan PKL',
+            'description' => 'Hapus data pengajuan PKL dengan NISN ' . $pkl->nisn,
+        ]);
+
+        return response()->json([
+            'message' => 'Data PKL berhasil dihapus'
         ]);
     }
 }

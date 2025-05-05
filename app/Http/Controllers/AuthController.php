@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,6 +39,11 @@ class AuthController extends Controller
 
     public function registerbysuperadmin(Request $request)
     {
+        $users = $request->user();
+        if (!$users) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         $request->validate([
             'name' => 'required',
             'email' => 'required|email|unique:user',
@@ -52,6 +58,12 @@ class AuthController extends Controller
             'role' => $request->role
         ]);
 
+        ActivityLog::create([
+            'user_id' => $users->id,
+            'action' => 'Registrasi Akun',
+            'description' => 'Berhasil melakukan registrasi dengan email ' . $request->email,
+        ]);
+
         return response()->json([
             'message' => 'Akun berhasil dibuat oleh superadmin',
             'user' => $user
@@ -60,6 +72,11 @@ class AuthController extends Controller
 
     public function updateuser(Request $request, $id)
     {
+        $users = $request->user();
+        if (!$users) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
         $request->validate([
             'name' => 'sometimes|required',
             'email' => 'sometimes|required|email|unique:user,email,' . $id,
@@ -85,6 +102,12 @@ class AuthController extends Controller
         }
 
         $user->save();
+
+        ActivityLog::create([
+            'user_id' => $users->id,
+            'action' => 'Perubahan Detail Akun',
+            'description' => 'Melakukan perubahan detail dengan email ' . $request->email,
+        ]);
 
         return response()->json([
             'message' => 'Data user berhasil diupdate.',
@@ -125,8 +148,35 @@ class AuthController extends Controller
         ]);
     }
 
+    public function logout(Request $request)
+    {
+        $user = $request->user();
+
+        $user->currentAccessToken()->delete();
+
+        return response()->json([
+            'message' => 'Berhasil Logout dan token dihapus'
+        ]);
+    }
+
+    public function logoutalltoken(Request $request)
+    {
+        $user = $request->user();
+
+        $user->tokens()->delete();
+
+        return response()->json([
+            'message' => 'Berhasil hapus semua riwayat token'
+        ]);
+    }
+
     public function deleteuser($id)
     {
+        $users = $request->user();
+        if (!$users) {
+            return response()->json(['message' => 'Unauthorized'], 401);
+        }
+        
         $user = User::find($id);
 
         if (!$user) {
@@ -136,6 +186,12 @@ class AuthController extends Controller
         }
 
         $user->delete();
+
+        ActivityLog::create([
+            'user_id' => $users->id,
+            'action' => 'Penghapusan Akun',
+            'description' => 'Melakukan penhapusan akun dengan email ' . $request->email,
+        ]);
 
         return response()->json([
             'message' => 'Data User berhasil dihapus'
