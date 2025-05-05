@@ -1,9 +1,7 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/models/user.dart';
-import 'package:sikermatsu/pages/login.dart';
-import 'package:http/http.dart' as http;
-import '../widgets/main_layout.dart';
+import 'package:sikermatsu/widgets/main_layout.dart';
+import 'package:sikermatsu/widgets/table.dart';
+import 'add_role.dart';
 
 class SuperAdminPage extends StatefulWidget {
   const SuperAdminPage({super.key});
@@ -13,169 +11,58 @@ class SuperAdminPage extends StatefulWidget {
 }
 
 class _SuperAdminPageState extends State<SuperAdminPage> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController name = TextEditingController();
-  final TextEditingController email = TextEditingController();
-  final TextEditingController password = TextEditingController();
-  String role = 'admin';
-  User? userModel;
-
-  // Future registerAdmin(name, email, password, role) async {
-  //   User userModel;
-  //   final response = await http.post(
-  //     Uri.parse("http://192.168.100.236:8000/api/register"),
-  //     body: {
-  //       "name": name.toString(),
-  //       "email": email.toString(),
-  //       "password": password.toString(),
-  //       "role": role.toString(),
-  //     },
-  //   );
-
-  //   userModel = User.fromJson(jsonDecode(response.body)[0]);
-  //   print(userModel);
-  // }
-
-  Future<void> _showBerhasil() async {
-    return showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Berhasil!'),
-          content: const SingleChildScrollView(
-            child: ListBody(children: <Widget>[Text("Register berhasil")]),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => LoginPage()))
-                    .then((value) {
-                      setState(() {});
-                    });
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  final List<Map<String, dynamic>> _adminData = [
+    {'Name': 'Admin Satu', 'Email': 'admin1@example.com', 'Role': 'admin'},
+    {
+      'Name': 'Pimpinan Dua',
+      'Email': 'pimpinan2@example.com',
+      'Role': 'pimpinan',
+    },
+  ];
 
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      title: "Register Admin",
-      child: Center(
-        child: SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 800),
-            child: Card(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              color: Colors.white,
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        controller: name,
-                        decoration: const InputDecoration(
-                          labelText: 'Name',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator:
-                            (value) =>
-                                value!.isEmpty ? 'Nama wajib diisi' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: email,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator:
-                            (value) =>
-                                value!.isEmpty ? 'Email wajib diisi' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: password,
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
-                          border: OutlineInputBorder(),
-                        ),
-                        obscureText: true,
-                        validator:
-                            (value) =>
-                                value!.isEmpty ? 'Password wajib diisi' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      DropdownButtonFormField<String>(
-                        value: role,
-                        items:
-                            ['admin', 'pimpinan']
-                                .map(
-                                  (role) => DropdownMenuItem(
-                                    value: role,
-                                    child: Text(role),
-                                  ),
-                                )
-                                .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            role = value!;
-                          });
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Role',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: () {
-                          // if (_formKey.currentState!.validate()) {
-                          //   registerAdmin(
-                          //     name.text,
-                          //     email.text,
-                          //     password.text,
-                          //     role,
-                          //   );
-                          // }
-                          _showBerhasil();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        child: const Text("Register"),
-                      ),
-                      // TextButton(
-                      //   onPressed: () {
-                      //     Navigator.pushNamed(context, '/login');
-                      //   },
-                      //   child: const Text("Sudah punya akun? Login"),
-                      // ),
-                    ],
-                  ),
-                ),
-              ),
+      title: 'Kelola Admin',
+      child: Stack(
+        children: [
+          TableData(
+            title: 'Daftar Admin',
+            columns: const ['Name', 'Email', 'Role'],
+            data: _adminData,
+            actionLabel: 'Hapus',
+            getActionBgColor: (label) {
+              if (label == 'Hapus') return Colors.red;
+              if (label == 'Detail' || label == 'Upload' || label == 'Send')
+                return Colors.teal;
+              return Colors.teal;
+            },
+            getActionFgColor: (_) => Colors.white,
+            onActionPressed: (context, rowData) {
+              // Optional: Tambahkan konfirmasi jika perlu
+              setState(() {
+                _adminData.remove(rowData);
+              });
+            },
+          ),
+          Positioned(
+            bottom: 16,
+            right: 16,
+            child: FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AddRolePage()),
+                ).then((_) {
+                  setState(() {});
+                });
+              },
+              backgroundColor: Colors.teal,
+              foregroundColor: Colors.white,
+              child: const Icon(Icons.add),
             ),
           ),
-        ),
+        ],
       ),
     );
   }

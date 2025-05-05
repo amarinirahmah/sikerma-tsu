@@ -49,9 +49,9 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
 
-    // userModel = User.fromJson(jsonDecode(response.body)[0]);
-    // print(userModel);
-    // print(Exception);
+    userModel = User.fromJson(jsonDecode(response.body)[0]);
+    print(userModel);
+    print(Exception);
   }
 
   Future<void> fetchUserData() async {

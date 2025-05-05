@@ -12,6 +12,10 @@ import 'pages/detail_mou.dart';
 import 'pages/daftar_pks.dart';
 import 'pages/detail_pks.dart';
 import 'pages/register.dart';
+import 'pages/add_role.dart';
+import 'pages/pengajuan_pkl.dart';
+import 'pages/pkl.dart';
+import 'pages/detail_pkl.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,6 +35,7 @@ class MyApp extends StatelessWidget {
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/superadmin': (context) => const SuperAdminPage(),
+        '/addrole': (context) => const AddRolePage(),
         '/dashboard': (context) => const AdminDashboardPage(),
         '/uploadmou': (context) => const UploadMoUPage(),
         '/uploadpks': (context) => const UploadPKSPage(),
@@ -41,6 +46,9 @@ class MyApp extends StatelessWidget {
         '/detailmou': (context) => const DetailMoUPage(),
         '/pks': (context) => const PKSPage(),
         '/detailpks': (context) => const DetailPKSPage(),
+        '/uploadpkl': (context) => const UploadPKLPage(),
+        '/pkl': (context) => const PKLPage(),
+        '/detailpkl': (context) => const DetailPKLPage(),
       },
     );
   }

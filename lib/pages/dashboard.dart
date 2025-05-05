@@ -8,14 +8,14 @@ class AdminDashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MainLayout(
       title: 'Dashboard',
-      actions: [
-        IconButton(
-          icon: const Icon(Icons.logout),
-          onPressed: () {
-            Navigator.pushReplacementNamed(context, '/login');
-          },
-        ),
-      ],
+      // actions: [
+      //   IconButton(
+      //     icon: const Icon(Icons.logout),
+      //     onPressed: () {
+      //       Navigator.pushReplacementNamed(context, '/login');
+      //     },
+      //   ),
+      // ],
       child: Center(
         child: Text(
           'Isi Halaman Dashboard',

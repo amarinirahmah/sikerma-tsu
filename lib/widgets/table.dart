@@ -7,6 +7,8 @@ class TableData extends StatefulWidget {
   final String actionLabel;
   final void Function(BuildContext context, Map<String, dynamic> rowData)
   onActionPressed;
+  final Color Function(String actionLabel)? getActionBgColor;
+  final Color Function(String actionLabel)? getActionFgColor;
 
   const TableData({
     super.key,
@@ -15,6 +17,8 @@ class TableData extends StatefulWidget {
     required this.data,
     required this.actionLabel,
     required this.onActionPressed,
+    this.getActionBgColor,
+    this.getActionFgColor,
   });
 
   @override
@@ -32,6 +36,8 @@ class _TableDataState extends State<TableData> {
       actionLabel: widget.actionLabel,
       context: context,
       onActionPressed: widget.onActionPressed,
+      getActionBgColor: widget.getActionBgColor,
+      getActionFgColor: widget.getActionFgColor,
     );
 
     final columns = [
@@ -81,6 +87,8 @@ class _TableDataSource extends DataTableSource {
   final BuildContext context;
   final void Function(BuildContext context, Map<String, dynamic> rowData)
   onActionPressed;
+  final Color Function(String actionLabel)? getActionBgColor;
+  final Color Function(String actionLabel)? getActionFgColor;
 
   _TableDataSource({
     required this.columns,
@@ -88,6 +96,8 @@ class _TableDataSource extends DataTableSource {
     required this.actionLabel,
     required this.context,
     required this.onActionPressed,
+    required this.getActionBgColor,
+    required this.getActionFgColor,
   });
 
   @override
@@ -104,8 +114,10 @@ class _TableDataSource extends DataTableSource {
             onPressed: () => onActionPressed(context, row),
             child: Text(actionLabel),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.teal,
-              foregroundColor: Colors.white,
+              backgroundColor:
+                  getActionBgColor?.call(actionLabel) ?? Colors.teal,
+              foregroundColor:
+                  getActionFgColor?.call(actionLabel) ?? Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),

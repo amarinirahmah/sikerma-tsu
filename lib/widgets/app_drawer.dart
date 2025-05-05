@@ -59,6 +59,12 @@ class AppDrawer extends StatelessWidget {
                   ),
                   _buildMenuItem(
                     context,
+                    'Pengajuan PKL',
+                    '/pkl',
+                    icon: Icons.work,
+                  ),
+                  _buildMenuItem(
+                    context,
                     'Admin',
                     '/superadmin',
                     icon: Icons.accessibility,
