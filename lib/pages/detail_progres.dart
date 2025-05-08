@@ -15,6 +15,7 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
   DateTime? _selectedDate;
   final TextEditingController _aktivitasController = TextEditingController();
   final List<Map<String, dynamic>> _progresList = [];
+  String judulAktivitas = 'selesai pengajuan';
 
   void _pickTanggal() async {
     final picked = await showDatePicker(
@@ -37,6 +38,7 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
         _progresList.add({
           'No': (_progresList.length + 1).toString(),
           'Tanggal': "${_selectedDate!.toLocal()}".split(' ')[0],
+          'Proses': judulAktivitas,
           'Aktivitas': _aktivitasController.text,
         });
         _selectedDate = null;
@@ -77,6 +79,33 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
                               : "${_selectedDate!.toLocal()}".split(' ')[0],
                         ),
                       ),
+
+                      DropdownButtonFormField<String>(
+                        value: judulAktivitas,
+                        items:
+                            [
+                                  'selesai pengajuan',
+                                  'selesai ditandatangani',
+                                  'revisi draft',
+                                ]
+                                .map(
+                                  (role) => DropdownMenuItem(
+                                    value: role,
+                                    child: Text(role),
+                                  ),
+                                )
+                                .toList(),
+                        onChanged: (value) {
+                          setState(() {
+                            judulAktivitas = value!;
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          labelText: 'Proses',
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+
                       TextFormField(
                         controller: _aktivitasController,
                         decoration: const InputDecoration(
@@ -101,10 +130,8 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
                     ? const Text("Belum ada data progres.")
                     : TableData(
                       title: 'Daftar Progres',
-                      columns: const ['No', 'Tanggal', 'Aktivitas'],
+                      columns: const ['No', 'Tanggal', 'Proses', 'Aktivitas'],
                       data: _progresList,
-                      actionLabel: 'Send',
-                      onActionPressed: (_, __) {},
                     ),
               ],
             ),

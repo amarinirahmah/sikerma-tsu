@@ -16,6 +16,7 @@ import 'pages/add_role.dart';
 import 'pages/pengajuan_pkl.dart';
 import 'pages/pkl.dart';
 import 'pages/detail_pkl.dart';
+import 'pages/home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,8 +31,9 @@ class MyApp extends StatelessWidget {
       title: 'Sikerma TSU',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.teal),
-      initialRoute: '/login',
+      initialRoute: '/home',
       routes: {
+        '/home': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         '/superadmin': (context) => const SuperAdminPage(),

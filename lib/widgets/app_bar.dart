@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/pages/daftar_notifikasi.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isDesktop;
@@ -32,15 +33,34 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         children: [
           Image.asset('assets/images/logo.png', height: 32),
           const SizedBox(width: 12),
-          Text(
-            title.isNotEmpty ? title : 'SIKERMA TSU',
-            style: const TextStyle(fontSize: 20),
+          // Text(
+          //   title.isNotEmpty ? title : 'SIKERMA TSU',
+          //   style: const TextStyle(fontSize: 20),
+          // ),
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/mou');
+            },
+            child: const Text('Daftar MoU'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/pks');
+            },
+            child: const Text('Daftar PKS'),
           ),
         ],
       ),
       actions:
           actions ??
           [
+            IconButton(
+              icon: const Icon(Icons.notifications),
+              tooltip: 'Notifikasi',
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/notifikasi');
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.person),
               tooltip: 'Logout',

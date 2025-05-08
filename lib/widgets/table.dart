@@ -4,8 +4,8 @@ class TableData extends StatefulWidget {
   final String title;
   final List<String> columns;
   final List<Map<String, dynamic>> data;
-  final String actionLabel;
-  final void Function(BuildContext context, Map<String, dynamic> rowData)
+  final String? actionLabel;
+  final void Function(BuildContext context, Map<String, dynamic> rowData)?
   onActionPressed;
   final Color Function(String actionLabel)? getActionBgColor;
   final Color Function(String actionLabel)? getActionFgColor;
@@ -15,8 +15,8 @@ class TableData extends StatefulWidget {
     required this.title,
     required this.columns,
     required this.data,
-    required this.actionLabel,
-    required this.onActionPressed,
+    this.actionLabel,
+    this.onActionPressed,
     this.getActionBgColor,
     this.getActionFgColor,
   });
@@ -30,6 +30,8 @@ class _TableDataState extends State<TableData> {
 
   @override
   Widget build(BuildContext context) {
+    final bool hasAction =
+        widget.actionLabel != null && widget.onActionPressed != null;
     final dataSource = _TableDataSource(
       columns: widget.columns,
       data: widget.data,
@@ -42,7 +44,7 @@ class _TableDataState extends State<TableData> {
 
     final columns = [
       ...widget.columns.map((col) => DataColumn(label: Text(col))),
-      DataColumn(label: Text(widget.actionLabel)),
+      if (hasAction) DataColumn(label: Text(widget.actionLabel!)),
     ];
 
     return LayoutBuilder(
@@ -83,9 +85,9 @@ class _TableDataState extends State<TableData> {
 class _TableDataSource extends DataTableSource {
   final List<String> columns;
   final List<Map<String, dynamic>> data;
-  final String actionLabel;
+  final String? actionLabel;
   final BuildContext context;
-  final void Function(BuildContext context, Map<String, dynamic> rowData)
+  final void Function(BuildContext context, Map<String, dynamic> rowData)?
   onActionPressed;
   final Color Function(String actionLabel)? getActionBgColor;
   final Color Function(String actionLabel)? getActionFgColor;
@@ -93,39 +95,43 @@ class _TableDataSource extends DataTableSource {
   _TableDataSource({
     required this.columns,
     required this.data,
-    required this.actionLabel,
+    this.actionLabel,
     required this.context,
-    required this.onActionPressed,
-    required this.getActionBgColor,
-    required this.getActionFgColor,
+    this.onActionPressed,
+    this.getActionBgColor,
+    this.getActionFgColor,
   });
 
   @override
   DataRow? getRow(int index) {
     if (index >= data.length) return null;
-
     final row = data[index];
 
-    return DataRow(
-      cells: [
-        ...columns.map((col) => DataCell(Text(row[col]?.toString() ?? ''))),
+    final cells = [
+      ...columns.map((col) => DataCell(Text(row[col]?.toString() ?? ''))),
+    ];
+
+    if (actionLabel != null && onActionPressed != null) {
+      cells.add(
         DataCell(
           ElevatedButton(
-            onPressed: () => onActionPressed(context, row),
-            child: Text(actionLabel),
+            onPressed: () => onActionPressed!(context, row),
+            child: Text(actionLabel!),
             style: ElevatedButton.styleFrom(
               backgroundColor:
-                  getActionBgColor?.call(actionLabel) ?? Colors.teal,
+                  getActionBgColor?.call(actionLabel!) ?? Colors.teal,
               foregroundColor:
-                  getActionFgColor?.call(actionLabel) ?? Colors.white,
+                  getActionFgColor?.call(actionLabel!) ?? Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(4),
               ),
             ),
           ),
         ),
-      ],
-    );
+      );
+    }
+
+    return DataRow(cells: cells);
   }
 
   @override

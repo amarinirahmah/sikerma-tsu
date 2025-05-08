@@ -27,8 +27,6 @@ class NotificationPage extends StatelessWidget {
                 title: 'Notifikasi',
                 columns: const ['Nomor', 'Notifikasi'],
                 data: notifikasiData,
-                actionLabel: 'Send',
-                onActionPressed: (_, __) {},
               ),
     );
   }
