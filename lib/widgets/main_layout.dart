@@ -1,57 +1,67 @@
 import 'package:flutter/material.dart';
-import 'app_bar.dart';
-import 'app_drawer.dart';
+import 'package:sikermatsu/widgets/app_drawer.dart';
+import 'package:sikermatsu/widgets/app_bar.dart';
 
-class MainLayout extends StatefulWidget {
-  final Widget child;
+class MainLayout extends StatelessWidget {
   final String title;
-  final List<Widget>? actions;
+  final Widget child;
+  final bool isDesktop;
+  final bool isLoggedIn;
 
   const MainLayout({
     super.key,
+    required this.title,
     required this.child,
-    this.title = '',
-    this.actions,
+    this.isDesktop = true, //true
+    this.isLoggedIn = false, //false
   });
 
-  @override
-  State<MainLayout> createState() => _MainLayoutState();
-}
-
-class _MainLayoutState extends State<MainLayout> {
-  bool isDrawerVisible = true;
+  // @override
+  // Widget build(BuildContext context) {
+  //   return Builder(
+  //     builder: (scaffoldContext) {
+  //       return Scaffold(
+  //         backgroundColor: const Color.fromARGB(255, 236, 236, 236),
+  //         appBar: CustomAppBar(
+  //           isDesktop: isDesktop,
+  //           onMenuPressed: () {
+  //             Scaffold.of(scaffoldContext).openDrawer();
+  //           },
+  //           title: title,
+  //           isLoggedIn: isLoggedIn,
+  //         ),
+  //         drawer: isLoggedIn ? const AppDrawer() : null,
+  //         body: Row(
+  //           children: [
+  //             if (isDesktop && isLoggedIn) const AppDrawer(),
+  //             Expanded(child: child),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        bool isDesktop = constraints.maxWidth >= 800;
-
-        return Scaffold(
-          backgroundColor: const Color.fromARGB(255, 236, 236, 236),
-          drawer: isDesktop ? null : const Drawer(child: AppDrawer()),
-          appBar: CustomAppBar(
-            isDesktop: isDesktop,
-            onMenuPressed: () {
-              if (isDesktop) {
-                setState(() {
-                  isDrawerVisible = !isDrawerVisible;
-                });
-              } else {
-                Scaffold.of(context).openDrawer();
-              }
-            },
-            title: widget.title,
-            actions: widget.actions,
-          ),
-          body: Row(
-            children: [
-              if (isDesktop && isDrawerVisible) const AppDrawer(),
-              Expanded(child: widget.child),
-            ],
-          ),
-        );
-      },
+    return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 236, 236, 236),
+      appBar: CustomAppBar(
+        isDesktop: isDesktop,
+        onMenuPressed: () {
+          Scaffold.of(context).openDrawer();
+        },
+        title: title,
+        isLoggedIn: isLoggedIn,
+      ),
+      drawer: isLoggedIn ? const AppDrawer() : null,
+      // body: child,
+      body: Row(
+        children: [
+          if (isDesktop && isLoggedIn) const AppDrawer(),
+          Expanded(child: child),
+        ],
+      ),
     );
   }
 }

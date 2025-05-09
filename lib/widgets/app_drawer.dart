@@ -51,12 +51,12 @@ class AppDrawer extends StatelessWidget {
                     '/progres',
                     icon: Icons.timeline,
                   ),
-                  _buildMenuItem(
-                    context,
-                    'Notifikasi',
-                    '/notifikasi',
-                    icon: Icons.notifications,
-                  ),
+                  // _buildMenuItem(
+                  //   context,
+                  //   'Notifikasi',
+                  //   '/notifikasi',
+                  //   icon: Icons.notifications,
+                  // ),
                   _buildMenuItem(
                     context,
                     'Pengajuan PKL',

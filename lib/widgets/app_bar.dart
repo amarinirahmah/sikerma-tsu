@@ -6,6 +6,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onMenuPressed;
   final String title;
   final List<Widget>? actions;
+  final bool isLoggedIn;
 
   const CustomAppBar({
     super.key,
@@ -13,17 +14,23 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onMenuPressed,
     this.title = '',
     this.actions,
+    this.isLoggedIn = false, //false
   });
 
   @override
   Widget build(BuildContext context) {
+    final currentRoute = ModalRoute.of(context)?.settings.name;
+    final bool isHome = currentRoute == '/home';
+    final bool showMenuIcon = isDesktop && isLoggedIn && !isHome;
+    final bool showNotificationIcon = isLoggedIn && !isHome;
+
     return AppBar(
       surfaceTintColor: Colors.transparent,
       elevation: 0,
       backgroundColor: Colors.white,
-      automaticallyImplyLeading: !isDesktop,
+      automaticallyImplyLeading: false,
       leading:
-          isDesktop
+          showMenuIcon
               ? IconButton(
                 icon: const Icon(Icons.menu),
                 onPressed: onMenuPressed,
@@ -33,34 +40,44 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         children: [
           Image.asset('assets/images/logo.png', height: 32),
           const SizedBox(width: 12),
-          // Text(
-          //   title.isNotEmpty ? title : 'SIKERMA TSU',
-          //   style: const TextStyle(fontSize: 20),
-          // ),
           TextButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/mou');
+              Navigator.pushNamed(context, '/home');
             },
-            child: const Text('Daftar MoU'),
+            child: const Text('Home'),
           ),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/pks');
-            },
-            child: const Text('Daftar PKS'),
-          ),
+          if (!isLoggedIn) ...[
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/mou');
+              },
+              child: const Text('Daftar MoU'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pushNamed(context, '/pks');
+              },
+              child: const Text('Daftar PKS'),
+            ),
+          ],
         ],
+
+        // Text(
+        //   title.isNotEmpty ? title : 'SIKERMA TSU',
+        //   style: const TextStyle(fontSize: 20),
+        // ),
       ),
       actions:
           actions ??
           [
-            IconButton(
-              icon: const Icon(Icons.notifications),
-              tooltip: 'Notifikasi',
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/notifikasi');
-              },
-            ),
+            if (showNotificationIcon)
+              IconButton(
+                icon: const Icon(Icons.notifications),
+                tooltip: 'Notifikasi',
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/notifikasi');
+                },
+              ),
             IconButton(
               icon: const Icon(Icons.person),
               tooltip: 'Logout',

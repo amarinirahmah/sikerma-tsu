@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/models/user.dart';
-import 'package:http/http.dart' as http;
+import 'package:sikermatsu/models/constants.dart';
+import 'package:sikermatsu/models/mock_user.dart';
 import 'package:sikermatsu/pages/dashboard.dart';
+import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
@@ -16,25 +17,32 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
 
-  // bool submit = false;
   String token = '';
   Map<String, dynamic>? user;
-  // User? userModel;
 
-  Future loginUser(email, password) async {
-    User userModel;
+  Future loginUser(String email, String password) async {
+    if (useMockLogin) {
+      final data = await dummyLogin(email, password);
+      if (data != null) {
+        setState(() {
+          token = data['token'];
+          user = data['user'];
+        });
+        _showBerhasil();
+      } else {
+        _showGagal("Login gagal. Email atau password salah.");
+      }
+      return;
+    }
+
     final response = await http.post(
       Uri.parse("http://192.168.100.236:8000/api/login"),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "email": email.toString(),
-        "password": password.toString(),
-      }),
+      body: jsonEncode({"email": email, "password": password}),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print("Response Data: $data");
       setState(() {
         token = data['token'];
         user = data['user'];
@@ -47,11 +55,9 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         _showGagal("Login gagal. Periksa email atau password.");
       }
+    } else {
+      _showGagal("Gagal terhubung ke server.");
     }
-
-    userModel = User.fromJson(jsonDecode(response.body)[0]);
-    print(userModel);
-    print(Exception);
   }
 
   Future<void> fetchUserData() async {
@@ -72,12 +78,6 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  // void _login() {
-  //   if (_formKey.currentState!.validate()) {
-  //     Navigator.pushReplacementNamed(context, '/dashboard');
-  //   }
-  // }
-
   Future<void> _showBerhasil() async {
     return showDialog<void>(
       context: context,
@@ -85,9 +85,7 @@ class _LoginPageState extends State<LoginPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Berhasil!'),
-          content: Text(
-            "Selamat datang, ${user?['name']?.toString() ?? 'Pengguna'}",
-          ),
+          content: Text("Selamat datang, ${user?['name'] ?? 'Pengguna'}"),
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
@@ -128,7 +126,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Center(
         child: SingleChildScrollView(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 400),
+            constraints: const BoxConstraints(maxWidth: 400),
             child: Card(
               color: Colors.white,
               elevation: 1,
