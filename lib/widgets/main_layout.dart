@@ -5,63 +5,43 @@ import 'package:sikermatsu/widgets/app_bar.dart';
 class MainLayout extends StatelessWidget {
   final String title;
   final Widget child;
-  final bool isDesktop;
   final bool isLoggedIn;
 
-  const MainLayout({
+  MainLayout({
     super.key,
     required this.title,
     required this.child,
-    this.isDesktop = true, //true
-    this.isLoggedIn = false, //false
+    this.isLoggedIn = false,
   });
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Builder(
-  //     builder: (scaffoldContext) {
-  //       return Scaffold(
-  //         backgroundColor: const Color.fromARGB(255, 236, 236, 236),
-  //         appBar: CustomAppBar(
-  //           isDesktop: isDesktop,
-  //           onMenuPressed: () {
-  //             Scaffold.of(scaffoldContext).openDrawer();
-  //           },
-  //           title: title,
-  //           isLoggedIn: isLoggedIn,
-  //         ),
-  //         drawer: isLoggedIn ? const AppDrawer() : null,
-  //         body: Row(
-  //           children: [
-  //             if (isDesktop && isLoggedIn) const AppDrawer(),
-  //             Expanded(child: child),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 236, 236, 236),
-      appBar: CustomAppBar(
-        isDesktop: isDesktop,
-        onMenuPressed: () {
-          Scaffold.of(context).openDrawer();
-        },
-        title: title,
-        isLoggedIn: isLoggedIn,
-      ),
-      drawer: isLoggedIn ? const AppDrawer() : null,
-      // body: child,
-      body: Row(
-        children: [
-          if (isDesktop && isLoggedIn) const AppDrawer(),
-          Expanded(child: child),
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isDesktop = constraints.maxWidth >= 800;
+
+        return Scaffold(
+          backgroundColor: const Color.fromARGB(255, 236, 236, 236),
+          appBar: CustomAppBar(
+            isDesktop: isDesktop,
+            scaffoldKey: scaffoldKey,
+            // onMenuPressed: () {
+            //   Scaffold.of(context).openDrawer(); // untuk mobile
+            // },
+            title: title,
+            isLoggedIn: isLoggedIn,
+          ),
+          drawer: (!isDesktop && isLoggedIn) ? const AppDrawer() : null,
+          body: Row(
+            children: [
+              if (isDesktop && isLoggedIn) const AppDrawer(),
+              Expanded(child: child),
+            ],
+          ),
+        );
+      },
     );
   }
 }

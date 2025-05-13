@@ -3,7 +3,8 @@ import 'package:sikermatsu/pages/daftar_notifikasi.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isDesktop;
-  final VoidCallback onMenuPressed;
+  // final VoidCallback onMenuPressed;
+  final GlobalKey<ScaffoldState>? scaffoldKey;
   final String title;
   final List<Widget>? actions;
   final bool isLoggedIn;
@@ -11,7 +12,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({
     super.key,
     required this.isDesktop,
-    required this.onMenuPressed,
+    // required this.onMenuPressed,
+    this.scaffoldKey,
     this.title = '',
     this.actions,
     this.isLoggedIn = false, //false
@@ -19,9 +21,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currentRoute = ModalRoute.of(context)?.settings.name;
+    final currentRoute = ModalRoute.of(context)?.settings.name ?? '';
     final bool isHome = currentRoute == '/home';
-    final bool showMenuIcon = isDesktop && isLoggedIn && !isHome;
+    final bool showMenuIcon = isLoggedIn && !isHome;
     final bool showNotificationIcon = isLoggedIn && !isHome;
 
     return AppBar(
@@ -33,33 +35,41 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           showMenuIcon
               ? IconButton(
                 icon: const Icon(Icons.menu),
-                onPressed: onMenuPressed,
+                onPressed: () {
+                  final isOpen =
+                      scaffoldKey?.currentState?.isDrawerOpen ?? false;
+                  if (isOpen) {
+                    Navigator.of(scaffoldKey!.currentContext!).pop();
+                  } else {
+                    scaffoldKey?.currentState?.openDrawer();
+                  }
+                },
               )
               : null,
       title: Row(
         children: [
           Image.asset('assets/images/logo.png', height: 32),
           const SizedBox(width: 12),
-          TextButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/home');
-            },
-            child: const Text('Home'),
-          ),
           if (!isLoggedIn) ...[
             TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/mou');
+                Navigator.pop(context, '/home');
               },
-              child: const Text('Daftar MoU'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/pks');
-              },
-              child: const Text('Daftar PKS'),
+              child: const Text('Home'),
             ),
           ],
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, '/mou');
+            },
+            child: const Text('Daftar MoU'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context, '/pks');
+            },
+            child: const Text('Daftar PKS'),
+          ),
         ],
 
         // Text(
@@ -78,6 +88,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Navigator.pushReplacementNamed(context, '/notifikasi');
                 },
               ),
+
             IconButton(
               icon: const Icon(Icons.person),
               tooltip: 'Logout',

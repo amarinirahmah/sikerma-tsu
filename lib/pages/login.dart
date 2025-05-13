@@ -4,6 +4,7 @@ import 'package:sikermatsu/models/mock_user.dart';
 import 'package:sikermatsu/pages/dashboard.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:sikermatsu/models/app_state.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -90,6 +91,7 @@ class _LoginPageState extends State<LoginPage> {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
+                AppState.isLoggedIn.value = true;
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(builder: (context) => AdminDashboardPage()),
                 );

@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(isDesktop: false, onMenuPressed: () {}),
+      appBar: CustomAppBar(isDesktop: false),
       body: Stack(
         children: [
           Container(
