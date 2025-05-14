@@ -23,7 +23,7 @@ class AuthController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'user',
+            'role' => 'userpkl',
             // 'role' => $request->role
         ]);
 
@@ -37,7 +37,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function registerbysuperadmin(Request $request)
+    public function registerbyadmin(Request $request)
     {
         $users = $request->user();
         if (!$users) {
@@ -48,7 +48,7 @@ class AuthController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:user',
             'password' => 'required',
-            'role' => 'required|in:admin,user,pimpinan',
+            'role' => 'required|in:admin,user,userpkl',
         ]);
 
         $user = User::create([
@@ -81,7 +81,7 @@ class AuthController extends Controller
             'name' => 'sometimes|required',
             'email' => 'sometimes|required|email|unique:user,email,' . $id,
             'password' => 'sometimes|required',
-            'role' => 'sometimes|required|in:superadmin,admin,user,pimpinan',
+            'role' => 'sometimes|required|in:superadmin,admin,user,userpkl',
         ]);
 
         $user = User::find($id);
@@ -170,7 +170,7 @@ class AuthController extends Controller
         ]);
     }
 
-    public function deleteuser($id)
+    public function deleteuser(Request $request, $id)
     {
         $users = $request->user();
         if (!$users) {

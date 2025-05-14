@@ -20,6 +20,8 @@ return new class extends Migration
             $table->date('tanggal_berakhir');
             $table->string('file_mou')->nullable();
             $table->string('tujuan');
+            $table->enum('status', ['Aktif', 'Tidak Aktif'])->default('Tidak Aktif');
+            $table->enum('keterangan',['Diajukan','Disetujui','Dibatalkan'])->default('Diajukan');
             $table->timestamps();
         });
     }

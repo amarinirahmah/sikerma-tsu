@@ -9,7 +9,7 @@ class DataPks extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nomormou', 'nomorpks', 'judul', 'tanggal_mulai', 'tanggal_berakhir', 'namaunit', 'file_pks', 'tujuan'];
+    protected $fillable = ['nomormou', 'nomorpks', 'judul', 'tanggal_mulai', 'tanggal_berakhir', 'namaunit', 'file_pks', 'tujuan','status','keterangan'];
     protected $table = 'data_pks';
 
     public function mou()

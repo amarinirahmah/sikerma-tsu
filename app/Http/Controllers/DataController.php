@@ -85,6 +85,7 @@ class DataController extends Controller
             'tanggal_berakhir' => 'sometimes|required|date',
             'tujuan' => 'sometimes|required',
             'file_mou' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
+            'keterangan' => 'sometimes|required|in:Diajukan,Disetujui,Dibatalkan',
         ]);
 
         $mou = DataMou::find($id);
@@ -237,6 +238,7 @@ class DataController extends Controller
             'namaunit' => 'sometimes|required',
             'tujuan' => 'sometimes|required',
             'file_pks' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
+            'keterangan' => 'sometimes|required|in:Diajukan,Disetujui,Dibatalkan',
         ]);
 
         $pks = DataPks::find($id);

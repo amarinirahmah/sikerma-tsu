@@ -13,32 +13,28 @@ use Illuminate\Support\Facades\Auth;
 Route::post('/registeruser', [AuthController::class, 'registeruser']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
-Route::middleware(['auth:sanctum', 'role:admin,superadmin,pimpinan'])->group(function () {
-    Route::get('/users', [AuthController::class, 'getalluser']);
-    Route::get('/users/{id}', [AuthController::class, 'getuserid']);
-    Route::get('/notifikasi', [NotifController::class, 'index']);
+Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
     Route::get('/getmou', [DataController::class, 'getmou']);
     Route::get('/getpks', [DataController::class, 'getpks']);
     Route::get('/getpkl', [DataController::class, 'getpkl']);
-});
-Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
-    Route::post('/uploadpkl', [DataController::class, 'uploadpkl']);
-    Route::put('/updatepkl/{id}', [DataController::class, 'updatepkl']);
-});
-Route::middleware('auth:sanctum', 'role:superadmin')->group(function () {
-    Route::post('/registerbysuperadmin', [AuthController::class, 'registerbysuperadmin']);
-    Route::put('/updateuser/{id}', [AuthController::class, 'updateuser']);
-    Route::delete('/deleteuser/{id}', [AuthController::class, 'deleteuser']);
-    Route::delete('/logoutalltoken', [AuthController::class, 'logoutalltoken']);
-});
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/uploadmou', [DataController::class, 'uploadmou']);
     Route::post('/uploadpks', [DataController::class, 'uploadpks']);
     Route::put('/updatemou/{id}', [DataController::class, 'updatemou']);
     Route::put('/updatepks/{id}', [DataController::class, 'updatepks']);
     Route::delete('/deletemou/{id}', [DataController::class, 'deletemou']);
     Route::delete('/deletepks/{id}', [DataController::class, 'deletepks']);
+    Route::post('/uploadpkl', [DataController::class, 'uploadpkl']);
+    Route::put('/updatepkl/{id}', [DataController::class, 'updatepkl']);
     Route::delete('/deletepkl/{id}', [DataController::class, 'deletepkl']);
+});
+Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+    Route::post('/registerbyadmin', [AuthController::class, 'registerbyadmin']);
+    Route::put('/updateuser/{id}', [AuthController::class, 'updateuser']);
+    Route::delete('/deleteuser/{id}', [AuthController::class, 'deleteuser']);
+    Route::delete('/logoutalltoken', [AuthController::class, 'logoutalltoken']);
+    Route::get('/users', [AuthController::class, 'getalluser']);
+    Route::get('/users/{id}', [AuthController::class, 'getuserid']);
+    Route::get('/notifikasi', [NotifController::class, 'index']);
 });
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/user', function (Request $request) {
