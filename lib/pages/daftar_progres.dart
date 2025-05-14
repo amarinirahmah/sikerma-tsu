@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
+import 'package:sikermatsu/models/app_state.dart';
 
 class ProgressPage extends StatefulWidget {
   const ProgressPage({super.key});
@@ -74,80 +75,86 @@ class _ProgressPageState extends State<ProgressPage> {
 
   @override
   Widget build(BuildContext context) {
-    final columns = [
-      'Jenis',
-      'Nama Mitra',
-      'Tanggal Mulai',
-      'Tanggal Berakhir',
-      'Status',
-    ];
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppState.isLoggedIn,
+      builder: (context, isLoggedIn, _) {
+        final columns = [
+          'Jenis',
+          'Nama Mitra',
+          'Tanggal Mulai',
+          'Tanggal Berakhir',
+          'Status',
+        ];
 
-    return MainLayout(
-      title: 'Daftar MoU & PKS',
-      child:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : Column(
-                children: [
-                  // FILTER UI
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 8,
-                    ),
-                    child: Row(
-                      children: [
-                        DropdownButton<String>(
-                          value: _selectedJenis,
-                          items:
-                              ['Semua', 'MoU', 'PKS']
-                                  .map(
-                                    (jenis) => DropdownMenuItem(
-                                      value: jenis,
-                                      child: Text(jenis),
-                                    ),
-                                  )
-                                  .toList(),
-                          onChanged: (value) {
-                            if (value != null) {
-                              setState(() {
-                                _selectedJenis = value;
-                              });
-                            }
+        return MainLayout(
+          title: '',
+          isLoggedIn: isLoggedIn,
+          child:
+              _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
+                    children: [
+                      // FILTER UI
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
+                        child: Row(
+                          children: [
+                            DropdownButton<String>(
+                              value: _selectedJenis,
+                              items:
+                                  ['Semua', 'MoU', 'PKS']
+                                      .map(
+                                        (jenis) => DropdownMenuItem(
+                                          value: jenis,
+                                          child: Text(jenis),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged: (value) {
+                                if (value != null) {
+                                  setState(() {
+                                    _selectedJenis = value;
+                                  });
+                                }
+                              },
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: TextField(
+                                decoration: const InputDecoration(
+                                  labelText: 'Cari Nama Mitra / Status',
+                                  prefixIcon: Icon(Icons.search),
+                                ),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _searchQuery = value;
+                                  });
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      // TABLE DATA
+                      Expanded(
+                        child: TableData(
+                          title: 'Daftar Kerja Sama',
+                          columns: columns,
+                          data: _filteredData,
+                          actionLabel: 'Detail',
+                          onActionPressed: (context, rowData) {
+                            Navigator.pushNamed(context, '/detailprogres');
                           },
                         ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: TextField(
-                            decoration: const InputDecoration(
-                              labelText: 'Cari Nama Mitra / Status',
-                              prefixIcon: Icon(Icons.search),
-                            ),
-                            onChanged: (value) {
-                              setState(() {
-                                _searchQuery = value;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-
-                  // TABLE DATA
-                  Expanded(
-                    child: TableData(
-                      title: 'Daftar Kerja Sama',
-                      columns: columns,
-                      data: _filteredData,
-                      actionLabel: 'Detail',
-                      onActionPressed: (context, rowData) {
-                        Navigator.pushNamed(context, '/detailprogres');
-                      },
-                    ),
-                  ),
-                ],
-              ),
+        );
+      },
     );
   }
 }

@@ -90,10 +90,16 @@ class _LoginPageState extends State<LoginPage> {
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
+              // onPressed: () {
+              //   AppState.isLoggedIn.value = true;
+              //   Navigator.of(context).pushReplacementNamed('/dashboard');
+              // },
               onPressed: () {
                 AppState.isLoggedIn.value = true;
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => AdminDashboardPage()),
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/dashboard',
+                  (route) => false,
                 );
               },
             ),

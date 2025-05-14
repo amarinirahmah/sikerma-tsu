@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/upload_card.dart';
+import 'package:sikermatsu/models/app_state.dart';
 
 class UploadPKLPage extends StatefulWidget {
   const UploadPKLPage({super.key});
@@ -84,40 +85,46 @@ class _UploadPKLPage extends State<UploadPKLPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      title: "Pengajuan PKL",
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
-            child: Form(
-              key: _formKey,
-              child: UploadCard(
-                onSubmit: _submitForm,
-                fields: [
-                  buildField("NISN", _nisn),
-                  buildField("Nama Siswa", _namaSiswa),
-                  buildField("Nama Sekolah", _namaSekolah),
-                  buildDateRow(
-                    "Tanggal Mulai",
-                    _tanggalMulai,
-                    _pickTanggalMulai,
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppState.isLoggedIn,
+      builder: (context, isLoggedIn, _) {
+        return MainLayout(
+          title: "",
+          isLoggedIn: isLoggedIn,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 700),
+                child: Form(
+                  key: _formKey,
+                  child: UploadCard(
+                    onSubmit: _submitForm,
+                    fields: [
+                      buildField("NISN", _nisn),
+                      buildField("Nama Siswa", _namaSiswa),
+                      buildField("Nama Sekolah", _namaSekolah),
+                      buildDateRow(
+                        "Tanggal Mulai",
+                        _tanggalMulai,
+                        _pickTanggalMulai,
+                      ),
+                      buildDateRow(
+                        "Tanggal Berakhir",
+                        _tanggalBerakhir,
+                        _pickTanggalBerakhir,
+                      ),
+                      buildFileRow(),
+                      buildField("No Telepon / Email", _telpEmail),
+                      buildField("Alamat", _alamat, maxLines: 3),
+                    ],
                   ),
-                  buildDateRow(
-                    "Tanggal Berakhir",
-                    _tanggalBerakhir,
-                    _pickTanggalBerakhir,
-                  ),
-                  buildFileRow(),
-                  buildField("No Telepon / Email", _telpEmail),
-                  buildField("Alamat", _alamat, maxLines: 3),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

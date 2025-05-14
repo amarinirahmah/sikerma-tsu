@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/upload_card.dart';
+import 'package:sikermatsu/models/app_state.dart';
 
 class UploadMoUPage extends StatefulWidget {
   const UploadMoUPage({super.key});
@@ -82,39 +83,45 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      title: "Upload MoU",
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 700),
-            child: Form(
-              key: _formKey,
-              child: UploadCard(
-                onSubmit: _submitForm,
-                fields: [
-                  buildField("Nomor MoU", _nomorController),
-                  buildField("Nama Mitra", _mitraController),
-                  buildField("Judul Kerja Sama", _judulController),
-                  buildDateRow(
-                    "Tanggal Mulai",
-                    _tanggalMulai,
-                    _pickTanggalMulai,
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppState.isLoggedIn,
+      builder: (context, isLoggedIn, _) {
+        return MainLayout(
+          title: "",
+          isLoggedIn: isLoggedIn,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 700),
+                child: Form(
+                  key: _formKey,
+                  child: UploadCard(
+                    onSubmit: _submitForm,
+                    fields: [
+                      buildField("Nomor MoU", _nomorController),
+                      buildField("Nama Mitra", _mitraController),
+                      buildField("Judul Kerja Sama", _judulController),
+                      buildDateRow(
+                        "Tanggal Mulai",
+                        _tanggalMulai,
+                        _pickTanggalMulai,
+                      ),
+                      buildDateRow(
+                        "Tanggal Berakhir",
+                        _tanggalBerakhir,
+                        _pickTanggalBerakhir,
+                      ),
+                      buildField("Tujuan", _tujuanController, maxLines: 3),
+                      buildFileRow(),
+                    ],
                   ),
-                  buildDateRow(
-                    "Tanggal Berakhir",
-                    _tanggalBerakhir,
-                    _pickTanggalBerakhir,
-                  ),
-                  buildField("Tujuan", _tujuanController, maxLines: 3),
-                  buildFileRow(),
-                ],
+                ),
               ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

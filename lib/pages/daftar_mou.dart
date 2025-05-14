@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
 import 'package:sikermatsu/pages/mou.dart';
+import 'package:sikermatsu/models/app_state.dart';
 
 class MoUPage extends StatefulWidget {
   const MoUPage({super.key});
@@ -64,53 +65,62 @@ class _MoUPage extends State<MoUPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      title: 'Daftar MoU',
-      child: Stack(
-        children: [
-          TableData(
-            title: 'Daftar MoU',
-            columns: const [
-              'Nama Mitra',
-              'Tanggal Mulai',
-              'Tanggal Berakhir',
-              'Status',
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppState.isLoggedIn,
+      builder: (context, isLoggedIn, _) {
+        return MainLayout(
+          title: '',
+          isLoggedIn: isLoggedIn,
+          child: Stack(
+            children: [
+              TableData(
+                title: 'Daftar MoU',
+                columns: const [
+                  'Nama Mitra',
+                  'Tanggal Mulai',
+                  'Tanggal Berakhir',
+                  'Status',
+                ],
+                data: daftarMou,
+                actionLabel: 'Detail',
+                getActionBgColor: (label) {
+                  if (label == 'Hapus') return Colors.red;
+                  if (label == 'Detail' ||
+                      label == 'Upload' ||
+                      label == 'Send') {
+                    return Colors.teal;
+                  }
+                  return Colors.teal;
+                },
+                getActionFgColor: (_) => Colors.white,
+                onActionPressed: (
+                  BuildContext context,
+                  Map<String, dynamic> rowData,
+                ) {
+                  Navigator.pushNamed(context, '/detailmou');
+                },
+              ),
+
+              if (isLoggedIn)
+                Positioned(
+                  bottom: 16,
+                  right: 16,
+                  child: FloatingActionButton(
+                    onPressed: () {
+                      Navigator.pushNamed(
+                        context,
+                        '/uploadmou',
+                      ).then((_) => setState(() {}));
+                    },
+                    backgroundColor: Colors.teal,
+                    foregroundColor: Colors.white,
+                    child: const Icon(Icons.add),
+                  ),
+                ),
             ],
-            data: daftarMou,
-            actionLabel: 'Detail',
-            getActionBgColor: (label) {
-              if (label == 'Hapus') return Colors.red;
-              if (label == 'Detail' || label == 'Upload' || label == 'Send')
-                return Colors.teal;
-              return Colors.teal;
-            },
-            getActionFgColor: (_) => Colors.white,
-            onActionPressed: (
-              BuildContext context,
-              Map<String, dynamic> rowData,
-            ) {
-              Navigator.pushNamed(context, '/detailmou');
-            },
           ),
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const UploadMoUPage()),
-                ).then((_) {
-                  setState(() {});
-                });
-              },
-              backgroundColor: Colors.teal,
-              foregroundColor: Colors.white,
-              child: const Icon(Icons.add),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

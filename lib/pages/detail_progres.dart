@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
 import 'package:sikermatsu/widgets/upload_card.dart';
+import 'package:sikermatsu/models/app_state.dart';
 
 class DetailProgressPage extends StatefulWidget {
   const DetailProgressPage({super.key});
@@ -57,87 +58,100 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      title: "Detail Progres",
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 800),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Form(
-                  key: _formKey,
-                  child: UploadCard(
-                    fields: [
-                      OutlinedButton(
-                        onPressed: _pickTanggal,
-                        child: Text(
-                          _selectedDate == null
-                              ? "Pilih Tanggal"
-                              : "${_selectedDate!.toLocal()}".split(' ')[0],
-                        ),
-                      ),
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppState.isLoggedIn,
+      builder: (context, isLoggedIn, _) {
+        return MainLayout(
+          title: "",
+          isLoggedIn: isLoggedIn,
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 800),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Form(
+                      key: _formKey,
+                      child: UploadCard(
+                        fields: [
+                          OutlinedButton(
+                            onPressed: _pickTanggal,
+                            child: Text(
+                              _selectedDate == null
+                                  ? "Pilih Tanggal"
+                                  : "${_selectedDate!.toLocal()}".split(' ')[0],
+                            ),
+                          ),
 
-                      DropdownButtonFormField<String>(
-                        value: judulAktivitas,
-                        items:
-                            [
-                                  'selesai pengajuan',
-                                  'selesai ditandatangani',
-                                  'revisi draft',
-                                ]
-                                .map(
-                                  (role) => DropdownMenuItem(
-                                    value: role,
-                                    child: Text(role),
-                                  ),
-                                )
-                                .toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            judulAktivitas = value!;
-                          });
-                        },
-                        decoration: const InputDecoration(
-                          labelText: 'Proses',
-                          border: OutlineInputBorder(),
-                        ),
-                      ),
+                          DropdownButtonFormField<String>(
+                            value: judulAktivitas,
+                            items:
+                                [
+                                      'selesai pengajuan',
+                                      'selesai ditandatangani',
+                                      'revisi draft',
+                                    ]
+                                    .map(
+                                      (role) => DropdownMenuItem(
+                                        value: role,
+                                        child: Text(role),
+                                      ),
+                                    )
+                                    .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                judulAktivitas = value!;
+                              });
+                            },
+                            decoration: const InputDecoration(
+                              labelText: 'Proses',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
 
-                      TextFormField(
-                        controller: _aktivitasController,
-                        decoration: const InputDecoration(
-                          labelText: "Aktivitas",
-                          border: OutlineInputBorder(),
-                        ),
-                        validator:
-                            (value) =>
-                                value!.isEmpty ? "Aktivitas wajib diisi" : null,
+                          TextFormField(
+                            controller: _aktivitasController,
+                            decoration: const InputDecoration(
+                              labelText: "Aktivitas",
+                              border: OutlineInputBorder(),
+                            ),
+                            validator:
+                                (value) =>
+                                    value!.isEmpty
+                                        ? "Aktivitas wajib diisi"
+                                        : null,
+                          ),
+                        ],
+                        onSubmit: _simpanData,
                       ),
-                    ],
-                    onSubmit: _simpanData,
-                  ),
-                ),
-                // const SizedBox(height: 24),
-                // const Text(
-                //   "Daftar Progres",
-                //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                // ),
-                const SizedBox(height: 16),
-                _progresList.isEmpty
-                    ? const Text("Belum ada data progres.")
-                    : TableData(
-                      title: 'Daftar Progres',
-                      columns: const ['No', 'Tanggal', 'Proses', 'Aktivitas'],
-                      data: _progresList,
                     ),
-              ],
+                    // const SizedBox(height: 24),
+                    // const Text(
+                    //   "Daftar Progres",
+                    //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    // ),
+                    const SizedBox(height: 16),
+                    _progresList.isEmpty
+                        ? const Text("Belum ada data progres.")
+                        : TableData(
+                          title: 'Daftar Progres',
+                          columns: const [
+                            'No',
+                            'Tanggal',
+                            'Proses',
+                            'Aktivitas',
+                          ],
+                          data: _progresList,
+                        ),
+                  ],
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

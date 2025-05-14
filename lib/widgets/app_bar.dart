@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/pages/daftar_notifikasi.dart';
+import 'package:sikermatsu/models/app_state.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isDesktop;
@@ -36,16 +37,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ? IconButton(
                 icon: const Icon(Icons.menu),
                 onPressed: () {
-                  final isOpen =
-                      scaffoldKey?.currentState?.isDrawerOpen ?? false;
-                  if (isOpen) {
-                    Navigator.of(scaffoldKey!.currentContext!).pop();
-                  } else {
-                    scaffoldKey?.currentState?.openDrawer();
-                  }
+                  scaffoldKey?.currentState?.openDrawer();
                 },
               )
               : null,
+
       title: Row(
         children: [
           Image.asset('assets/images/logo.png', height: 32),
@@ -53,20 +49,20 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           if (!isLoggedIn) ...[
             TextButton(
               onPressed: () {
-                Navigator.pop(context, '/home');
+                Navigator.pushReplacementNamed(context, '/home');
               },
               child: const Text('Home'),
             ),
           ],
           TextButton(
             onPressed: () {
-              Navigator.pop(context, '/mou');
+              Navigator.pushReplacementNamed(context, '/mou');
             },
             child: const Text('Daftar MoU'),
           ),
           TextButton(
             onPressed: () {
-              Navigator.pop(context, '/pks');
+              Navigator.pushReplacementNamed(context, '/pks');
             },
             child: const Text('Daftar PKS'),
           ),
@@ -89,11 +85,57 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 },
               ),
 
+            // IconButton(
+            //   icon: const Icon(Icons.person),
+            //   tooltip: 'Logout',
+            //   // onPressed: () {
+            //   //   Navigator.pushReplacementNamed(context, '/login');
+            //   // },
+            //   onPressed: () {
+            //     AppState.isLoggedIn.value = false;
+            //     Navigator.pushNamedAndRemoveUntil(
+            //       context,
+            //       '/login',
+            //       (route) => false,
+            //     );
+            //   },
+            // ),
             IconButton(
               icon: const Icon(Icons.person),
-              tooltip: 'Logout',
+              tooltip: isLoggedIn ? 'Logout' : 'Login',
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/login');
+                if (isLoggedIn) {
+                  showDialog(
+                    context: context,
+                    builder:
+                        (context) => AlertDialog(
+                          title: const Text('Konfirmasi Logout'),
+                          content: const Text(
+                            'Apakah Anda yakin ingin logout?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed:
+                                  () => Navigator.pop(context), // Tutup dialog
+                              child: const Text('Batal'),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                AppState.isLoggedIn.value = false;
+                                Navigator.pushNamedAndRemoveUntil(
+                                  context,
+                                  '/login',
+                                  (route) => false,
+                                );
+                              },
+                              child: const Text('Logout'),
+                            ),
+                          ],
+                        ),
+                  );
+                } else {
+                  Navigator.pushReplacementNamed(context, '/login');
+                }
               },
             ),
           ],

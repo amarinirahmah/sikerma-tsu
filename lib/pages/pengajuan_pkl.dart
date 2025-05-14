@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
 import 'pkl.dart';
+import 'package:sikermatsu/models/app_state.dart';
 // import 'detailpkl.dart';
 
 class PKLPage extends StatefulWidget {
@@ -38,45 +39,51 @@ class _PKLPageState extends State<PKLPage> {
 
   @override
   Widget build(BuildContext context) {
-    return MainLayout(
-      title: 'Pengajuan PKL',
-      child: Stack(
-        children: [
-          TableData(
-            title: 'Daftar Pengajuan PKL',
-            columns: const [
-              'NISN',
-              'Nama Siswa',
-              'Tanggal Mulai',
-              'Tanggal Berakhir',
-              'Status',
+    return ValueListenableBuilder<bool>(
+      valueListenable: AppState.isLoggedIn,
+      builder: (context, isLoggedIn, _) {
+        return MainLayout(
+          title: '',
+          isLoggedIn: isLoggedIn,
+          child: Stack(
+            children: [
+              TableData(
+                title: 'Daftar Pengajuan PKL',
+                columns: const [
+                  'NISN',
+                  'Nama Siswa',
+                  'Tanggal Mulai',
+                  'Tanggal Berakhir',
+                  'Status',
+                ],
+                data: _dataPKL,
+                actionLabel: 'Detail',
+                onActionPressed: (
+                  BuildContext context,
+                  Map<String, dynamic> rowData,
+                ) {
+                  Navigator.pushNamed(context, '/detailpkl');
+                },
+              ),
+              Positioned(
+                bottom: 16,
+                right: 16,
+                child: FloatingActionButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const UploadPKLPage()),
+                    ).then((_) => setState(() {}));
+                  },
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  child: const Icon(Icons.add),
+                ),
+              ),
             ],
-            data: _dataPKL,
-            actionLabel: 'Detail',
-            onActionPressed: (
-              BuildContext context,
-              Map<String, dynamic> rowData,
-            ) {
-              Navigator.pushNamed(context, '/detailpkl');
-            },
           ),
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const UploadPKLPage()),
-                ).then((_) => setState(() {}));
-              },
-              backgroundColor: Colors.teal,
-              foregroundColor: Colors.white,
-              child: const Icon(Icons.add),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }
