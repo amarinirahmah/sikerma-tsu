@@ -26,6 +26,8 @@ class Kernel extends ConsoleKernel
     {
         // Jadwalkan tugas yang ingin kamu jalankan, contoh:
         $schedule->command('check:mou-pks-notification')->everyMinute();
+        $schedule->command('cek:notifikasi')->everyMinute();
+        $schedule->command(MouPksStatus::class)->everyMinute();
     }
 
     /**
