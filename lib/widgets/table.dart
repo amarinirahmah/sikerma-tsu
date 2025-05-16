@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/styles/style.dart';
 
 class TableData extends StatefulWidget {
   final String title;
@@ -117,15 +118,8 @@ class _TableDataSource extends DataTableSource {
           ElevatedButton(
             onPressed: () => onActionPressed!(context, row),
             child: Text(actionLabel!),
-            style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  getActionBgColor?.call(actionLabel!) ?? Colors.teal,
-              foregroundColor:
-                  getActionFgColor?.call(actionLabel!) ?? Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
+
+            style: CustomStyle.getButtonStyleByLabel(actionLabel!),
           ),
         ),
       );

@@ -73,33 +73,27 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         //   style: const TextStyle(fontSize: 20),
         // ),
       ),
+
       actions:
           actions ??
           [
-            if (showNotificationIcon)
-              IconButton(
-                icon: const Icon(Icons.notifications),
-                tooltip: 'Notifikasi',
-                onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/notifikasi');
-                },
-              ),
+            ValueListenableBuilder<String>(
+              valueListenable: AppState.role,
+              builder: (context, role, _) {
+                if (showNotificationIcon &&
+                    (role == 'admin' || role == 'user')) {
+                  return IconButton(
+                    icon: const Icon(Icons.notifications),
+                    tooltip: 'Notifikasi',
+                    onPressed: () {
+                      Navigator.pushReplacementNamed(context, '/notifikasi');
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
 
-            // IconButton(
-            //   icon: const Icon(Icons.person),
-            //   tooltip: 'Logout',
-            //   // onPressed: () {
-            //   //   Navigator.pushReplacementNamed(context, '/login');
-            //   // },
-            //   onPressed: () {
-            //     AppState.isLoggedIn.value = false;
-            //     Navigator.pushNamedAndRemoveUntil(
-            //       context,
-            //       '/login',
-            //       (route) => false,
-            //     );
-            //   },
-            // ),
             IconButton(
               icon: const Icon(Icons.person),
               tooltip: isLoggedIn ? 'Logout' : 'Login',
@@ -115,16 +109,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                           ),
                           actions: [
                             TextButton(
-                              onPressed:
-                                  () => Navigator.pop(context), // Tutup dialog
+                              onPressed: () => Navigator.pop(context),
                               child: const Text('Batal'),
                             ),
                             TextButton(
                               onPressed: () {
                                 AppState.isLoggedIn.value = false;
+                                AppState.role.value = 'guest'; // reset role
                                 Navigator.pushNamedAndRemoveUntil(
                                   context,
-                                  '/login',
+                                  '/home',
                                   (route) => false,
                                 );
                               },

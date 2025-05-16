@@ -32,6 +32,7 @@ class _ProgressPageState extends State<ProgressPage> {
           'Tanggal Mulai': '2024-01-01',
           'Tanggal Berakhir': '2025-01-01',
           'Status': 'Aktif',
+          'Keterangan': 'Diajukan',
         },
         {
           'Jenis': 'PKS',
@@ -39,6 +40,7 @@ class _ProgressPageState extends State<ProgressPage> {
           'Tanggal Mulai': '2023-06-15',
           'Tanggal Berakhir': '2024-06-14',
           'Status': 'Nonaktif',
+          'Keterangan': 'Disetujui',
         },
         {
           'Jenis': 'MoU',
@@ -46,6 +48,7 @@ class _ProgressPageState extends State<ProgressPage> {
           'Tanggal Mulai': '2022-03-01',
           'Tanggal Berakhir': '2023-03-01',
           'Status': 'Nonaktif',
+          'Keterangan': 'Dibatalkan',
         },
         {
           'Jenis': 'PKS',
@@ -53,6 +56,7 @@ class _ProgressPageState extends State<ProgressPage> {
           'Tanggal Mulai': '2024-02-01',
           'Tanggal Berakhir': '2026-02-01',
           'Status': 'Aktif',
+          'Keterangan': 'Diajukan',
         },
       ];
       _isLoading = false;
@@ -65,10 +69,7 @@ class _ProgressPageState extends State<ProgressPage> {
           _selectedJenis == 'Semua' || item['Jenis'] == _selectedJenis;
       final matchesSearch =
           _searchQuery.isEmpty ||
-          item['Nama Mitra'].toLowerCase().contains(
-            _searchQuery.toLowerCase(),
-          ) ||
-          item['Status'].toLowerCase().contains(_searchQuery.toLowerCase());
+          item['Nama Mitra'].toLowerCase().contains(_searchQuery.toLowerCase());
       return matchesJenis && matchesSearch;
     }).toList();
   }
@@ -125,7 +126,7 @@ class _ProgressPageState extends State<ProgressPage> {
                             Expanded(
                               child: TextField(
                                 decoration: const InputDecoration(
-                                  labelText: 'Cari Nama Mitra / Status',
+                                  labelText: 'Cari Nama Mitra',
                                   prefixIcon: Icon(Icons.search),
                                 ),
                                 onChanged: (value) {

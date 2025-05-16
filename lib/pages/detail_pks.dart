@@ -32,6 +32,7 @@ class DetailPKSPage extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 1000),
                 child: DetailCard(
                   data: pksDetail,
+                  role: AppState.role.value,
                   onEdit: () {
                     Navigator.pushNamed(context, '/editpks');
                   },

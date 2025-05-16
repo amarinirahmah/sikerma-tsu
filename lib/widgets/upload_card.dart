@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/styles/style.dart';
 
 class UploadCard extends StatelessWidget {
+  final String? title;
   final List<Widget> fields;
   final VoidCallback onSubmit;
 
-  const UploadCard({super.key, required this.fields, required this.onSubmit});
+  const UploadCard({
+    super.key,
+    this.title,
+    required this.fields,
+    required this.onSubmit,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,6 +23,16 @@ class UploadCard extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
+            if (title != null) ...[
+              Text(
+                title!,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
             ...fields.map(
               (field) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
@@ -29,13 +46,7 @@ class UploadCard extends StatelessWidget {
                 ElevatedButton.icon(
                   onPressed: onSubmit,
                   label: const Text("Upload"),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                  ),
+                  style: CustomStyle.getButtonStyleByLabel('Upload'),
                 ),
               ],
             ),

@@ -128,7 +128,7 @@ class _SuperAdminPageState extends State<AddRolePage> {
                           DropdownButtonFormField<String>(
                             value: role,
                             items:
-                                ['admin', 'user', 'user pkl']
+                                ['admin', 'user', 'userpkl']
                                     .map(
                                       (role) => DropdownMenuItem(
                                         value: role,

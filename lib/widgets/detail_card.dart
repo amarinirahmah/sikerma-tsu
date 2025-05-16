@@ -1,14 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/styles/style.dart';
 
 class DetailCard extends StatelessWidget {
   final Map<String, dynamic> data;
   final VoidCallback? onEdit;
   final VoidCallback? onDelete;
+  final Function(String)? onStatusChange;
+  final String? currentStatus;
+  final String? role;
 
-  const DetailCard({super.key, required this.data, this.onEdit, this.onDelete});
+  const DetailCard({
+    super.key,
+    required this.data,
+    this.onEdit,
+    this.onDelete,
+    this.onStatusChange,
+    this.currentStatus,
+    this.role,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Contoh opsi status
+    final statuses = ['Disetujui', 'Diproses', 'Ditolak'];
+
     return Card(
       color: Colors.white,
       elevation: 1,
@@ -41,33 +56,58 @@ class DetailCard extends StatelessWidget {
                 ),
               ),
             ),
+
             const SizedBox(height: 20),
-            if (onEdit != null && onDelete != null)
+
+            // Tampilkan dropdown status jika role admin/user dan callback ada
+            if ((role == 'admin' || role == 'user') && onStatusChange != null)
+              Row(
+                children: [
+                  const Text(
+                    'Status: ',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  ),
+                  const SizedBox(width: 12),
+                  DropdownButton<String>(
+                    value: currentStatus ?? statuses.first,
+                    items:
+                        statuses
+                            .map(
+                              (status) => DropdownMenuItem(
+                                value: status,
+                                child: Text(status),
+                              ),
+                            )
+                            .toList(),
+                    onChanged: (newStatus) {
+                      if (newStatus != null) {
+                        onStatusChange!(newStatus);
+                      }
+                    },
+                  ),
+                ],
+              ),
+
+            const SizedBox(height: 20),
+
+            // Tampilkan tombol Edit dan Hapus hanya jika role admin/user dan callback tidak null
+            if (onEdit != null &&
+                onDelete != null &&
+                (role == 'admin' || role == 'user'))
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   ElevatedButton(
                     onPressed: onEdit,
+                    style: CustomStyle.getButtonStyleByLabel('Edit'),
                     child: const Text('Edit'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.teal,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
                   ),
+
                   const SizedBox(width: 12),
                   ElevatedButton(
                     onPressed: onDelete,
+                    style: CustomStyle.getButtonStyleByLabel('Hapus'),
                     child: const Text('Hapus'),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
                   ),
                 ],
               ),

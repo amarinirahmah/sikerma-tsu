@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
-import 'pkl.dart';
+import 'upload_pkl.dart';
 import 'package:sikermatsu/models/app_state.dart';
 // import 'detailpkl.dart';
 

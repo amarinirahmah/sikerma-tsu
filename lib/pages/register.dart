@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:sikermatsu/models/user.dart';
 import 'package:sikermatsu/pages/login.dart';
 import 'package:http/http.dart' as http;
+import 'package:sikermatsu/styles/style.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -164,15 +165,10 @@ class _RegisterPageState extends State<RegisterPage> {
                             registerUser(name.text, email.text, password.text);
                           }
                         },
+                        style: CustomStyle.getButtonStyleByLabel('Register'),
                         child: const Text("Register"),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.teal,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
                       ),
+
                       TextButton(
                         onPressed: () {
                           Navigator.pushNamed(context, '/login');

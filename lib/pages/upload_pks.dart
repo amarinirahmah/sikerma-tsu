@@ -3,6 +3,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/upload_card.dart';
 import 'package:sikermatsu/models/app_state.dart';
+import '../styles/style.dart';
 
 class UploadPKSPage extends StatefulWidget {
   const UploadPKSPage({super.key});
@@ -98,6 +99,7 @@ class _UploadPKSPageState extends State<UploadPKSPage> {
                 child: Form(
                   key: _formKey,
                   child: UploadCard(
+                    title: "Form Upload PKS",
                     onSubmit: _submitForm,
                     fields: [
                       buildField("Nomor MoU", _nomorMouController),
@@ -142,7 +144,7 @@ class _UploadPKSPageState extends State<UploadPKSPage> {
         Expanded(
           child: TextFormField(
             controller: controller,
-            decoration: const InputDecoration(border: OutlineInputBorder()),
+            decoration: CustomStyle.inputDecoration(),
             maxLines: maxLines,
             validator: (value) => value!.isEmpty ? "$label wajib diisi" : null,
           ),
@@ -180,6 +182,7 @@ class _UploadPKSPageState extends State<UploadPKSPage> {
             onPressed: _pickFile,
             icon: const Icon(Icons.attach_file),
             label: Text(_fileName ?? "Pilih File PKS"),
+            style: CustomStyle.getButtonStyleByLabel('Pilih File PKS'),
           ),
         ),
       ],

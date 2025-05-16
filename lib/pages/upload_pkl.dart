@@ -3,21 +3,23 @@ import 'package:file_picker/file_picker.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/upload_card.dart';
 import 'package:sikermatsu/models/app_state.dart';
+import '../styles/style.dart';
 
-class UploadMoUPage extends StatefulWidget {
-  const UploadMoUPage({super.key});
+class UploadPKLPage extends StatefulWidget {
+  const UploadPKLPage({super.key});
 
   @override
-  State<UploadMoUPage> createState() => _UploadMoUPageState();
+  State<UploadPKLPage> createState() => _UploadPKLPage();
 }
 
-class _UploadMoUPageState extends State<UploadMoUPage> {
+class _UploadPKLPage extends State<UploadPKLPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nomorController = TextEditingController();
-  final _mitraController = TextEditingController();
-  final _judulController = TextEditingController();
-  final _tujuanController = TextEditingController();
-
+  final _nisn = TextEditingController();
+  final _namaSekolah = TextEditingController();
+  final _namaSiswa = TextEditingController();
+  final _telpEmail = TextEditingController();
+  final _alamat = TextEditingController();
+  String _jenisKelamin = 'Laki-laki';
   DateTime? _tanggalMulai;
   DateTime? _tanggalBerakhir;
   String? _fileName;
@@ -66,13 +68,14 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
         _tanggalBerakhir != null &&
         _fileName != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Data MoU berhasil diunggah!")),
+        const SnackBar(content: Text("Data Siswa berhasil diunggah!")),
       );
       _formKey.currentState!.reset();
       setState(() {
         _tanggalMulai = null;
         _tanggalBerakhir = null;
         _fileName = null;
+        _jenisKelamin = 'Laki-laki';
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -97,11 +100,12 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
                 child: Form(
                   key: _formKey,
                   child: UploadCard(
+                    title: "Form Pengajuan Siswa PKL",
                     onSubmit: _submitForm,
                     fields: [
-                      buildField("Nomor MoU", _nomorController),
-                      buildField("Nama Mitra", _mitraController),
-                      buildField("Judul Kerja Sama", _judulController),
+                      buildField("NISN", _nisn),
+                      buildField("Nama Siswa", _namaSiswa),
+                      buildField("Nama Sekolah", _namaSekolah),
                       buildDateRow(
                         "Tanggal Mulai",
                         _tanggalMulai,
@@ -112,8 +116,9 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
                         _tanggalBerakhir,
                         _pickTanggalBerakhir,
                       ),
-                      buildField("Tujuan", _tujuanController, maxLines: 3),
                       buildFileRow(),
+                      buildField("No Telepon / Email", _telpEmail),
+                      buildField("Alamat", _alamat, maxLines: 3),
                     ],
                   ),
                 ),
@@ -139,7 +144,7 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
         Expanded(
           child: TextFormField(
             controller: controller,
-            decoration: const InputDecoration(border: OutlineInputBorder()),
+            decoration: CustomStyle.inputDecoration(),
             maxLines: maxLines,
             validator: (value) => value!.isEmpty ? "$label wajib diisi" : null,
           ),
@@ -176,7 +181,34 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
           child: ElevatedButton.icon(
             onPressed: _pickFile,
             icon: const Icon(Icons.attach_file),
-            label: Text(_fileName ?? "Pilih File MoU"),
+            label: Text(_fileName ?? "Pilih File PKL"),
+            style: CustomStyle.getButtonStyleByLabel('Pilih File PKL'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildDropdownField(String label) {
+    return Row(
+      children: [
+        SizedBox(width: 130, child: Text(label)),
+        const SizedBox(width: 16),
+        Expanded(
+          child: DropdownButtonFormField<String>(
+            value: _jenisKelamin,
+            items:
+                ['Laki-laki', 'Perempuan']
+                    .map((jk) => DropdownMenuItem(value: jk, child: Text(jk)))
+                    .toList(),
+            onChanged: (value) {
+              if (value != null) {
+                setState(() {
+                  _jenisKelamin = value;
+                });
+              }
+            },
+            decoration: const InputDecoration(border: OutlineInputBorder()),
           ),
         ),
       ],

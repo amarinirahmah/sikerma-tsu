@@ -3,6 +3,7 @@ import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
 import 'package:sikermatsu/widgets/upload_card.dart';
 import 'package:sikermatsu/models/app_state.dart';
+import '../styles/style.dart';
 
 class DetailProgressPage extends StatefulWidget {
   const DetailProgressPage({super.key});
@@ -16,7 +17,7 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
   DateTime? _selectedDate;
   final TextEditingController _aktivitasController = TextEditingController();
   final List<Map<String, dynamic>> _progresList = [];
-  String judulAktivitas = 'selesai pengajuan';
+  String judulAktivitas = 'Diajukan';
 
   void _pickTanggal() async {
     final picked = await showDatePicker(
@@ -75,64 +76,26 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
                     Form(
                       key: _formKey,
                       child: UploadCard(
+                        title: "Log Aktivitas Kerja Sama",
                         fields: [
-                          OutlinedButton(
-                            onPressed: _pickTanggal,
-                            child: Text(
-                              _selectedDate == null
-                                  ? "Pilih Tanggal"
-                                  : "${_selectedDate!.toLocal()}".split(' ')[0],
-                            ),
-                          ),
-
-                          DropdownButtonFormField<String>(
-                            value: judulAktivitas,
-                            items:
-                                [
-                                      'selesai pengajuan',
-                                      'selesai ditandatangani',
-                                      'revisi draft',
-                                    ]
-                                    .map(
-                                      (role) => DropdownMenuItem(
-                                        value: role,
-                                        child: Text(role),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                judulAktivitas = value!;
-                              });
-                            },
-                            decoration: const InputDecoration(
-                              labelText: 'Proses',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-
-                          TextFormField(
-                            controller: _aktivitasController,
-                            decoration: const InputDecoration(
-                              labelText: "Aktivitas",
-                              border: OutlineInputBorder(),
-                            ),
-                            validator:
-                                (value) =>
-                                    value!.isEmpty
-                                        ? "Aktivitas wajib diisi"
-                                        : null,
-                          ),
+                          buildDateRow("Tanggal", _selectedDate, _pickTanggal),
+                          const SizedBox(height: 16),
+                          buildDropdownRow(),
+                          const SizedBox(height: 16),
+                          buildAktivitasField(),
                         ],
                         onSubmit: _simpanData,
                       ),
                     ),
-                    // const SizedBox(height: 24),
-                    // const Text(
-                    //   "Daftar Progres",
-                    //   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    // ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 32),
+                    const Text(
+                      "Daftar Progres",
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    // const SizedBox(height: 16),
                     _progresList.isEmpty
                         ? const Text("Belum ada data progres.")
                         : TableData(
@@ -152,6 +115,71 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
           ),
         );
       },
+    );
+  }
+
+  Widget buildDateRow(String label, DateTime? date, VoidCallback onTap) {
+    return Row(
+      children: [
+        SizedBox(width: 130, child: Text(label)),
+        const SizedBox(width: 16),
+        Expanded(
+          child: OutlinedButton(
+            onPressed: onTap,
+            child: Text(
+              date == null
+                  ? "Pilih Tanggal"
+                  : "${date.toLocal()}".split(' ')[0],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildDropdownRow() {
+    return Row(
+      children: [
+        const SizedBox(width: 130, child: Text("Proses")),
+        const SizedBox(width: 16),
+        Expanded(
+          child: DropdownButtonFormField<String>(
+            value: judulAktivitas,
+            items:
+                ['Diajukan', 'Disetujui', 'Ditolak']
+                    .map(
+                      (status) =>
+                          DropdownMenuItem(value: status, child: Text(status)),
+                    )
+                    .toList(),
+            onChanged: (value) {
+              setState(() {
+                judulAktivitas = value!;
+              });
+            },
+            decoration: const InputDecoration(border: OutlineInputBorder()),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget buildAktivitasField() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(width: 130, child: Text("Aktivitas")),
+        const SizedBox(width: 16),
+        Expanded(
+          child: TextFormField(
+            controller: _aktivitasController,
+            maxLines: 3,
+            decoration: CustomStyle.inputDecoration(),
+            validator:
+                (value) => value!.isEmpty ? "Aktivitas wajib diisi" : null,
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
-import 'package:sikermatsu/pages/mou.dart';
+import 'package:sikermatsu/pages/upload_mou.dart';
 import 'package:sikermatsu/models/app_state.dart';
 
 class MoUPage extends StatefulWidget {
@@ -83,16 +83,16 @@ class _MoUPage extends State<MoUPage> {
                 ],
                 data: daftarMou,
                 actionLabel: 'Detail',
-                getActionBgColor: (label) {
-                  if (label == 'Hapus') return Colors.red;
-                  if (label == 'Detail' ||
-                      label == 'Upload' ||
-                      label == 'Send') {
-                    return Colors.teal;
-                  }
-                  return Colors.teal;
-                },
-                getActionFgColor: (_) => Colors.white,
+                // getActionBgColor: (label) {
+                //   if (label == 'Hapus') return Colors.red;
+                //   if (label == 'Detail' ||
+                //       label == 'Upload' ||
+                //       label == 'Send') {
+                //     return Colors.teal;
+                //   }
+                //   return Colors.teal;
+                // },
+                // getActionFgColor: (_) => Colors.white,
                 onActionPressed: (
                   BuildContext context,
                   Map<String, dynamic> rowData,
@@ -101,7 +101,7 @@ class _MoUPage extends State<MoUPage> {
                 },
               ),
 
-              if (isLoggedIn)
+              if (isLoggedIn && AppState.role.value != 'userpkl')
                 Positioned(
                   bottom: 16,
                   right: 16,

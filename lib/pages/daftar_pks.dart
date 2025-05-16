@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
-import 'package:sikermatsu/pages/pks.dart';
+import 'package:sikermatsu/pages/upload_pks.dart';
 import 'package:sikermatsu/models/app_state.dart';
 
 class PKSPage extends StatefulWidget {

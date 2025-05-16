@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'pages/login.dart';
 import 'pages/super_admin.dart';
 import 'pages/dashboard.dart';
-import 'pages/mou.dart';
-import 'pages/pks.dart';
+import 'pages/upload_mou.dart';
+import 'pages/upload_pks.dart';
 import 'pages/daftar_progres.dart';
 import 'pages/daftar_notifikasi.dart';
 import 'pages/detail_progres.dart';
@@ -14,9 +14,10 @@ import 'pages/detail_pks.dart';
 import 'pages/register.dart';
 import 'pages/add_role.dart';
 import 'pages/pengajuan_pkl.dart';
-import 'pages/pkl.dart';
+import 'pages/upload_pkl.dart';
 import 'pages/detail_pkl.dart';
 import 'pages/home.dart';
+import 'styles/style.dart';
 
 void main() {
   runApp(const MyApp());
@@ -30,7 +31,19 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Sikerma TSU',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.teal),
+      // theme: ThemeData(primarySwatch: Colors.teal),
+      theme: ThemeData(
+        primarySwatch: Colors.teal,
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.teal,
+        ).copyWith(secondary: CustomStyle.accentColor),
+        inputDecorationTheme: InputDecorationTheme(
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: CustomStyle.baseButtonStyle,
+        ),
+      ),
       initialRoute: '/home',
       routes: {
         '/home': (context) => const HomePage(),

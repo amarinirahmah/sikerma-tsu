@@ -31,8 +31,9 @@ class DetailMoUPage extends StatelessWidget {
                 constraints: const BoxConstraints(maxWidth: 1000),
                 child: DetailCard(
                   data: mouDetail,
+                  role: AppState.role.value,
                   onEdit: () {
-                    Navigator.pushNamed(context, '/editmou');
+                    Navigator.pushNamed(context, '/uploadmou');
                   },
                   onDelete: () {
                     showDialog(
