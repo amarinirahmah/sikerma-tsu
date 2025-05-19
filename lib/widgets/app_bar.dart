@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/pages/daftar_notifikasi.dart';
 import 'package:sikermatsu/models/app_state.dart';
+import 'package:sikermatsu/styles/style.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool isDesktop;
@@ -85,6 +86,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   return IconButton(
                     icon: const Icon(Icons.notifications),
                     tooltip: 'Notifikasi',
+                    style: CustomStyle.iconButtonStyle,
                     onPressed: () {
                       Navigator.pushReplacementNamed(context, '/notifikasi');
                     },
@@ -96,6 +98,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
             IconButton(
               icon: const Icon(Icons.person),
+              style: CustomStyle.iconButtonStyle,
               tooltip: isLoggedIn ? 'Logout' : 'Login',
               onPressed: () {
                 if (isLoggedIn) {

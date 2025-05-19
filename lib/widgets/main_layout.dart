@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/app_drawer.dart';
 import 'package:sikermatsu/widgets/app_bar.dart';
 import 'package:sikermatsu/models/app_state.dart';
+import 'package:sikermatsu/styles/style.dart';
 
 class MainLayout extends StatefulWidget {
   final String title;
@@ -48,14 +49,36 @@ class _MainLayoutState extends State<MainLayout> {
                         child: ListView(
                           padding: EdgeInsets.zero,
                           children: [
-                            const DrawerHeader(
+                            DrawerHeader(
                               decoration: BoxDecoration(color: Colors.teal),
-                              child: Text(
-                                'SIKERMA TSU',
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 24,
-                                ),
+                              // child: Text(
+                              //   'SIKERMA TSU',
+                              //   style: TextStyle(
+                              //     color: Colors.white,
+                              //     fontSize: 24,
+                              //   ),
+                              // ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  SizedBox(
+                                    height: 60,
+                                    child: Image.asset(
+                                      'assets/images/logo-white.png',
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                  SizedBox(height: 12),
+                                  Text(
+                                    'Tiga Serangkai University',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
 
@@ -203,15 +226,28 @@ class _MainLayoutState extends State<MainLayout> {
       decoration:
           isSelected
               ? BoxDecoration(
-                color: Colors.teal.shade100,
-                border: const Border(
-                  left: BorderSide(color: Colors.teal, width: 4),
+                color: CustomStyle.borderColor,
+                border: Border(
+                  left: BorderSide(
+                    color: CustomStyle.primaryColorDark,
+                    width: 4,
+                  ),
                 ),
               )
               : null,
       child: ListTile(
-        leading: Icon(icon, color: isSelected ? Colors.teal : Colors.black54),
-        title: Text(title),
+        leading: Icon(
+          icon,
+          color: isSelected ? CustomStyle.primaryColorDark : Colors.black54,
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? CustomStyle.textColorSecondary : Colors.black87,
+          ),
+        ),
+
         selected: isSelected,
         onTap: () {
           if (!isSelected) {

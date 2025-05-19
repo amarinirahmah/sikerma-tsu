@@ -21,9 +21,6 @@ class DetailCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Contoh opsi status
-    final statuses = ['Disetujui', 'Diproses', 'Ditolak'];
-
     return Card(
       color: Colors.white,
       elevation: 1,
@@ -59,31 +56,30 @@ class DetailCard extends StatelessWidget {
 
             const SizedBox(height: 20),
 
-            // Tampilkan dropdown status jika role admin/user dan callback ada
             if ((role == 'admin' || role == 'user') && onStatusChange != null)
               Row(
                 children: [
-                  const Text(
-                    'Status: ',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                  const SizedBox(width: 12),
-                  DropdownButton<String>(
-                    value: currentStatus ?? statuses.first,
-                    items:
-                        statuses
-                            .map(
-                              (status) => DropdownMenuItem(
-                                value: status,
-                                child: Text(status),
-                              ),
-                            )
-                            .toList(),
-                    onChanged: (newStatus) {
-                      if (newStatus != null) {
-                        onStatusChange!(newStatus);
-                      }
-                    },
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: currentStatus ?? 'Diproses',
+                      decoration: const InputDecoration(
+                        labelText: 'Pilih Status',
+                      ),
+                      items:
+                          ['Diproses', 'Disetujui', 'Ditolak']
+                              .map(
+                                (status) => DropdownMenuItem(
+                                  value: status,
+                                  child: Text(status),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (newValue) {
+                        if (newValue != null && newValue != currentStatus) {
+                          onStatusChange!(newValue);
+                        }
+                      },
+                    ),
                   ),
                 ],
               ),

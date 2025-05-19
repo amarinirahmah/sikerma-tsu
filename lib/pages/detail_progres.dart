@@ -125,11 +125,13 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
         const SizedBox(width: 16),
         Expanded(
           child: OutlinedButton(
+            style: CustomStyle.outlinedButtonStyle,
             onPressed: onTap,
             child: Text(
               date == null
                   ? "Pilih Tanggal"
                   : "${date.toLocal()}".split(' ')[0],
+              style: CustomStyle.dateTextStyle,
             ),
           ),
         ),
@@ -145,6 +147,7 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
         Expanded(
           child: DropdownButtonFormField<String>(
             value: judulAktivitas,
+            decoration: CustomStyle.dropdownDecoration(hintText: 'Diajukan'),
             items:
                 ['Diajukan', 'Disetujui', 'Ditolak']
                     .map(
@@ -157,7 +160,6 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
                 judulAktivitas = value!;
               });
             },
-            decoration: const InputDecoration(border: OutlineInputBorder()),
           ),
         ),
       ],

@@ -158,10 +158,12 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
         Expanded(
           child: OutlinedButton(
             onPressed: onTap,
+            style: CustomStyle.outlinedButtonStyle,
             child: Text(
               date == null
                   ? "Pilih Tanggal"
                   : "${date.toLocal()}".split(' ')[0],
+              style: CustomStyle.dateTextStyle,
             ),
           ),
         ),
@@ -175,11 +177,11 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
         const SizedBox(width: 130, child: Text("Upload File")),
         const SizedBox(width: 16),
         Expanded(
-          child: ElevatedButton.icon(
+          child: OutlinedButton.icon(
             onPressed: _pickFile,
             icon: const Icon(Icons.attach_file),
             label: Text(_fileName ?? "Pilih File MoU"),
-            style: CustomStyle.getButtonStyleByLabel('Pilih File MoU'),
+            style: CustomStyle.outlinedButtonStyle,
           ),
         ),
       ],

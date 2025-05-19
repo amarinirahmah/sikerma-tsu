@@ -57,7 +57,7 @@ class _TableDataState extends State<TableData> {
           alignment: Alignment.topCenter,
           child: Container(
             width: maxWidth,
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            margin: EdgeInsets.zero,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(4),
               border: Border.all(color: Colors.white60.withOpacity(0.1)),

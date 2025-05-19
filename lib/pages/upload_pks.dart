@@ -160,11 +160,13 @@ class _UploadPKSPageState extends State<UploadPKSPage> {
         const SizedBox(width: 16),
         Expanded(
           child: OutlinedButton(
+            style: CustomStyle.outlinedButtonStyle,
             onPressed: onTap,
             child: Text(
               date == null
                   ? "Pilih Tanggal"
                   : "${date.toLocal()}".split(' ')[0],
+              style: CustomStyle.dateTextStyle,
             ),
           ),
         ),
@@ -178,11 +180,11 @@ class _UploadPKSPageState extends State<UploadPKSPage> {
         const SizedBox(width: 130, child: Text("Upload File")),
         const SizedBox(width: 16),
         Expanded(
-          child: ElevatedButton.icon(
+          child: OutlinedButton.icon(
             onPressed: _pickFile,
             icon: const Icon(Icons.attach_file),
             label: Text(_fileName ?? "Pilih File PKS"),
-            style: CustomStyle.getButtonStyleByLabel('Pilih File PKS'),
+            style: CustomStyle.outlinedButtonStyle,
           ),
         ),
       ],

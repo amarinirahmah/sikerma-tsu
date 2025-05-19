@@ -5,6 +5,7 @@ import 'package:sikermatsu/models/user.dart';
 import 'package:sikermatsu/pages/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:sikermatsu/styles/style.dart';
+import 'package:sikermatsu/widgets/user_card.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -20,6 +21,7 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController password = TextEditingController();
   // String role = 'user';
   // bool submit = false;
+  bool isLoading = false;
 
   User? userModel;
 
@@ -80,104 +82,49 @@ class _RegisterPageState extends State<RegisterPage> {
       body: Center(
         child: SingleChildScrollView(
           child: ConstrainedBox(
-            constraints: BoxConstraints(maxWidth: 400),
-            child: Card(
-              margin: const EdgeInsets.symmetric(horizontal: 24),
-              color: Colors.white,
-              elevation: 1,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Text(
-                        "Register",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      TextFormField(
-                        controller: name,
-                        decoration: const InputDecoration(
-                          labelText: 'Name',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator:
-                            (value) =>
-                                value!.isEmpty ? 'Nama wajib diisi' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: email,
-                        decoration: const InputDecoration(
-                          labelText: 'Email',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator:
-                            (value) =>
-                                value!.isEmpty ? 'Email wajib diisi' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: password,
-                        decoration: const InputDecoration(
-                          labelText: 'Password',
-                          border: OutlineInputBorder(),
-                        ),
-                        obscureText: true,
-                        validator:
-                            (value) =>
-                                value!.isEmpty ? 'Password wajib diisi' : null,
-                      ),
-                      // const SizedBox(height: 16),
-                      // DropdownButtonFormField<String>(
-                      //   value: role,
-                      //   items:
-                      //       ['admin', 'user', 'pimpinan', 'super admin']
-                      //           .map(
-                      //             (role) => DropdownMenuItem(
-                      //               value: role,
-                      //               child: Text(role),
-                      //             ),
-                      //           )
-                      //           .toList(),
-                      //   onChanged: (value) {
-                      //     setState(() {
-                      //       role = value!;
-                      //     });
-                      //   },
-                      //   decoration: const InputDecoration(
-                      //     labelText: 'Role',
-                      //     border: OutlineInputBorder(),
-                      //   ),
-                      // ),
-                      const SizedBox(height: 24),
-                      ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            registerUser(name.text, email.text, password.text);
-                          }
-                        },
-                        style: CustomStyle.getButtonStyleByLabel('Register'),
-                        child: const Text("Register"),
-                      ),
-
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/login');
-                        },
-                        child: const Text("Sudah punya akun? Login"),
-                      ),
-                    ],
+            constraints: const BoxConstraints(maxWidth: 400),
+            child: UserCard(
+              title: "Register",
+              formKey: _formKey,
+              fields: [
+                TextFormField(
+                  controller: name,
+                  decoration: CustomStyle.inputDecorationWithLabel(
+                    labelText: 'Name',
                   ),
+                  validator:
+                      (value) => value!.isEmpty ? 'Nama wajib diisi' : null,
                 ),
+                TextFormField(
+                  controller: email,
+                  decoration: CustomStyle.inputDecorationWithLabel(
+                    labelText: 'Email',
+                  ),
+                  validator:
+                      (value) => value!.isEmpty ? 'Email wajib diisi' : null,
+                ),
+                TextFormField(
+                  controller: password,
+                  decoration: CustomStyle.inputDecorationWithLabel(
+                    labelText: 'Password',
+                  ),
+                  obscureText: true,
+                  validator:
+                      (value) => value!.isEmpty ? 'Password wajib diisi' : null,
+                ),
+              ],
+              buttonLabel: 'Register',
+              isLoading: isLoading,
+              onSubmit: () {
+                if (_formKey.currentState!.validate()) {
+                  registerUser(name.text, email.text, password.text);
+                }
+              },
+              footer: TextButton(
+                onPressed:
+                    () => Navigator.pushReplacementNamed(context, '/login'),
+                style: CustomStyle.textButtonStyle2,
+                child: const Text("Sudah punya akun? Login"),
               ),
             ),
           ),

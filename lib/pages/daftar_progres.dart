@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
 import 'package:sikermatsu/models/app_state.dart';
+import '../styles/style.dart';
 
 class ProgressPage extends StatefulWidget {
   const ProgressPage({super.key});
@@ -95,61 +96,82 @@ class _ProgressPageState extends State<ProgressPage> {
                   ? const Center(child: CircularProgressIndicator())
                   : Column(
                     children: [
-                      // FILTER UI
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Row(
-                          children: [
-                            DropdownButton<String>(
-                              value: _selectedJenis,
-                              items:
-                                  ['Semua', 'MoU', 'PKS']
-                                      .map(
-                                        (jenis) => DropdownMenuItem(
-                                          value: jenis,
-                                          child: Text(jenis),
-                                        ),
-                                      )
-                                      .toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _selectedJenis = value;
-                                  });
-                                }
-                              },
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: TextField(
-                                decoration: const InputDecoration(
-                                  labelText: 'Cari Nama Mitra',
-                                  prefixIcon: Icon(Icons.search),
+                      // FILTER UI dengan maxWidth 1000 dan rata tengah
+                      Container(
+                        margin: const EdgeInsets.only(top: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 1000),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: DropdownButtonFormField<String>(
+                                    value: _selectedJenis,
+                                    decoration: CustomStyle.dropdownDecoration(
+                                      hintText: 'Semua',
+                                    ),
+                                    items:
+                                        ['Semua', 'MoU', 'PKS']
+                                            .map(
+                                              (jenis) => DropdownMenuItem(
+                                                value: jenis,
+                                                child: Text(jenis),
+                                              ),
+                                            )
+                                            .toList(),
+                                    onChanged: (value) {
+                                      if (value != null) {
+                                        setState(() {
+                                          _selectedJenis = value;
+                                        });
+                                      }
+                                    },
+                                  ),
                                 ),
-                                onChanged: (value) {
-                                  setState(() {
-                                    _searchQuery = value;
-                                  });
-                                },
-                              ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  flex: 3,
+                                  child: TextField(
+                                    decoration: CustomStyle.inputDecoration(
+                                      hintText: 'Cari Nama Mitra',
+                                      prefixIcon: const Icon(Icons.search),
+                                    ),
+                                    onChanged: (value) {
+                                      setState(() {
+                                        _searchQuery = value;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
 
-                      // TABLE DATA
+                      // TABLE DATA dengan maxWidth 1000 dan rata tengah
                       Expanded(
-                        child: TableData(
-                          title: 'Daftar Kerja Sama',
-                          columns: columns,
-                          data: _filteredData,
-                          actionLabel: 'Detail',
-                          onActionPressed: (context, rowData) {
-                            Navigator.pushNamed(context, '/detailprogres');
-                          },
+                        child: Center(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 1000),
+                            child: Container(
+                              margin: const EdgeInsets.only(top: 16),
+                              child: TableData(
+                                title: 'Daftar Kerja Sama',
+                                columns: columns,
+                                data: _filteredData,
+                                actionLabel: 'Detail',
+                                onActionPressed: (context, rowData) {
+                                  Navigator.pushNamed(
+                                    context,
+                                    '/detailprogres',
+                                  );
+                                },
+                              ),
+                            ),
+                          ),
                         ),
                       ),
                     ],

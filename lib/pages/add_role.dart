@@ -3,6 +3,8 @@ import 'package:sikermatsu/models/user.dart';
 import 'package:sikermatsu/pages/login.dart';
 import '../widgets/main_layout.dart';
 import 'package:sikermatsu/models/app_state.dart';
+import '../styles/style.dart';
+import '../widgets/user_card.dart';
 
 class AddRolePage extends StatefulWidget {
   const AddRolePage({super.key});
@@ -49,11 +51,8 @@ class _SuperAdminPageState extends State<AddRolePage> {
             TextButton(
               child: const Text('OK'),
               onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (context) => LoginPage()))
-                    .then((value) {
-                      setState(() {});
-                    });
+                Navigator.of(context).pop();
+                setState(() {});
               },
             ),
           ],
@@ -74,110 +73,66 @@ class _SuperAdminPageState extends State<AddRolePage> {
             child: SingleChildScrollView(
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: 800),
-                child: Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 24),
-                  color: Colors.white,
-                  elevation: 1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(24),
-                    child: Form(
-                      key: _formKey,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          const SizedBox(height: 24),
-                          TextFormField(
-                            controller: name,
-                            decoration: const InputDecoration(
-                              labelText: 'Name',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator:
-                                (value) =>
-                                    value!.isEmpty ? 'Nama wajib diisi' : null,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: email,
-                            decoration: const InputDecoration(
-                              labelText: 'Email',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator:
-                                (value) =>
-                                    value!.isEmpty ? 'Email wajib diisi' : null,
-                          ),
-                          const SizedBox(height: 16),
-                          TextFormField(
-                            controller: password,
-                            decoration: const InputDecoration(
-                              labelText: 'Password',
-                              border: OutlineInputBorder(),
-                            ),
-                            obscureText: true,
-                            validator:
-                                (value) =>
-                                    value!.isEmpty
-                                        ? 'Password wajib diisi'
-                                        : null,
-                          ),
-                          const SizedBox(height: 16),
-                          DropdownButtonFormField<String>(
-                            value: role,
-                            items:
-                                ['admin', 'user', 'userpkl']
-                                    .map(
-                                      (role) => DropdownMenuItem(
-                                        value: role,
-                                        child: Text(role),
-                                      ),
-                                    )
-                                    .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                role = value!;
-                              });
-                            },
-                            decoration: const InputDecoration(
-                              labelText: 'Role',
-                              border: OutlineInputBorder(),
-                            ),
-                          ),
-                          const SizedBox(height: 24),
-                          ElevatedButton(
-                            onPressed: () {
-                              // if (_formKey.currentState!.validate()) {
-                              //   registerAdmin(
-                              //     name.text,
-                              //     email.text,
-                              //     password.text,
-                              //     role,
-                              //   );
-                              // }
-                              _showBerhasil();
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.teal,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                            ),
-                            child: const Text("Register"),
-                          ),
-                          // TextButton(
-                          //   onPressed: () {
-                          //     Navigator.pushNamed(context, '/login');
-                          //   },
-                          //   child: const Text("Sudah punya akun? Login"),
-                          // ),
-                        ],
+                child: UserCard(
+                  title: "Tambah Role",
+                  formKey: _formKey,
+                  fields: [
+                    TextFormField(
+                      controller: name,
+                      decoration: CustomStyle.inputDecorationWithLabel(
+                        labelText: 'Nama',
                       ),
+                      validator:
+                          (value) => value!.isEmpty ? 'Nama wajib diisi' : null,
                     ),
-                  ),
+                    TextFormField(
+                      controller: email,
+                      decoration: CustomStyle.inputDecorationWithLabel(
+                        labelText: 'Email',
+                      ),
+                      validator:
+                          (value) =>
+                              value!.isEmpty ? 'Email wajib diisi' : null,
+                    ),
+                    TextFormField(
+                      controller: password,
+                      obscureText: true,
+                      decoration: CustomStyle.inputDecorationWithLabel(
+                        labelText: 'Password',
+                      ),
+                      validator:
+                          (value) =>
+                              value!.isEmpty ? 'Password wajib diisi' : null,
+                    ),
+
+                    DropdownButtonFormField<String>(
+                      value: role,
+                      decoration: CustomStyle.dropdownDecoration(
+                        hintText: 'Pilih role',
+                      ),
+                      items:
+                          ['admin', 'user', 'userpkl']
+                              .map(
+                                (role) => DropdownMenuItem(
+                                  value: role,
+                                  child: Text(role),
+                                ),
+                              )
+                              .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          role = value!;
+                        });
+                      },
+                    ),
+                  ],
+                  buttonLabel: "Register",
+                  isLoading: false,
+                  onSubmit: () {
+                    if (_formKey.currentState!.validate()) {
+                      _showBerhasil();
+                    }
+                  },
                 ),
               ),
             ),
@@ -187,3 +142,129 @@ class _SuperAdminPageState extends State<AddRolePage> {
     );
   }
 }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ValueListenableBuilder<bool>(
+//       valueListenable: AppState.isLoggedIn,
+//       builder: (context, isLoggedIn, _) {
+//         return MainLayout(
+//           title: "",
+//           isLoggedIn: isLoggedIn,
+//           child: Center(
+//             child: SingleChildScrollView(
+//               child: ConstrainedBox(
+//                 constraints: BoxConstraints(maxWidth: 800),
+//                 child: Card(
+//                   margin: const EdgeInsets.symmetric(horizontal: 24),
+//                   color: Colors.white,
+//                   elevation: 1,
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(4),
+//                   ),
+//                   child: Padding(
+//                     padding: const EdgeInsets.all(24),
+//                     child: Form(
+//                       key: _formKey,
+//                       child: Column(
+//                         mainAxisSize: MainAxisSize.min,
+//                         children: [
+//                           const SizedBox(height: 24),
+//                           TextFormField(
+//                             controller: name,
+//                             decoration: const InputDecoration(
+//                               labelText: 'Name',
+//                               border: OutlineInputBorder(),
+//                             ),
+//                             validator:
+//                                 (value) =>
+//                                     value!.isEmpty ? 'Nama wajib diisi' : null,
+//                           ),
+//                           const SizedBox(height: 16),
+//                           TextFormField(
+//                             controller: email,
+//                             decoration: const InputDecoration(
+//                               labelText: 'Email',
+//                               border: OutlineInputBorder(),
+//                             ),
+//                             validator:
+//                                 (value) =>
+//                                     value!.isEmpty ? 'Email wajib diisi' : null,
+//                           ),
+//                           const SizedBox(height: 16),
+//                           TextFormField(
+//                             controller: password,
+//                             decoration: const InputDecoration(
+//                               labelText: 'Password',
+//                               border: OutlineInputBorder(),
+//                             ),
+//                             obscureText: true,
+//                             validator:
+//                                 (value) =>
+//                                     value!.isEmpty
+//                                         ? 'Password wajib diisi'
+//                                         : null,
+//                           ),
+//                           const SizedBox(height: 16),
+//                           DropdownButtonFormField<String>(
+//                             value: role,
+//                             items:
+//                                 ['admin', 'user', 'userpkl']
+//                                     .map(
+//                                       (role) => DropdownMenuItem(
+//                                         value: role,
+//                                         child: Text(role),
+//                                       ),
+//                                     )
+//                                     .toList(),
+//                             onChanged: (value) {
+//                               setState(() {
+//                                 role = value!;
+//                               });
+//                             },
+//                             decoration: const InputDecoration(
+//                               labelText: 'Role',
+//                               border: OutlineInputBorder(),
+//                             ),
+//                           ),
+//                           const SizedBox(height: 24),
+//                           ElevatedButton(
+//                             onPressed: () {
+//                               // if (_formKey.currentState!.validate()) {
+//                               //   registerAdmin(
+//                               //     name.text,
+//                               //     email.text,
+//                               //     password.text,
+//                               //     role,
+//                               //   );
+//                               // }
+//                               _showBerhasil();
+//                             },
+//                             style: ElevatedButton.styleFrom(
+//                               backgroundColor: Colors.teal,
+//                               foregroundColor: Colors.white,
+//                               shape: RoundedRectangleBorder(
+//                                 borderRadius: BorderRadius.circular(4),
+//                               ),
+//                             ),
+//                             child: const Text("Register"),
+//                           ),
+//                           // TextButton(
+//                           //   onPressed: () {
+//                           //     Navigator.pushNamed(context, '/login');
+//                           //   },
+//                           //   child: const Text("Sudah punya akun? Login"),
+//                           // ),
+//                         ],
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }

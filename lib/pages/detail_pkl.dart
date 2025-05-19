@@ -68,21 +68,46 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
                   });
                   print('Status changed to: $newStatus');
                 }
-                // setState(() {
-                //   currentStatus = newStatus;
-                // });
-                // print('Status changed to: $newStatus');
+                // kalau batal, gak perlu setState apapun, biar dropdown tetap di nilai lama
               },
+
               onEdit:
                   (role == 'admin' || role == 'user')
                       ? () {
-                        Navigator.pushNamed(context, '/editpkl');
+                        Navigator.pushNamed(context, '/uploadpkl');
                       }
                       : null,
+
               onDelete:
                   (role == 'admin' || role == 'user')
-                      ? () {
-                        // your delete logic
+                      ? () async {
+                        final confirmed = await showDialog<bool>(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text('Konfirmasi'),
+                                content: const Text(
+                                  'Yakin ingin menghapus data PKL ini?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, false),
+                                    child: const Text('Batal'),
+                                  ),
+                                  TextButton(
+                                    onPressed:
+                                        () => Navigator.pop(context, true),
+                                    child: const Text('Ya, Hapus'),
+                                  ),
+                                ],
+                              ),
+                        );
+
+                        if (confirmed == true) {
+                          print('Data PKL dihapus');
+                          Navigator.pop(context);
+                        }
                       }
                       : null,
             ),

@@ -17,6 +17,18 @@ class CustomStyle {
     color: primaryColor,
   );
 
+  static const TextStyle headline2 = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: accentColor,
+  );
+
+  static const TextStyle headline3 = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+  );
+
   static final TextStyle bodyText = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w500,
@@ -27,7 +39,7 @@ class CustomStyle {
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: textColorSecondary,
-    fontStyle: FontStyle.italic,
+    // fontStyle: FontStyle.italic,
   );
 
   // Input decoration for TextFormField (used for forms & search)
@@ -38,6 +50,29 @@ class CustomStyle {
     return InputDecoration(
       hintText: hintText,
       hintStyle: hintText != null ? hintTextStyle : null,
+      prefixIcon: prefixIcon,
+      contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: borderColor),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: primaryColorDark, width: 2),
+      ),
+      filled: true,
+      fillColor: Colors.grey.shade200,
+    );
+  }
+
+  static InputDecoration inputDecorationWithLabel({
+    required String labelText,
+    Widget? prefixIcon,
+  }) {
+    return InputDecoration(
+      labelText: labelText,
+      labelStyle: const TextStyle(color: Colors.grey), // bisa custom
+      floatingLabelStyle: TextStyle(color: primaryColorDark),
       prefixIcon: prefixIcon,
       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       enabledBorder: OutlineInputBorder(
@@ -68,7 +103,7 @@ class CustomStyle {
         borderSide: BorderSide(color: primaryColorDark, width: 2),
       ),
       filled: true,
-      fillColor: Colors.white,
+      fillColor: Colors.grey.shade200,
     );
   }
 
@@ -94,6 +129,19 @@ class CustomStyle {
     }),
   );
 
+  //   //file picker button
+  //   static final ButtonStyle filePickerButtonStyle = ElevatedButton.styleFrom(
+  //   backgroundColor: Colors.grey.shade200,
+  //   foregroundColor: Colors.black87,
+  //   elevation: 0,
+  //   padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+  //   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //   textStyle: const TextStyle(fontSize: 14),
+  //   shadowColor: Colors.transparent,
+  // ).copyWith(
+  //   overlayColor: WidgetStateProperty.all(Colors.transparent),
+  // );
+
   static ButtonStyle getButtonStyleByLabel(String label) {
     Color bgColor;
 
@@ -105,14 +153,19 @@ class CustomStyle {
       bgColor = Colors.orange;
     } else if (lowerLabel.contains('upload')) {
       bgColor = primaryColor; // default teal
-    } else if (lowerLabel.contains('pilih file')) {
-      bgColor = Colors.orange; // untuk tombol file picker
+      // } else if (lowerLabel.contains('pilih file')) {
+      // bgColor = Colors.grey.shade200; // untuk tombol file picker
     } else {
       bgColor = primaryColor;
     }
 
     return baseButtonStyle.copyWith(
-      backgroundColor: WidgetStateProperty.all(bgColor),
+      // backgroundColor: WidgetStateProperty.all(bgColor),
+      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+        if (states.contains(WidgetState.disabled)) return Colors.grey.shade400;
+        return bgColor;
+      }),
+      shadowColor: WidgetStateProperty.all(bgColor.withOpacity(0.4)),
     );
   }
 
@@ -159,6 +212,20 @@ class CustomStyle {
 
   // TextButton Style
   static ButtonStyle textButtonStyle = TextButton.styleFrom(
+    foregroundColor: primaryColorDark,
+    textStyle: const TextStyle(fontSize: 14),
+  ).copyWith(
+    overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
+      if (states.contains(WidgetState.hovered))
+        return primaryColorDark.withOpacity(0.1);
+      if (states.contains(WidgetState.pressed))
+        return primaryColorDark.withOpacity(0.3);
+      return null;
+    }),
+  );
+
+  // TextButton Style
+  static ButtonStyle textButtonStyle2 = TextButton.styleFrom(
     foregroundColor: accentColor,
     textStyle: const TextStyle(fontSize: 14),
   ).copyWith(
@@ -175,12 +242,12 @@ class CustomStyle {
   static ButtonStyle iconButtonStyle = ButtonStyle(
     overlayColor: WidgetStateProperty.resolveWith<Color?>((states) {
       if (states.contains(WidgetState.hovered))
-        return primaryColor.withOpacity(0.1);
+        return primaryColorDark.withOpacity(0.1);
       if (states.contains(WidgetState.pressed))
-        return primaryColor.withOpacity(0.3);
+        return primaryColorDark.withOpacity(0.3);
       return null;
     }),
-    foregroundColor: WidgetStateProperty.all(primaryColor),
+    foregroundColor: WidgetStateProperty.all(primaryColorDark),
     shape: WidgetStateProperty.all(
       RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
     ),
@@ -201,4 +268,18 @@ class CustomStyle {
 
   static Color drawerItemHoverColor = accentColor.withOpacity(0.1);
   static Color drawerItemSelectedColor = primaryColor.withOpacity(0.15);
+
+  //date picker
+  static final ButtonStyle outlinedButtonStyle = OutlinedButton.styleFrom(
+    foregroundColor: Colors.grey,
+    backgroundColor: Colors.grey.shade200,
+    side: BorderSide(color: borderColor),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    // textStyle: TextStyle(fontWeight: FontWeight.w500),
+  );
+
+  static const TextStyle dateTextStyle = TextStyle(
+    // fontSize: 16,
+    color: Colors.grey,
+  );
 }
