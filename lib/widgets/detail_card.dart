@@ -64,6 +64,8 @@ class DetailCard extends StatelessWidget {
                       value: currentStatus ?? 'Diproses',
                       decoration: const InputDecoration(
                         labelText: 'Pilih Status',
+                        filled: true,
+                        fillColor: Color(0xFFEEEEEE),
                       ),
                       items:
                           ['Diproses', 'Disetujui', 'Ditolak']

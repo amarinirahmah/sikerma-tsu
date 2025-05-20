@@ -4,9 +4,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'user.dart';
 
 class AuthService {
-  static const baseUrl = "http://192.168.100.238:8000/api";
-  static String? _token;
-  static String? _role;
+  static const baseUrl = "http://192.168.1.142:8000/api";
+  static String? token;
+  static String? role;
 
   // Login: return role jika berhasil, throw Exception jika gagal
   static Future<User> login(String email, String password) async {
@@ -23,8 +23,11 @@ class AuthService {
       final prefs = await SharedPreferences.getInstance();
 
       // Simpan token & role ke SharedPreferences
-      await prefs.setString('access_token', user.access_token);
-      await prefs.setString('role', user.role);
+      final token = data['token'] ?? '';
+      final role = data['role'] ?? '';
+
+      await prefs.setString('token', token);
+      await prefs.setString('role', role);
 
       return user;
     }
@@ -37,18 +40,18 @@ class AuthService {
 
   // Ambil token dari memori atau SharedPreferences
   static Future<String?> getToken() async {
-    if (_token != null) return _token;
+    if (token != null) return token;
     final prefs = await SharedPreferences.getInstance();
-    _token = prefs.getString('access_token');
-    return _token;
+    token = prefs.getString('token');
+    return token;
   }
 
   // Ambil role dari memori atau SharedPreferences
   static Future<String?> getRole() async {
-    if (_role != null) return _role;
+    if (role != null) return role;
     final prefs = await SharedPreferences.getInstance();
-    _role = prefs.getString('role');
-    return _role;
+    role = prefs.getString('role');
+    return role;
   }
 
   // Fetch data user dari API, throw exception jika error
@@ -79,10 +82,10 @@ class AuthService {
 
   // Logout: hapus token & role di memori dan SharedPreferences
   static Future<void> logout() async {
-    _token = null;
-    _role = null;
+    token = null;
+    role = null;
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('access_token');
+    await prefs.remove('token');
     await prefs.remove('role');
   }
 }

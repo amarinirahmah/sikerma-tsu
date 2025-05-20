@@ -46,11 +46,13 @@ class CustomStyle {
   static InputDecoration inputDecoration({
     String? hintText,
     Widget? prefixIcon,
+    Widget? suffixIcon,
   }) {
     return InputDecoration(
       hintText: hintText,
       hintStyle: hintText != null ? hintTextStyle : null,
       prefixIcon: prefixIcon,
+      suffixIcon: suffixIcon,
       contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(12),

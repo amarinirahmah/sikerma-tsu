@@ -4,6 +4,7 @@ import 'package:sikermatsu/widgets/table.dart';
 import 'package:sikermatsu/pages/upload_mou.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/styles/style.dart';
+import 'package:sikermatsu/widgets/table2.dart';
 
 class MoUPage extends StatefulWidget {
   const MoUPage({super.key});
@@ -116,6 +117,17 @@ class _MoUPage extends State<MoUPage> {
                                   decoration: CustomStyle.inputDecoration(
                                     hintText: 'Cari Nama Mitra',
                                     prefixIcon: const Icon(Icons.search),
+                                    suffixIcon:
+                                        _searchQuery.isNotEmpty
+                                            ? IconButton(
+                                              icon: const Icon(Icons.clear),
+                                              onPressed: () {
+                                                setState(() {
+                                                  _searchQuery = '';
+                                                });
+                                              },
+                                            )
+                                            : null,
                                   ),
                                   onChanged: (value) {
                                     setState(() {
@@ -134,7 +146,7 @@ class _MoUPage extends State<MoUPage> {
                                 constraints: const BoxConstraints(
                                   maxWidth: 1000,
                                 ),
-                                child: TableData(
+                                child: CustomPaginatedTable(
                                   title: 'Daftar MoU',
                                   columns: const [
                                     'Nama Mitra',
