@@ -4,6 +4,8 @@ import 'package:sikermatsu/widgets/table.dart';
 import 'add_role.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/styles/style.dart';
+import '../models/user.dart';
+import '../models/auth_service.dart';
 
 class SuperAdminPage extends StatefulWidget {
   const SuperAdminPage({super.key});
@@ -24,15 +26,67 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
   }
 
   Future<void> _loadData() async {
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() {
-      _adminData = [
-        {'Name': 'Admin Satu', 'Email': 'admin1@example.com', 'Role': 'admin'},
-        {'Name': 'PKL Dua', 'Email': 'pkl2@example.com', 'Role': 'user pkl'},
-      ];
-      _isLoading = false;
-    });
+    setState(() => _isLoading = true);
+    try {
+      List<User> users = await AuthService.getAllUser();
+      setState(() {
+        _adminData =
+            users
+                .map(
+                  (user) => {
+                    'id': user.id,
+                    'Name': user.name,
+                    'Email': user.email,
+                    'Role': user.role,
+                  },
+                )
+                .toList();
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal memuat data: $e')));
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
+
+  Future<void> showBerhasil(
+    BuildContext context, {
+    String message = 'Berhasil!',
+  }) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Sukses'),
+          content: SingleChildScrollView(
+            child: ListBody(children: <Widget>[Text(message)]),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Future<void> _loadData() async {
+  //   await Future.delayed(const Duration(seconds: 1));
+  //   setState(() {
+  //     _adminData = [
+  //       {'Name': 'Admin Satu', 'Email': 'admin1@example.com', 'Role': 'admin'},
+  //       {'Name': 'PKL Dua', 'Email': 'pkl2@example.com', 'Role': 'user pkl'},
+  //     ];
+  //     _isLoading = false;
+  //   });
+  // }
 
   List<Map<String, dynamic>> get _filteredData {
     if (_searchQuery.isEmpty) return _adminData;
@@ -100,42 +154,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                   data: _filteredData,
                                   actionLabel: 'Hapus',
 
-                                  onActionPressed: (context, rowData) async {
-                                    final confirm = await showDialog<bool>(
-                                      context: context,
-                                      builder:
-                                          (context) => AlertDialog(
-                                            title: const Text('Konfirmasi'),
-                                            content: Text(
-                                              'Yakin ingin menghapus ${rowData['Name']}?',
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed:
-                                                    () => Navigator.pop(
-                                                      context,
-                                                      false,
-                                                    ),
-                                                child: const Text('Batal'),
-                                              ),
-                                              TextButton(
-                                                onPressed:
-                                                    () => Navigator.pop(
-                                                      context,
-                                                      true,
-                                                    ),
-                                                child: const Text('Hapus'),
-                                              ),
-                                            ],
-                                          ),
-                                    );
-
-                                    if (confirm == true) {
-                                      setState(() {
-                                        _adminData.remove(rowData);
-                                      });
-                                    }
-                                  },
+                                  onActionPressed: (context, rowData) async {},
                                 ),
                               ),
                             ),

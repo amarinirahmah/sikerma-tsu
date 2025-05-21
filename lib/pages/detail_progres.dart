@@ -4,6 +4,8 @@ import 'package:sikermatsu/widgets/table.dart';
 import 'package:sikermatsu/widgets/upload_card.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import '../styles/style.dart';
+import 'package:sikermatsu/widgets/table2.dart';
+// import 'package:sikermatsu/models/progres_service.dart';
 
 class DetailProgressPage extends StatefulWidget {
   const DetailProgressPage({super.key});
@@ -33,6 +35,44 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
       });
     }
   }
+
+  // void _simpanData() async {
+  //   if (_formKey.currentState!.validate() && _selectedDate != null) {
+  //     setState(() {
+  //       _progresList.add({
+  //         'No': (_progresList.length + 1).toString(),
+  //         'Tanggal': "${_selectedDate!.toLocal()}".split(' ')[0],
+  //         'Proses': judulAktivitas,
+  //         'Aktivitas': _aktivitasController.text,
+  //       });
+  //     });
+
+  //     try {
+  //       await uploadProgress(
+  //         userId: 1, // <--- Ganti ini dengan ID user sebenarnya
+  //         action: judulAktivitas,
+  //         description: _aktivitasController.text,
+  //       );
+
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(
+  //           content: Text("Data progres berhasil disimpan dan dikirim!"),
+  //         ),
+  //       );
+  //     } catch (e) {
+  //       ScaffoldMessenger.of(
+  //         context,
+  //       ).showSnackBar(SnackBar(content: Text("Gagal mengirim progres: $e")));
+  //     }
+
+  //     _selectedDate = null;
+  //     _aktivitasController.clear();
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Harap lengkapi semua data!")),
+  //     );
+  //   }
+  // }
 
   void _simpanData() {
     if (_formKey.currentState!.validate() && _selectedDate != null) {
@@ -88,17 +128,17 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
                       ),
                     ),
                     const SizedBox(height: 32),
-                    const Text(
-                      "Daftar Progres",
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
+                    // const Text(
+                    //   "Daftar Progres",
+                    //   style: TextStyle(
+                    //     fontSize: 18,
+                    //     fontWeight: FontWeight.bold,
+                    //   ),
+                    // ),
                     // const SizedBox(height: 16),
                     _progresList.isEmpty
                         ? const Text("Belum ada data progres.")
-                        : TableData(
+                        : CustomPaginatedTable(
                           title: 'Daftar Progres',
                           columns: const [
                             'No',

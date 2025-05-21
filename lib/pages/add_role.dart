@@ -5,6 +5,7 @@ import '../widgets/main_layout.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import '../styles/style.dart';
 import '../widgets/user_card.dart';
+import '../models/auth_service.dart';
 
 class AddRolePage extends StatefulWidget {
   const AddRolePage({super.key});
@@ -19,23 +20,80 @@ class _SuperAdminPageState extends State<AddRolePage> {
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   String role = 'admin';
-  User? userModel;
+  bool isLoading = false;
 
-  // Future registerAdmin(name, email, password, role) async {
-  //   User userModel;
-  //   final response = await http.post(
-  //     Uri.parse("http://192.168.100.236:8000/api/register"),
-  //     body: {
-  //       "name": name.toString(),
-  //       "email": email.toString(),
-  //       "password": password.toString(),
-  //       "role": role.toString(),
-  //     },
-  //   );
+  // Future<void> registerUserByAdmin() async {
+  //   setState(() => isLoading = true);
 
-  //   userModel = User.fromJson(jsonDecode(response.body)[0]);
-  //   print(userModel);
+  //   try {
+  //     await AuthService.registerUserByAdmin(
+  //       name.text,
+  //       email.text,
+  //       password.text,
+  //       role,
+  //     );
+
+  //     setState(() => isLoading = false);
+  //       await _showBerhasil();
+
+  //     name.clear();
+  //     email.clear();
+  //     password.clear();
+  //     setState(() {
+  //       role = 'admin';
+  //     });
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text(e.toString())));
+  //   } finally {
+  //     setState(() => isLoading = false);
+  //   }
   // }
+
+  Future<void> registerUserByAdmin() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    setState(() => isLoading = true);
+
+    try {
+      await AuthService.registerUserByAdmin(
+        name.text,
+        email.text,
+        password.text,
+        role,
+      );
+
+      setState(() => isLoading = false);
+
+      await _showBerhasil();
+
+      // Clear fields setelah berhasil
+      name.clear();
+      email.clear();
+      password.clear();
+      setState(() {
+        role = 'admin';
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text('Error'),
+              content: Text(e.toString().replaceAll('Exception: ', '')),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+      );
+    }
+  }
 
   Future<void> _showBerhasil() async {
     return showDialog<void>(
@@ -127,12 +185,14 @@ class _SuperAdminPageState extends State<AddRolePage> {
                     ),
                   ],
                   buttonLabel: "Register",
-                  isLoading: false,
-                  onSubmit: () {
-                    if (_formKey.currentState!.validate()) {
-                      _showBerhasil();
-                    }
-                  },
+                  isLoading: isLoading,
+                  onSubmit: registerUserByAdmin,
+                  // onSubmit: () {
+                  //   if (_formKey.currentState!.validate()) {
+                  //     _showBerhasil();
+                  //      registerUserByAdmin();
+                  //   }
+                  // },
                 ),
               ),
             ),

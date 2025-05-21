@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'user.dart';
 
 class AuthService {
-  static const baseUrl = "http://192.168.1.142:8000/api";
+  static const baseUrl = "https://5a18-66-96-225-94.ngrok-free.app/api";
   static String? token;
   static String? role;
 
@@ -24,7 +24,7 @@ class AuthService {
 
       // Simpan token & role ke SharedPreferences
       final token = data['token'] ?? '';
-      final role = data['role'] ?? '';
+      final role = data['user']['role'] ?? '';
 
       await prefs.setString('token', token);
       await prefs.setString('role', role);
@@ -87,5 +87,147 @@ class AuthService {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     await prefs.remove('role');
+  }
+
+  //register user by admin
+  static Future<void> registerUserByAdmin(
+    String name,
+    String email,
+    String password,
+    String role,
+  ) async {
+    final token = await AuthService.getToken();
+    final response = await http.post(
+      Uri.parse('${AuthService.baseUrl}/registerbyadmin'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        'name': name,
+        'email': email,
+        'password': password,
+        'role': role,
+      }),
+    );
+
+    if (response.statusCode == 201) {
+      // print("User berhasil ditambahkan");
+      return;
+    } else {
+      final data = jsonDecode(response.body);
+      String message = data['message'] ?? 'Gagal menambahkan user';
+      throw Exception(message);
+    }
+  }
+
+  //register userpkl
+  static Future<void> registerUser({
+    required String name,
+    required String email,
+    required String password,
+  }) async {
+    final response = await http.post(
+      Uri.parse('${AuthService.baseUrl}/registeruser'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        "name": name,
+        "email": email,
+        "password": password,
+        "role": "userpkl",
+      }),
+    );
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      // print("User berhasil ditambahkan");
+      return;
+    } else {
+      final data = jsonDecode(response.body);
+      String message = data['message'] ?? 'Register gagal';
+      throw Exception(message);
+    }
+  }
+
+  //get all user
+  static Future<List<User>> getAllUser() async {
+    final token = await getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/users'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List data = jsonDecode(response.body);
+      // final List<dynamic> data = body['data'];
+      return data.map((json) => User.fromJson(json)).toList();
+    } else {
+      throw Exception('Gagal mengambil data user');
+    }
+  }
+
+  // UPDATE USER
+  static Future<void> updateUser({
+    required int id,
+    required String name,
+    required String email,
+    required String role,
+    required String token,
+  }) async {
+    final Map<String, dynamic> body = {
+      'name': name,
+      'email': email,
+      'role': role,
+    };
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/users/$id'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode != 200) {
+      final data = jsonDecode(response.body);
+      throw Exception(data['message'] ?? 'Gagal mengupdate user');
+    }
+  }
+
+  // static Future<void> updateUser({
+  //   required int id,
+  //   required String name,
+  //   required String email,
+  //   required String role,
+  // }) async {
+  //   final response = await http.put(
+  //     Uri.parse('$baseUrl/users/$id'),
+  //     headers: {'Content-Type': 'application/json'},
+  //     body: jsonEncode({'name': name, 'email': email, 'role': role}),
+  //   );
+
+  //   if (response.statusCode != 200) {
+  //     final data = jsonDecode(response.body);
+  //     throw Exception(data['message'] ?? 'Gagal mengedit user');
+  //   }
+  // }
+
+  // DELETE USER
+  Future<void> deleteUser(int id) async {
+    final token = await AuthService.getToken();
+    final response = await http.delete(
+      Uri.parse('$baseUrl/users/$id'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Gagal menghapus User');
+    }
   }
 }

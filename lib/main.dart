@@ -18,8 +18,20 @@ import 'pages/upload_pkl.dart';
 import 'pages/detail_pkl.dart';
 import 'pages/home.dart';
 import 'styles/style.dart';
+import 'models/app_state.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  Future<void> loadLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+    final role = prefs.getString('role') ?? 'guest';
+
+    if (token != null && token.isNotEmpty) {
+      AppState.loginAs(role);
+    }
+  }
+
   runApp(const MyApp());
 }
 

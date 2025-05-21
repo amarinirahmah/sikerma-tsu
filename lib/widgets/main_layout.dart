@@ -71,7 +71,7 @@ class _MainLayoutState extends State<MainLayout> {
                                   ),
                                   SizedBox(height: 12),
                                   Text(
-                                    'Tiga Serangkai University',
+                                    'SiKERMA TSU',
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontSize: 20,
@@ -82,7 +82,7 @@ class _MainLayoutState extends State<MainLayout> {
                               ),
                             ),
 
-                            if (role != 'user pkl') ...[
+                            if (role != 'userpkl') ...[
                               _buildDrawerItem(
                                 context,
                                 'Dashboard',

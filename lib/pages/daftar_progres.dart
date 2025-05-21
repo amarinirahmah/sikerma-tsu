@@ -3,6 +3,7 @@ import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import '../styles/style.dart';
+import '../widgets/table2.dart';
 
 class ProgressPage extends StatefulWidget {
   const ProgressPage({super.key});
@@ -12,9 +13,9 @@ class ProgressPage extends StatefulWidget {
 }
 
 class _ProgressPageState extends State<ProgressPage> {
-  List<Map<String, dynamic>> _allData = [];
+  List<Map<String, dynamic>> allData = [];
   String _selectedJenis = 'Semua';
-  String _searchQuery = '';
+  // String _searchQuery = '';
   bool _isLoading = true;
 
   @override
@@ -26,7 +27,7 @@ class _ProgressPageState extends State<ProgressPage> {
   Future<void> _loadData() async {
     await Future.delayed(const Duration(seconds: 1));
     setState(() {
-      _allData = [
+      allData = [
         {
           'Jenis': 'MoU',
           'Nama Mitra': 'PT Maju Jaya',
@@ -64,115 +65,68 @@ class _ProgressPageState extends State<ProgressPage> {
     });
   }
 
-  List<Map<String, dynamic>> get _filteredData {
-    return _allData.where((item) {
-      final matchesJenis =
-          _selectedJenis == 'Semua' || item['Jenis'] == _selectedJenis;
-      final matchesSearch =
-          _searchQuery.isEmpty ||
-          item['Nama Mitra'].toLowerCase().contains(_searchQuery.toLowerCase());
-      return matchesJenis && matchesSearch;
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
+    final List<String> statusOptions =
+        allData
+            .map((e) => e['Status']?.toString() ?? '')
+            .toSet()
+            .where((e) => e.isNotEmpty)
+            .toList();
+
+    final List<String> jenisOptions =
+        allData
+            .map((e) => e['Jenis']?.toString() ?? '')
+            .toSet()
+            .where((e) => e.isNotEmpty)
+            .toList();
     return ValueListenableBuilder<bool>(
       valueListenable: AppState.isLoggedIn,
       builder: (context, isLoggedIn, _) {
-        final columns = [
-          'Jenis',
-          'Nama Mitra',
-          'Tanggal Mulai',
-          'Tanggal Berakhir',
-          'Status',
-        ];
-
         return MainLayout(
           title: '',
           isLoggedIn: isLoggedIn,
           child:
               _isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : Column(
+                  : Stack(
                     children: [
-                      // FILTER UI dengan maxWidth 1000 dan rata tengah
-                      Container(
-                        margin: const EdgeInsets.only(top: 16),
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 1000),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  flex: 1,
-                                  child: DropdownButtonFormField<String>(
-                                    value: _selectedJenis,
-                                    decoration: CustomStyle.dropdownDecoration(
-                                      hintText: 'Semua',
-                                    ),
-                                    items:
-                                        ['Semua', 'MoU', 'PKS']
-                                            .map(
-                                              (jenis) => DropdownMenuItem(
-                                                value: jenis,
-                                                child: Text(jenis),
-                                              ),
-                                            )
-                                            .toList(),
-                                    onChanged: (value) {
-                                      if (value != null) {
-                                        setState(() {
-                                          _selectedJenis = value;
-                                        });
-                                      }
-                                    },
-                                  ),
+                      Column(
+                        children: [
+                          Expanded(
+                            child: Center(
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 1000,
                                 ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  flex: 3,
-                                  child: TextField(
-                                    decoration: CustomStyle.inputDecoration(
-                                      hintText: 'Cari Nama Mitra',
-                                      prefixIcon: const Icon(Icons.search),
-                                    ),
-                                    onChanged: (value) {
-                                      setState(() {
-                                        _searchQuery = value;
-                                      });
-                                    },
-                                  ),
+                                child: CustomPaginatedTable(
+                                  title: 'Daftar Progres',
+                                  columns: const [
+                                    'Nama Mitra',
+                                    'Tanggal Mulai'
+                                        'Tanggal Berakhir'
+                                        'Status'
+                                        'Jenis',
+                                  ],
+                                  statusOptions: statusOptions,
+                                  initialStatus: null,
+                                  jenisOptions: jenisOptions,
+                                  initialJenis: null,
+                                  data: allData,
+                                  onDetailPressed: (
+                                    BuildContext context,
+                                    Map<String, dynamic> rowData,
+                                  ) {
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/detailprogres',
+                                    );
+                                  },
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-
-                      // TABLE DATA dengan maxWidth 1000 dan rata tengah
-                      Expanded(
-                        child: Center(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 1000),
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 16),
-                              child: TableData(
-                                title: 'Daftar Kerja Sama',
-                                columns: columns,
-                                data: _filteredData,
-                                actionLabel: 'Detail',
-                                onActionPressed: (context, rowData) {
-                                  Navigator.pushNamed(
-                                    context,
-                                    '/detailprogres',
-                                  );
-                                },
                               ),
                             ),
                           ),
-                        ),
+                        ],
                       ),
                     ],
                   ),

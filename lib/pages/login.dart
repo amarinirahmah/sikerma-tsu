@@ -161,7 +161,9 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/models/auth_service.dart';
 import 'package:sikermatsu/models/user.dart';
-import 'package:sikermatsu/widgets/user_card.dart'; // pastikan path ini benar
+import 'package:sikermatsu/models/app_state.dart';
+import 'package:sikermatsu/widgets/user_card.dart';
+import 'package:sikermatsu/styles/style.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -184,9 +186,9 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final user = await AuthService.login(email.text, password.text);
-      await _showBerhasil(user); // Tampilkan dialog berhasil
+      AppState.loginAs(user.role);
+      await _showBerhasil(user);
 
-      // Navigasi sesuai role
       if (user.role == 'admin' || user.role == 'user') {
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else if (user.role == 'userpkl') {
@@ -252,20 +254,18 @@ class _LoginPageState extends State<LoginPage> {
               fields: [
                 TextFormField(
                   controller: email,
-                  decoration: const InputDecoration(
+                  decoration: CustomStyle.inputDecorationWithLabel(
                     labelText: 'Email',
-                    border: OutlineInputBorder(),
                   ),
                   validator:
                       (value) => value!.isEmpty ? 'Email wajib diisi' : null,
                 ),
                 TextFormField(
                   controller: password,
-                  decoration: const InputDecoration(
-                    labelText: 'Password',
-                    border: OutlineInputBorder(),
-                  ),
                   obscureText: true,
+                  decoration: CustomStyle.inputDecorationWithLabel(
+                    labelText: 'Password',
+                  ),
                   validator:
                       (value) => value!.isEmpty ? 'Password wajib diisi' : null,
                 ),
@@ -277,6 +277,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   Navigator.pushNamed(context, '/register');
                 },
+                style: CustomStyle.textButtonStyle2,
                 child: const Text("Belum punya akun? Register"),
               ),
             ),

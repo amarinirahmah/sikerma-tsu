@@ -117,8 +117,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             ),
                             TextButton(
                               onPressed: () {
-                                AppState.isLoggedIn.value = false;
-                                AppState.role.value = 'guest'; // reset role
+                                // AppState.isLoggedIn.value = false;
+                                AppState.logout();
                                 Navigator.pushNamedAndRemoveUntil(
                                   context,
                                   '/home',

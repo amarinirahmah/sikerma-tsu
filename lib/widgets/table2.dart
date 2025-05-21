@@ -5,18 +5,27 @@ class CustomPaginatedTable extends StatefulWidget {
   final String title;
   final List<String> columns;
   final List<Map<String, dynamic>> data;
-  final String? actionLabel;
-  final void Function(BuildContext context, Map<String, dynamic> rowData)?
-  onActionPressed;
+  final void Function(BuildContext, Map<String, dynamic>)? onDetailPressed;
+  final void Function(BuildContext, Map<String, dynamic>)? onEditPressed;
+  final void Function(BuildContext, Map<String, dynamic>)? onDeletePressed;
+  final List<String>? jenisOptions;
+  final List<String>? statusOptions;
+  final String? initialJenis;
+  final String? initialStatus;
 
   const CustomPaginatedTable({
-    super.key,
+    Key? key,
     required this.title,
     required this.columns,
     required this.data,
-    this.actionLabel,
-    this.onActionPressed,
-  });
+    this.onDetailPressed,
+    this.onEditPressed,
+    this.onDeletePressed,
+    this.jenisOptions,
+    this.statusOptions,
+    this.initialJenis,
+    this.initialStatus,
+  }) : super(key: key);
 
   @override
   State<CustomPaginatedTable> createState() => _CustomPaginatedTableState();
@@ -25,149 +34,324 @@ class CustomPaginatedTable extends StatefulWidget {
 class _CustomPaginatedTableState extends State<CustomPaginatedTable> {
   int _rowsPerPage = 10;
   int _currentPage = 0;
+  String _searchKeyword = '';
+  String? _selectedJenis;
+  String? _selectedStatus;
+  late TextEditingController _searchController;
 
-  List<int> _availableRowsPerPage = [10, 15, 20];
+  @override
+  void initState() {
+    super.initState();
+    _selectedJenis = widget.initialJenis;
+    _selectedStatus = widget.initialStatus;
+    _searchController = TextEditingController();
+    _searchController.addListener(() {
+      setState(() {
+        _searchKeyword = _searchController.text;
+        _currentPage = 0;
+      });
+    });
+  }
 
-  int get _pageCount => (widget.data.length / _rowsPerPage).ceil();
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onSearchChanged(String value) {
+    setState(() {
+      _searchKeyword = value;
+      _currentPage = 0;
+    });
+  }
+
+  void _onJenisChanged(String? value) {
+    setState(() {
+      _selectedJenis = value;
+      _currentPage = 0;
+    });
+  }
+
+  void _onStatusChanged(String? value) {
+    setState(() {
+      _selectedStatus = value;
+      _currentPage = 0;
+    });
+  }
+
+  List<Map<String, dynamic>> get _filteredData {
+    return widget.data.where((row) {
+      final matchesSearch =
+          _searchKeyword.isEmpty ||
+          row.values.any(
+            (value) => value.toString().toLowerCase().contains(
+              _searchKeyword.toLowerCase(),
+            ),
+          );
+
+      final matchesJenis =
+          widget.jenisOptions == null ||
+          _selectedJenis == null ||
+          _selectedJenis!.isEmpty ||
+          row['Jenis'] == _selectedJenis;
+
+      final matchesStatus =
+          widget.statusOptions == null ||
+          _selectedStatus == null ||
+          _selectedStatus!.isEmpty ||
+          row['Status'] == _selectedStatus;
+
+      return matchesSearch && matchesJenis && matchesStatus;
+    }).toList();
+  }
+
+  List<Map<String, dynamic>> get _pagedData {
+    final start = _currentPage * _rowsPerPage;
+    final end = start + _rowsPerPage;
+    final filtered = _filteredData;
+    return filtered.sublist(
+      start,
+      end > filtered.length ? filtered.length : end,
+    );
+  }
+
+  Widget _buildDropdownFilter({
+    required String hint,
+    required List<String> options,
+    required String? value,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Expanded(
+      flex: 1,
+      child: DropdownButtonFormField<String?>(
+        value: value,
+        decoration: CustomStyle.dropdownDecoration(hintText: hint),
+        items: [
+          const DropdownMenuItem(value: null, child: Text('Semua')),
+          ...options.map((e) => DropdownMenuItem(value: e, child: Text(e))),
+        ],
+        onChanged: onChanged,
+      ),
+    );
+  }
+
+  Widget _buildFilterSection() {
+    if (widget.jenisOptions == null && widget.statusOptions == null) {
+      return const SizedBox.shrink();
+    }
+
+    return Row(
+      children: [
+        Expanded(
+          flex: 3,
+          child: TextField(
+            controller: _searchController,
+            decoration: CustomStyle.inputDecoration(
+              hintText: 'Cari...',
+              suffixIcon:
+                  _searchKeyword.isNotEmpty
+                      ? GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _searchController.clear();
+                            _searchKeyword = '';
+                            _currentPage = 0;
+                          });
+                        },
+                        child: const Icon(Icons.close),
+                      )
+                      : null,
+            ),
+            onChanged: _onSearchChanged,
+          ),
+        ),
+        const SizedBox(width: 16),
+        if (widget.jenisOptions != null) ...[
+          _buildDropdownFilter(
+            hint: 'Jenis Dokumen',
+            options: widget.jenisOptions!,
+            value: _selectedJenis,
+            onChanged: _onJenisChanged,
+          ),
+          const SizedBox(width: 16),
+        ],
+        if (widget.statusOptions != null)
+          _buildDropdownFilter(
+            hint: 'Status',
+            options: widget.statusOptions!,
+            value: _selectedStatus,
+            onChanged: _onStatusChanged,
+          ),
+      ],
+    );
+  }
+
+  Widget _buildTable() {
+    return DataTable(
+      columnSpacing: 32,
+      headingRowColor: MaterialStateColor.resolveWith(
+        (states) => Colors.blueGrey.shade50,
+      ),
+      headingTextStyle: const TextStyle(fontWeight: FontWeight.bold),
+      border: TableBorder.all(width: 1, color: Colors.grey.shade300),
+      columns: [
+        ...widget.columns.map(
+          (col) => DataColumn(label: Expanded(child: Text(col))),
+        ),
+        const DataColumn(label: Text("Aksi")),
+      ],
+      rows:
+          _pagedData.map((row) {
+            return DataRow(
+              cells: [
+                ...widget.columns.map(
+                  (col) => DataCell(
+                    Text(
+                      row[col]?.toString() ?? '',
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+                DataCell(
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (widget.onDetailPressed != null)
+                        IconButton(
+                          icon: const Icon(Icons.info, color: Colors.blue),
+                          tooltip: 'Detail',
+                          onPressed:
+                              () => widget.onDetailPressed!(context, row),
+                        ),
+                      if (widget.onEditPressed != null)
+                        IconButton(
+                          icon: const Icon(Icons.edit, color: Colors.orange),
+                          tooltip: 'Edit',
+                          onPressed: () => widget.onEditPressed!(context, row),
+                        ),
+                      if (widget.onDeletePressed != null)
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          tooltip: 'Hapus',
+                          onPressed:
+                              () => widget.onDeletePressed!(context, row),
+                        ),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          }).toList(),
+    );
+  }
+
+  Widget _buildPagination() {
+    final totalPages = (_filteredData.length / _rowsPerPage).ceil();
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        DropdownButton<int>(
+          value: _rowsPerPage,
+          items:
+              [5, 10, 15, 20]
+                  .map(
+                    (e) => DropdownMenuItem(
+                      value: e,
+                      child: Text('Tampilkan $e data'),
+                    ),
+                  )
+                  .toList(),
+          onChanged: (val) {
+            setState(() {
+              _rowsPerPage = val!;
+              _currentPage = 0;
+            });
+          },
+        ),
+        Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chevron_left),
+              onPressed:
+                  _currentPage > 0
+                      ? () => setState(() => _currentPage--)
+                      : null,
+            ),
+            Text('${_currentPage + 1} dari $totalPages'),
+            IconButton(
+              icon: const Icon(Icons.chevron_right),
+              onPressed:
+                  (_currentPage + 1) < totalPages
+                      ? () => setState(() => _currentPage++)
+                      : null,
+            ),
+          ],
+        ),
+      ],
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final start = _currentPage * _rowsPerPage;
-    final end = (_currentPage + 1) * _rowsPerPage;
-    final pageItems = widget.data.sublist(
-      start,
-      end > widget.data.length ? widget.data.length : end,
-    );
-
     return Center(
-      child: SizedBox(
-        width: 1000,
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1000),
         child: Card(
-          margin: const EdgeInsets.only(bottom: 16),
-          elevation: 1,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+          margin: const EdgeInsets.symmetric(vertical: 16),
+          elevation: 1,
           child: Padding(
             padding: const EdgeInsets.all(16),
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(widget.title, style: CustomStyle.headline2),
-                  const SizedBox(height: 12),
-
-                  // Horizontal scroll hanya untuk table
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DataTable(
-                      columnSpacing:
-                          (1000 - 40) /
-                          (widget.columns.length +
-                              (widget.actionLabel != null ? 1 : 0)),
-                      columns: [
-                        ...widget.columns.map(
-                          (col) => DataColumn(label: Text(col)),
-                        ),
-                        if (widget.actionLabel != null)
-                          DataColumn(label: Text(widget.actionLabel!)),
-                      ],
-                      rows: List<DataRow>.generate(pageItems.length, (index) {
-                        final item = pageItems[index];
-                        final isEvenRow = index % 2 == 0;
-                        final cells =
-                            widget.columns
-                                .map(
-                                  (col) => DataCell(
-                                    Text(item[col]?.toString() ?? ''),
-                                  ),
-                                )
-                                .toList();
-
-                        if (widget.actionLabel != null &&
-                            widget.onActionPressed != null) {
-                          cells.add(
-                            DataCell(
-                              ElevatedButton(
-                                style: CustomStyle.getButtonStyleByLabel(
-                                  widget.actionLabel!,
-                                ),
-                                onPressed:
-                                    () =>
-                                        widget.onActionPressed!(context, item),
-                                child: Text(widget.actionLabel!),
-                              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.title, style: CustomStyle.headline1),
+                const SizedBox(height: 16),
+                _buildFilterSection(),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: LayoutBuilder(
+                    builder:
+                        (context, constraints) => SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: SizedBox(
+                            width: constraints.maxWidth,
+                            child: SingleChildScrollView(
+                              // Scroll vertikal untuk tabel
+                              child: _buildTable(),
                             ),
-                          );
-                        }
-
-                        return DataRow(
-                          color: MaterialStateProperty.resolveWith<Color?>(
-                            (states) =>
-                                isEvenRow
-                                    ? Colors.grey.shade200.withOpacity(0.4)
-                                    : null,
                           ),
-                          cells: cells,
-                        );
-                      }),
-                    ),
-                  ),
-
-                  // Controls
-                  Padding(
-                    padding: const EdgeInsets.only(top: 16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Text('Rows per page: '),
-                            DropdownButton<int>(
-                              value: _rowsPerPage,
-                              items:
-                                  _availableRowsPerPage
-                                      .map(
-                                        (e) => DropdownMenuItem(
-                                          value: e,
-                                          child: Text(e.toString()),
-                                        ),
-                                      )
-                                      .toList(),
-                              onChanged: (value) {
-                                if (value != null) {
-                                  setState(() {
-                                    _rowsPerPage = value;
-                                    _currentPage = 0;
-                                  });
-                                }
-                              },
-                            ),
-                          ],
                         ),
-                        Row(
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.chevron_left),
-                              onPressed:
-                                  _currentPage > 0
-                                      ? () => setState(() => _currentPage--)
-                                      : null,
-                            ),
-                            Text('${_currentPage + 1} / $_pageCount'),
-                            IconButton(
-                              icon: const Icon(Icons.chevron_right),
-                              onPressed:
-                                  _currentPage < _pageCount - 1
-                                      ? () => setState(() => _currentPage++)
-                                      : null,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
                   ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 16),
+                _buildPagination(),
+              ],
             ),
+
+            // child: Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Text(widget.title, style: CustomStyle.headline1),
+            //     const SizedBox(height: 16),
+            //     _buildFilterSection(),
+            //     const SizedBox(height: 16),
+            //     LayoutBuilder(
+            //       builder:
+            //           (context, constraints) => SingleChildScrollView(
+            //             scrollDirection: Axis.horizontal,
+            //             child: SizedBox(
+            //               width: constraints.maxWidth,
+            //               child: _buildTable(),
+            //             ),
+            //           ),
+            //     ),
+            //     const SizedBox(height: 16),
+            //     _buildPagination(),
+            //   ],
+            // ),
           ),
         ),
       ),

@@ -6,6 +6,7 @@ import 'package:sikermatsu/pages/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:sikermatsu/styles/style.dart';
 import 'package:sikermatsu/widgets/user_card.dart';
+import 'package:sikermatsu/models/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -22,31 +23,6 @@ class _RegisterPageState extends State<RegisterPage> {
   // String role = 'user';
   // bool submit = false;
   bool isLoading = false;
-
-  User? userModel;
-
-  Future registerUser(name, email, password) async {
-    User userModel;
-    final response = await http.post(
-      Uri.parse("http://192.168.100.236:8000/api/register"),
-      body: {
-        "name": name.toString(),
-        "email": email.toString(),
-        "password": password.toString(),
-        // "role": role.toString(),
-      },
-    );
-
-    userModel = User.fromJson(jsonDecode(response.body)[0]);
-    print(userModel);
-    print(Exception);
-  }
-
-  // void _register() {
-  //   if (_formKey.currentState!.validate()) {
-  //     Navigator.pushReplacementNamed(context, '/dashboard');
-  //   }
-  // }
 
   Future<void> _showBerhasil() async {
     return showDialog<void>(
@@ -73,6 +49,38 @@ class _RegisterPageState extends State<RegisterPage> {
         );
       },
     );
+  }
+
+  Future<void> _handleRegister() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() => isLoading = true);
+
+      try {
+        await AuthService.registerUser(
+          name: name.text,
+          email: email.text,
+          password: password.text,
+        );
+        setState(() => isLoading = false);
+        await _showBerhasil();
+      } catch (e) {
+        setState(() => isLoading = false);
+        showDialog(
+          context: context,
+          builder:
+              (context) => AlertDialog(
+                title: const Text('Error'),
+                content: Text(e.toString().replaceAll('Exception: ', '')),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text('OK'),
+                  ),
+                ],
+              ),
+        );
+      }
+    }
   }
 
   @override
@@ -115,11 +123,12 @@ class _RegisterPageState extends State<RegisterPage> {
               ],
               buttonLabel: 'Register',
               isLoading: isLoading,
-              onSubmit: () {
-                if (_formKey.currentState!.validate()) {
-                  registerUser(name.text, email.text, password.text);
-                }
-              },
+              // onSubmit: () {
+              //   if (_formKey.currentState!.validate()) {
+              //     registerUser(name.text, email.text, password.text);
+              //   }
+              // },
+              onSubmit: _handleRegister,
               footer: TextButton(
                 onPressed:
                     () => Navigator.pushReplacementNamed(context, '/login'),

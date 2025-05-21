@@ -128,7 +128,7 @@ class _PKSPage extends State<PKSPage> {
                       ),
 
                       // FAB
-                      if (isLoggedIn)
+                      if (isLoggedIn && AppState.role.value != 'userpkl')
                         Positioned(
                           bottom: 16,
                           right: 16,
