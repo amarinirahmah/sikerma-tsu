@@ -1,10 +1,10 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'user.dart';
+import '../models/user.dart';
 
 class AuthService {
-  static const baseUrl = "https://5a18-66-96-225-94.ngrok-free.app/api";
+  static const baseUrl = "http://192.168.224.238:8000/api";
   static String? token;
   static String? role;
 
@@ -160,8 +160,8 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      final List data = jsonDecode(response.body);
-      // final List<dynamic> data = body['data'];
+      final body = jsonDecode(response.body);
+      final List<dynamic> data = body['data'];
       return data.map((json) => User.fromJson(json)).toList();
     } else {
       throw Exception('Gagal mengambil data user');
@@ -183,7 +183,7 @@ class AuthService {
     };
 
     final response = await http.put(
-      Uri.parse('$baseUrl/users/$id'),
+      Uri.parse('$baseUrl/updateuser/$id'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -216,10 +216,10 @@ class AuthService {
   // }
 
   // DELETE USER
-  Future<void> deleteUser(int id) async {
+  static Future<void> deleteUser(id) async {
     final token = await AuthService.getToken();
     final response = await http.delete(
-      Uri.parse('$baseUrl/users/$id'),
+      Uri.parse('$baseUrl/deleteuser/$id'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

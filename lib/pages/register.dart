@@ -6,7 +6,7 @@ import 'package:sikermatsu/pages/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:sikermatsu/styles/style.dart';
 import 'package:sikermatsu/widgets/user_card.dart';
-import 'package:sikermatsu/models/auth_service.dart';
+import 'package:sikermatsu/services/auth_service.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

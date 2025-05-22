@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'mou.dart';
+import '../models/mou.dart';
 
 class MouService {
   final String baseUrl = 'http://192.168.100.238:8000/api';

@@ -5,7 +5,8 @@ import 'add_role.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/styles/style.dart';
 import '../models/user.dart';
-import '../models/auth_service.dart';
+import '../services/auth_service.dart';
+import 'package:sikermatsu/widgets/table2.dart';
 
 class SuperAdminPage extends StatefulWidget {
   const SuperAdminPage({super.key});
@@ -34,7 +35,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
             users
                 .map(
                   (user) => {
-                    'id': user.id,
+                    'id': user.id.toString(),
                     'Name': user.name,
                     'Email': user.email,
                     'Role': user.role,
@@ -46,6 +47,58 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Gagal memuat data: $e')));
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _delete(
+    BuildContext context,
+    Map<String, dynamic> rowData,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Konfirmasi'),
+            content: const Text('Yakin ingin menghapus user ini?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Batal'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Ya, Hapus'),
+              ),
+            ],
+          ),
+    );
+    if (confirmed != true) return;
+    setState(() => _isLoading = true);
+    try {
+      final id = rowData['id'];
+      if (id == null) {
+        throw Exception('ID user tidak valid');
+      }
+      await AuthService.deleteUser(id);
+      await showBerhasil(context, message: 'User berhasil dihapus');
+      await _loadData();
+    } catch (e) {
+      showDialog(
+        context: context,
+        builder:
+            (_) => AlertDialog(
+              title: const Text('Gagal'),
+              content: Text(e.toString().replaceAll('Exception: ', '')),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('OK'),
+                ),
+              ],
+            ),
+      );
     } finally {
       setState(() => _isLoading = false);
     }
@@ -77,32 +130,6 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
     );
   }
 
-  // Future<void> _loadData() async {
-  //   await Future.delayed(const Duration(seconds: 1));
-  //   setState(() {
-  //     _adminData = [
-  //       {'Name': 'Admin Satu', 'Email': 'admin1@example.com', 'Role': 'admin'},
-  //       {'Name': 'PKL Dua', 'Email': 'pkl2@example.com', 'Role': 'user pkl'},
-  //     ];
-  //     _isLoading = false;
-  //   });
-  // }
-
-  List<Map<String, dynamic>> get _filteredData {
-    if (_searchQuery.isEmpty) return _adminData;
-    return _adminData.where((item) {
-      return item['Name'].toString().toLowerCase().contains(
-            _searchQuery.toLowerCase(),
-          ) ||
-          item['Email'].toString().toLowerCase().contains(
-            _searchQuery.toLowerCase(),
-          ) ||
-          item['Role'].toString().toLowerCase().contains(
-            _searchQuery.toLowerCase(),
-          );
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
@@ -118,29 +145,6 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                     children: [
                       Column(
                         children: [
-                          // SEARCH BAR
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 1000,
-                                ),
-                                child: TextField(
-                                  decoration: CustomStyle.inputDecoration(
-                                    hintText: 'Cari Name, Email, atau Role',
-                                    prefixIcon: const Icon(Icons.search),
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _searchQuery = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-
                           // TABLE
                           Expanded(
                             child: Center(
@@ -148,13 +152,37 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                 constraints: const BoxConstraints(
                                   maxWidth: 1000,
                                 ),
-                                child: TableData(
+                                child: CustomPaginatedTable(
                                   title: 'Daftar Admin',
                                   columns: const ['Name', 'Email', 'Role'],
-                                  data: _filteredData,
-                                  actionLabel: 'Hapus',
+                                  data: _adminData,
+                                  onDeletePressed: (context, rowData) async {
+                                    await _delete(context, rowData);
+                                  },
+                                  onEditPressed: (
+                                    BuildContext context,
+                                    Map<String, dynamic> rowData,
+                                  ) async {
+                                    final result = await Navigator.pushNamed(
+                                      context,
+                                      '/addrole',
+                                      arguments: rowData,
+                                    );
+                                    if (result == true) {
+                                      _loadData();
+                                    }
+                                  },
 
-                                  onActionPressed: (context, rowData) async {},
+                                  // onEditPressed: (
+                                  //   BuildContext context,
+                                  //   Map<String, dynamic> rowData,
+                                  // ) {
+                                  //   Navigator.pushNamed(
+                                  //     context,
+                                  //     '/addrole',
+                                  //     arguments: rowData,
+                                  //   );
+                                  // },
                                 ),
                               ),
                             ),
@@ -172,9 +200,14 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                               MaterialPageRoute(
                                 builder: (_) => const AddRolePage(),
                               ),
-                            ).then((_) {
-                              _loadData();
+                            ).then((value) {
+                              if (value == true) {
+                                _loadData(); // refresh jika sukses
+                              }
                             });
+                            // ).then((_) {
+                            //   _loadData();
+                            // });
                           },
                           backgroundColor: Colors.teal,
                           foregroundColor: Colors.white,

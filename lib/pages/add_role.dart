@@ -5,22 +5,54 @@ import '../widgets/main_layout.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import '../styles/style.dart';
 import '../widgets/user_card.dart';
-import '../models/auth_service.dart';
+import '../services/auth_service.dart';
 
 class AddRolePage extends StatefulWidget {
   const AddRolePage({super.key});
 
   @override
-  State<AddRolePage> createState() => _SuperAdminPageState();
+  State<AddRolePage> createState() => _AddRolePageState();
 }
 
-class _SuperAdminPageState extends State<AddRolePage> {
+class _AddRolePageState extends State<AddRolePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController name = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   String role = 'admin';
   bool isLoading = false;
+  Map<String, dynamic>? editUser;
+  bool isEditMode = false;
+  bool isInit = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!isInit) {
+      final args = ModalRoute.of(context)?.settings.arguments;
+      if (args != null && args is Map<String, dynamic>) {
+        editUser = args;
+        isEditMode = true;
+        name.text = editUser!['name'] ?? '';
+        email.text = editUser!['email'] ?? '';
+        role = editUser!['role'] ?? 'admin';
+      }
+      isInit = true;
+    }
+  }
+
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
+  //   final args = ModalRoute.of(context)?.settings.arguments;
+  //   if (args != null && args is Map<String, dynamic>) {
+  //     editUser = args;
+  //     isEditMode = true;
+  //     name.text = editUser!['name'] ?? '';
+  //     email.text = editUser!['email'] ?? '';
+  //     role = editUser!['role'] ?? 'admin';
+  //   }
+  // }
 
   // Future<void> registerUserByAdmin() async {
   //   setState(() => isLoading = true);
@@ -51,38 +83,42 @@ class _SuperAdminPageState extends State<AddRolePage> {
   //   }
   // }
 
-  Future<void> registerUserByAdmin() async {
+  Future<void> submitForm() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => isLoading = true);
 
     try {
-      await AuthService.registerUserByAdmin(
-        name.text,
-        email.text,
-        password.text,
-        role,
-      );
+      if (isEditMode) {
+        final token = await AuthService.getToken();
+        await AuthService.updateUser(
+          // id: editUser!['id'],
+          id: int.tryParse(editUser!['id'].toString()) ?? 0,
+          name: name.text,
+          email: email.text,
+          role: role,
+          token: token.toString(),
+        );
+        await _showBerhasil(message: 'User berhasil diupdate');
+      } else {
+        await AuthService.registerUserByAdmin(
+          name.text,
+          email.text,
+          password.text,
+          role,
+        );
+        await _showBerhasil(message: 'User berhasil ditambahkan');
+        name.clear();
+        email.clear();
+        password.clear();
+      }
 
-      setState(() => isLoading = false);
-
-      await _showBerhasil();
-
-      // Clear fields setelah berhasil
-      name.clear();
-      email.clear();
-      password.clear();
-      setState(() {
-        role = 'admin';
-      });
+      Navigator.pop(context, true); // kembali ke halaman sebelumnya
     } catch (e) {
-      setState(() => isLoading = false);
-
       showDialog(
         context: context,
         builder:
-            (context) => AlertDialog(
-              title: const Text('Error'),
+            (_) => AlertDialog(
+              title: const Text('Berhasil!'),
               content: Text(e.toString().replaceAll('Exception: ', '')),
               actions: [
                 TextButton(
@@ -92,25 +128,67 @@ class _SuperAdminPageState extends State<AddRolePage> {
               ],
             ),
       );
+    } finally {
+      setState(() => isLoading = false);
     }
   }
+  // Future<void> registerUserByAdmin() async {
+  //   if (!_formKey.currentState!.validate()) return;
 
-  Future<void> _showBerhasil() async {
+  //   setState(() => isLoading = true);
+
+  //   try {
+  //     await AuthService.registerUserByAdmin(
+  //       name.text,
+  //       email.text,
+  //       password.text,
+  //       role,
+  //     );
+
+  //     setState(() => isLoading = false);
+
+  //     await _showBerhasil();
+
+  //     // Clear fields setelah berhasil
+  //     name.clear();
+  //     email.clear();
+  //     password.clear();
+  //     setState(() {
+  //       role = 'admin';
+  //     });
+  //   } catch (e) {
+  //     setState(() => isLoading = false);
+
+  //     showDialog(
+  //       context: context,
+  //       builder:
+  //           (context) => AlertDialog(
+  //             title: const Text('Error'),
+  //             content: Text(e.toString().replaceAll('Exception: ', '')),
+  //             actions: [
+  //               TextButton(
+  //                 onPressed: () => Navigator.pop(context),
+  //                 child: const Text('OK'),
+  //               ),
+  //             ],
+  //           ),
+  //     );
+  //   }
+  // }
+
+  Future<void> _showBerhasil({required String message}) async {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Berhasil!'),
-          content: const SingleChildScrollView(
-            child: ListBody(children: <Widget>[Text("Register berhasil")]),
-          ),
+          content: Text(message),
           actions: <Widget>[
             TextButton(
               child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
-                setState(() {});
               },
             ),
           ],
@@ -132,7 +210,7 @@ class _SuperAdminPageState extends State<AddRolePage> {
               child: ConstrainedBox(
                 constraints: BoxConstraints(maxWidth: 800),
                 child: UserCard(
-                  title: "Tambah Role",
+                  title: isEditMode ? "Edit User" : "Tambah Role",
                   formKey: _formKey,
                   fields: [
                     TextFormField(
@@ -152,16 +230,17 @@ class _SuperAdminPageState extends State<AddRolePage> {
                           (value) =>
                               value!.isEmpty ? 'Email wajib diisi' : null,
                     ),
-                    TextFormField(
-                      controller: password,
-                      obscureText: true,
-                      decoration: CustomStyle.inputDecorationWithLabel(
-                        labelText: 'Password',
+                    if (!isEditMode)
+                      TextFormField(
+                        controller: password,
+                        obscureText: true,
+                        decoration: CustomStyle.inputDecorationWithLabel(
+                          labelText: 'Password',
+                        ),
+                        validator:
+                            (value) =>
+                                value!.isEmpty ? 'Password wajib diisi' : null,
                       ),
-                      validator:
-                          (value) =>
-                              value!.isEmpty ? 'Password wajib diisi' : null,
-                    ),
 
                     DropdownButtonFormField<String>(
                       value: role,
@@ -184,9 +263,9 @@ class _SuperAdminPageState extends State<AddRolePage> {
                       },
                     ),
                   ],
-                  buttonLabel: "Register",
+                  buttonLabel: isEditMode ? "Simpan Perubahan" : "Register",
                   isLoading: isLoading,
-                  onSubmit: registerUserByAdmin,
+                  onSubmit: submitForm,
                   // onSubmit: () {
                   //   if (_formKey.currentState!.validate()) {
                   //     _showBerhasil();

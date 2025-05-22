@@ -159,7 +159,7 @@
 // }
 
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/models/auth_service.dart';
+import 'package:sikermatsu/services/auth_service.dart';
 import 'package:sikermatsu/models/user.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/widgets/user_card.dart';
