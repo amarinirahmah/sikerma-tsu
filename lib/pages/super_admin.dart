@@ -18,7 +18,6 @@ class SuperAdminPage extends StatefulWidget {
 class _SuperAdminPageState extends State<SuperAdminPage> {
   List<Map<String, dynamic>> _adminData = [];
   bool _isLoading = true;
-  String _searchQuery = '';
 
   @override
   void initState() {

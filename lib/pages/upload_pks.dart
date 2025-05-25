@@ -5,6 +5,12 @@ import 'package:sikermatsu/widgets/upload_card.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import '../styles/style.dart';
 
+import 'dart:io';
+import 'package:path/path.dart' as p;
+import '../models/pks.dart';
+import '../services/auth_service.dart';
+import '../services/pks_service.dart';
+
 class UploadPKSPage extends StatefulWidget {
   const UploadPKSPage({super.key});
 
@@ -14,15 +20,38 @@ class UploadPKSPage extends StatefulWidget {
 
 class _UploadPKSPageState extends State<UploadPKSPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nomorMouController = TextEditingController();
-  final _nomorPksController = TextEditingController();
-  final _judulController = TextEditingController();
-  final _unitController = TextEditingController();
-  final _tujuanController = TextEditingController();
+  final nomorMou = TextEditingController();
+  final nomorPks = TextEditingController();
+  final judul = TextEditingController();
+  final namaUnit = TextEditingController();
+  final tujuan = TextEditingController();
 
-  DateTime? _tanggalMulai;
-  DateTime? _tanggalBerakhir;
-  String? _fileName;
+  DateTime? tanggalMulai;
+  DateTime? tanggalBerakhir;
+  String? fileName;
+  File? selectedFile;
+  Pks? pksArgument;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      final args = ModalRoute.of(context)!.settings.arguments;
+      if (args != null && args is Pks) {
+        setState(() {
+          pksArgument = args;
+          nomorMou.text = args.nomorMou;
+          nomorPks.text = args.nomorPks;
+          judul.text = args.judul;
+          tujuan.text = args.tujuan;
+          namaUnit.text = args.namaUnit;
+          tanggalMulai = args.tanggalMulai;
+          tanggalBerakhir = args.tanggalBerakhir;
+          fileName = "File lama digunakan";
+        });
+      }
+    });
+  }
 
   void _pickTanggalMulai() async {
     final picked = await showDatePicker(
@@ -33,8 +62,8 @@ class _UploadPKSPageState extends State<UploadPKSPage> {
     );
     if (picked != null) {
       setState(() {
-        _tanggalMulai = picked;
-        _tanggalBerakhir = null;
+        tanggalMulai = picked;
+        tanggalBerakhir = null;
       });
     }
   }
@@ -42,13 +71,13 @@ class _UploadPKSPageState extends State<UploadPKSPage> {
   void _pickTanggalBerakhir() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _tanggalMulai ?? DateTime.now(),
-      firstDate: _tanggalMulai ?? DateTime.now(),
+      initialDate: tanggalMulai ?? DateTime.now(),
+      firstDate: tanggalMulai ?? DateTime.now(),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
       setState(() {
-        _tanggalBerakhir = picked;
+        tanggalBerakhir = picked;
       });
     }
   }
@@ -57,25 +86,51 @@ class _UploadPKSPageState extends State<UploadPKSPage> {
     final result = await FilePicker.platform.pickFiles();
     if (result != null) {
       setState(() {
-        _fileName = result.files.single.name;
+        fileName = result.files.single.name;
+        selectedFile = File(result.files.single.path!);
       });
     }
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate() &&
-        _tanggalMulai != null &&
-        _tanggalBerakhir != null &&
-        _fileName != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Data PKS berhasil diunggah!")),
+        tanggalMulai != null &&
+        tanggalBerakhir != null &&
+        selectedFile != null) {
+      // atau boleh file null kalau mau
+
+      final pks = Pks(
+        nomorMou: nomorMou.text,
+        nomorPks: nomorPks.text,
+        judul: judul.text,
+        tanggalMulai: tanggalMulai!,
+        tanggalBerakhir: tanggalBerakhir!,
+        namaUnit: namaUnit.text,
+        tujuan: tujuan.text,
+        keterangan: KeteranganPks.diajukan,
       );
-      _formKey.currentState!.reset();
-      setState(() {
-        _tanggalMulai = null;
-        _tanggalBerakhir = null;
-        _fileName = null;
-      });
+
+      try {
+        if (pksArgument != null) {
+          await PksService().updatePks(
+            pksArgument!.id!.toString(),
+            pks,
+            file: selectedFile,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Data PKS berhasil diperbarui!")),
+          );
+        } else {
+          await PksService().uploadPks(pks, file: selectedFile);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Data MoU berhasil diunggah!")),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Gagal mengunggah: $e")));
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Harap lengkapi semua data!")),
@@ -102,22 +157,22 @@ class _UploadPKSPageState extends State<UploadPKSPage> {
                     title: "Form Upload PKS",
                     onSubmit: _submitForm,
                     fields: [
-                      buildField("Nomor MoU", _nomorMouController),
-                      buildField("Nomor PKS", _nomorPksController),
-                      buildField("Judul Kerja Sama", _judulController),
+                      buildField("Nomor MoU", nomorMou),
+                      buildField("Nomor PKS", nomorPks),
+                      buildField("Judul Kerja Sama", judul),
 
                       buildDateRow(
                         "Tanggal Mulai",
-                        _tanggalMulai,
+                        tanggalMulai,
                         _pickTanggalMulai,
                       ),
                       buildDateRow(
                         "Tanggal Berakhir",
-                        _tanggalBerakhir,
+                        tanggalBerakhir,
                         _pickTanggalBerakhir,
                       ),
-                      buildField("Nama Mitra", _unitController),
-                      buildField("Tujuan", _tujuanController, maxLines: 3),
+                      buildField("Nama Mitra", namaUnit),
+                      buildField("Tujuan", tujuan, maxLines: 3),
                       buildFileRow(),
                     ],
                   ),
@@ -183,7 +238,7 @@ class _UploadPKSPageState extends State<UploadPKSPage> {
           child: OutlinedButton.icon(
             onPressed: _pickFile,
             icon: const Icon(Icons.attach_file),
-            label: Text(_fileName ?? "Pilih File PKS"),
+            label: Text(fileName ?? "Pilih File PKS"),
             style: CustomStyle.outlinedButtonStyle,
           ),
         ),

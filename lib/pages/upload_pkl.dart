@@ -1,9 +1,16 @@
+import 'dart:js_interop';
+
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/upload_card.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import '../styles/style.dart';
+
+import 'dart:io';
+import 'package:sikermatsu/services/pkl_service.dart';
+import 'package:sikermatsu/models/pkl.dart';
+import 'package:path/path.dart' as p;
 
 class UploadPKLPage extends StatefulWidget {
   const UploadPKLPage({super.key});
@@ -22,7 +29,30 @@ class _UploadPKLPage extends State<UploadPKLPage> {
   String _jenisKelamin = 'Laki-laki';
   DateTime? _tanggalMulai;
   DateTime? _tanggalBerakhir;
-  String? _fileName;
+  String? fileName;
+  File? selectedFile;
+  Pkl? pklArgument;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      final args = ModalRoute.of(context)!.settings.arguments;
+      if (args != null && args is Pkl) {
+        setState(() {
+          pklArgument = args;
+          _nisn.text = args.nisn;
+          _namaSiswa.text = args.nama;
+          _namaSekolah.text = args.sekolah;
+          _telpEmail.text = args.telpemail;
+          _alamat.text = args.alamat;
+          _tanggalMulai = args.tanggalMulai;
+          _tanggalBerakhir = args.tanggalBerakhir;
+          fileName = "File lama digunakan";
+        });
+      }
+    });
+  }
 
   void _pickTanggalMulai() async {
     final picked = await showDatePicker(
@@ -57,32 +87,83 @@ class _UploadPKLPage extends State<UploadPKLPage> {
     final result = await FilePicker.platform.pickFiles();
     if (result != null) {
       setState(() {
-        _fileName = result.files.single.name;
+        selectedFile = File(result.files.single.path!);
+        fileName = result.files.single.name;
       });
     }
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate() &&
         _tanggalMulai != null &&
         _tanggalBerakhir != null &&
-        _fileName != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Data Siswa berhasil diunggah!")),
+        selectedFile != null) {
+      final pkl = Pkl(
+        nisn: _nisn.text,
+        nama: _namaSiswa.text,
+        sekolah: _namaSekolah.text,
+        gender: JenisKelaminExtension.fromString(_jenisKelamin)!,
+        telpemail: _telpEmail.text,
+        alamat: _alamat.text,
+        tanggalMulai: _tanggalMulai!,
+        tanggalBerakhir: _tanggalBerakhir!,
       );
-      _formKey.currentState!.reset();
-      setState(() {
-        _tanggalMulai = null;
-        _tanggalBerakhir = null;
-        _fileName = null;
-        _jenisKelamin = 'Laki-laki';
-      });
+
+      try {
+        if (pklArgument != null) {
+          await PklService().updatePkl(
+            pklArgument!.id!.toString(),
+            pkl,
+            file: selectedFile,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text("Data siswa PKL berhasil diperbarui!"),
+            ),
+          );
+        } else {
+          await PklService().uploadPkl(pkl, file: selectedFile);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Data siswa PKL berhasil diunggah!")),
+          );
+        }
+        // await PklService().uploadPkl(pkl, file: File(selectedFile!));
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   const SnackBar(content: Text("Data PKL berhasil diunggah!")),
+        // );
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Gagal mengunggah: $e")));
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Harap lengkapi semua data!")),
       );
     }
   }
+
+  // void _submitForm() {
+  //   if (_formKey.currentState!.validate() &&
+  //       _tanggalMulai != null &&
+  //       _tanggalBerakhir != null &&
+  //       fileName != null) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Data Siswa berhasil diunggah!")),
+  //     );
+  //     _formKey.currentState!.reset();
+  //     setState(() {
+  //       _tanggalMulai = null;
+  //       _tanggalBerakhir = null;
+  //       fileName = null;
+  //       _jenisKelamin = 'Laki-laki';
+  //     });
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Harap lengkapi semua data!")),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -106,6 +187,7 @@ class _UploadPKLPage extends State<UploadPKLPage> {
                       buildField("NISN", _nisn),
                       buildField("Nama Siswa", _namaSiswa),
                       buildField("Nama Sekolah", _namaSekolah),
+                      buildDropdownField("Jenis Kelamin"),
                       buildDateRow(
                         "Tanggal Mulai",
                         _tanggalMulai,
@@ -183,7 +265,7 @@ class _UploadPKLPage extends State<UploadPKLPage> {
           child: OutlinedButton.icon(
             onPressed: _pickFile,
             icon: const Icon(Icons.attach_file),
-            label: Text(_fileName ?? "Pilih File PKL"),
+            label: Text(fileName ?? "Pilih File PKL"),
             style: CustomStyle.outlinedButtonStyle,
           ),
         ),

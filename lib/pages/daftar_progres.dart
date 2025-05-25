@@ -103,10 +103,10 @@ class _ProgressPageState extends State<ProgressPage> {
                                   title: 'Daftar Progres',
                                   columns: const [
                                     'Nama Mitra',
-                                    'Tanggal Mulai'
-                                        'Tanggal Berakhir'
-                                        'Status'
-                                        'Jenis',
+                                    'Tanggal Mulai',
+                                    'Tanggal Berakhir',
+                                    'Status',
+                                    'Jenis',
                                   ],
                                   statusOptions: statusOptions,
                                   initialStatus: null,

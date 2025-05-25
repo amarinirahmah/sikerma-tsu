@@ -4,25 +4,29 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/mou.dart';
+import '../services/auth_service.dart';
 
 class MouService {
-  final String baseUrl = 'http://192.168.100.238:8000/api';
+  static const String baseUrl = 'http://192.168.100.238:8000/api';
+  static String? token;
+  static String? role;
 
-  Future<String> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token') ?? '';
-  }
+  // Future<String> _getToken() async {
+  //   final prefs = await SharedPreferences.getInstance();
+  //   return prefs.getString('token') ?? '';
+  // }
 
-  Future<Map<String, String>> _jsonHeaders() async => {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ${await _getToken()}',
-  };
+  // Future<Map<String, String>> _jsonHeaders() async => {
+  //   'Content-Type': 'application/json',
+  //   'Authorization': 'Bearer ${await _getToken()}',
+  // };
 
-  //list mou
-  Future<List<Mou>> getAllMou() async {
+  // //list mou
+  static Future<List<Mou>> getAllMou() async {
+    final token = await AuthService.getToken();
     final response = await http.get(
       Uri.parse('$baseUrl/getmou'),
-      headers: await _jsonHeaders(),
+      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
@@ -32,12 +36,29 @@ class MouService {
       throw Exception('Gagal mengambil data MoU');
     }
   }
+  // Future<List<Mou>> getAllMou() async {
+  //   final response = await http.get(
+  //     Uri.parse('$baseUrl/getmou'),
+  //     headers: await _jsonHeaders(),
+  //   );
+
+  //   if (response.statusCode == 200) {
+  //     final List data = jsonDecode(response.body);
+  //     return data.map((json) => Mou.fromJson(json)).toList();
+  //   } else {
+  //     throw Exception('Gagal mengambil data MoU');
+  //   }
+  // }
 
   //detail mou
-  Future<Mou> getMouById(String id) async {
+  static Future<Mou> getMouById(String id) async {
+    final token = await AuthService.getToken();
     final response = await http.get(
       Uri.parse('$baseUrl/getmou/$id'),
-      headers: await _jsonHeaders(),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -48,7 +69,7 @@ class MouService {
   }
 
   Future<void> uploadMou(Mou mou, {File? file}) async {
-    final token = await _getToken();
+    final token = await AuthService.getToken();
     final uri = Uri.parse('$baseUrl/uploadmou');
 
     if (file == null) {
@@ -60,7 +81,7 @@ class MouService {
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode({
-          'nomormou': mou.nomormou,
+          'nomormou': mou.nomorMou,
           'nama': mou.nama,
           'judul': mou.judul,
           'tanggal_mulai': mou.tanggalMulai.toIso8601String(),
@@ -79,7 +100,7 @@ class MouService {
       final request =
           http.MultipartRequest('POST', uri)
             ..headers['Authorization'] = 'Bearer $token'
-            ..fields['nomormou'] = mou.nomormou
+            ..fields['nomormou'] = mou.nomorMou
             ..fields['nama'] = mou.nama
             ..fields['judul'] = mou.judul
             ..fields['tanggal_mulai'] = mou.tanggalMulai.toIso8601String()
@@ -109,7 +130,7 @@ class MouService {
 
   //edit mou
   Future<void> updateMou(String id, Mou mou, {File? file}) async {
-    final token = await _getToken();
+    final token = await AuthService.getToken();
     final uri = Uri.parse('$baseUrl/updatemou/$id');
 
     if (file != null) {
@@ -117,7 +138,7 @@ class MouService {
       final request = http.MultipartRequest('POST', uri);
       request.headers['Authorization'] = 'Bearer $token';
 
-      request.fields['nonormou'] = mou.nomormou;
+      request.fields['nonormou'] = mou.nomorMou;
       request.fields['nama'] = mou.nama;
       request.fields['judul'] = mou.judul;
       request.fields['tanggal_mulai'] = mou.tanggalMulai.toIso8601String();
@@ -147,7 +168,7 @@ class MouService {
       };
 
       final body = {
-        'nomormou': mou.nomormou,
+        'nomormou': mou.nomorMou,
         'nama': mou.nama,
         'judul': mou.judul,
         'tanggal_mulai': mou.tanggalMulai.toIso8601String(),
@@ -248,9 +269,13 @@ class MouService {
   // }
 
   Future<void> deleteMou(String id) async {
+    final token = await AuthService.getToken();
     final response = await http.delete(
       Uri.parse('$baseUrl/deletemou/$id'),
-      headers: await _jsonHeaders(),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
     );
 
     if (response.statusCode != 200) {

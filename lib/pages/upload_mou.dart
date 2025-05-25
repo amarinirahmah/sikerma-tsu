@@ -5,6 +5,11 @@ import 'package:sikermatsu/widgets/upload_card.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import '../styles/style.dart';
 
+import 'dart:io';
+import 'package:sikermatsu/services/mou_service.dart';
+import 'package:sikermatsu/models/mou.dart';
+import 'package:path/path.dart' as p;
+
 class UploadMoUPage extends StatefulWidget {
   const UploadMoUPage({super.key});
 
@@ -14,14 +19,36 @@ class UploadMoUPage extends StatefulWidget {
 
 class _UploadMoUPageState extends State<UploadMoUPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nomorController = TextEditingController();
-  final _mitraController = TextEditingController();
-  final _judulController = TextEditingController();
-  final _tujuanController = TextEditingController();
+  final nomorMou = TextEditingController();
+  final nama = TextEditingController();
+  final judul = TextEditingController();
+  final tujuan = TextEditingController();
 
-  DateTime? _tanggalMulai;
-  DateTime? _tanggalBerakhir;
-  String? _fileName;
+  DateTime? tanggalMulai;
+  DateTime? tanggalBerakhir;
+  String? fileName;
+  File? selectedFile;
+  Mou? mouArgument;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      final args = ModalRoute.of(context)!.settings.arguments;
+      if (args != null && args is Mou) {
+        setState(() {
+          mouArgument = args;
+          nomorMou.text = args.nomorMou;
+          nama.text = args.nama;
+          judul.text = args.judul;
+          tujuan.text = args.tujuan;
+          tanggalMulai = args.tanggalMulai;
+          tanggalBerakhir = args.tanggalBerakhir;
+          fileName = "File lama digunakan";
+        });
+      }
+    });
+  }
 
   void _pickTanggalMulai() async {
     final picked = await showDatePicker(
@@ -32,8 +59,8 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
     );
     if (picked != null) {
       setState(() {
-        _tanggalMulai = picked;
-        _tanggalBerakhir = null;
+        tanggalMulai = picked;
+        tanggalBerakhir = null;
       });
     }
   }
@@ -41,13 +68,13 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
   void _pickTanggalBerakhir() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _tanggalMulai ?? DateTime.now(),
-      firstDate: _tanggalMulai ?? DateTime.now(),
+      initialDate: tanggalMulai ?? DateTime.now(),
+      firstDate: tanggalMulai ?? DateTime.now(),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
       setState(() {
-        _tanggalBerakhir = picked;
+        tanggalBerakhir = picked;
       });
     }
   }
@@ -56,31 +83,74 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
     final result = await FilePicker.platform.pickFiles();
     if (result != null) {
       setState(() {
-        _fileName = result.files.single.name;
+        selectedFile = File(result.files.single.path!);
+        fileName = result.files.single.name;
       });
     }
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_formKey.currentState!.validate() &&
-        _tanggalMulai != null &&
-        _tanggalBerakhir != null &&
-        _fileName != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Data MoU berhasil diunggah!")),
+        tanggalMulai != null &&
+        tanggalBerakhir != null) {
+      final mou = Mou(
+        nomorMou: nomorMou.text,
+        nama: nama.text,
+        judul: judul.text,
+        tanggalMulai: tanggalMulai!,
+        tanggalBerakhir: tanggalBerakhir!,
+        tujuan: tujuan.text,
+        keterangan: KeteranganMou.diajukan,
       );
-      _formKey.currentState!.reset();
-      setState(() {
-        _tanggalMulai = null;
-        _tanggalBerakhir = null;
-        _fileName = null;
-      });
+
+      try {
+        if (mouArgument != null) {
+          await MouService().updateMou(
+            mouArgument!.id!.toString(),
+            mou,
+            file: selectedFile,
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Data MoU berhasil diperbarui!")),
+          );
+        } else {
+          await MouService().uploadMou(mou, file: selectedFile);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Data MoU berhasil diunggah!")),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Gagal mengunggah: $e")));
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Harap lengkapi semua data!")),
       );
     }
   }
+
+  // void _submitForm() {
+  //   if (_formKey.currentState!.validate() &&
+  //       tanggalMulai != null &&
+  //       tanggalBerakhir != null &&
+  //       fileName != null) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Data MoU berhasil diunggah!")),
+  //     );
+  //     _formKey.currentState!.reset();
+  //     setState(() {
+  //       tanggalMulai = null;
+  //       tanggalBerakhir = null;
+  //       fileName = null;
+  //     });
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text("Harap lengkapi semua data!")),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -101,20 +171,20 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
                     title: "Form Upload MoU",
                     onSubmit: _submitForm,
                     fields: [
-                      buildField("Nomor MoU", _nomorController),
-                      buildField("Nama Mitra", _mitraController),
-                      buildField("Judul Kerja Sama", _judulController),
+                      buildField("Nomor MoU", nomorMou),
+                      buildField("Nama Mitra", nama),
+                      buildField("Judul Kerja Sama", judul),
                       buildDateRow(
                         "Tanggal Mulai",
-                        _tanggalMulai,
+                        tanggalMulai,
                         _pickTanggalMulai,
                       ),
                       buildDateRow(
                         "Tanggal Berakhir",
-                        _tanggalBerakhir,
+                        tanggalBerakhir,
                         _pickTanggalBerakhir,
                       ),
-                      buildField("Tujuan", _tujuanController, maxLines: 3),
+                      buildField("Tujuan", tujuan, maxLines: 3),
                       buildFileRow(),
                     ],
                   ),
@@ -180,7 +250,7 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
           child: OutlinedButton.icon(
             onPressed: _pickFile,
             icon: const Icon(Icons.attach_file),
-            label: Text(_fileName ?? "Pilih File MoU"),
+            label: Text(fileName ?? "Pilih File MoU"),
             style: CustomStyle.outlinedButtonStyle,
           ),
         ),

@@ -3,6 +3,8 @@ import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/widgets/notif_card.dart';
+import '../models/notifikasi.dart';
+import '../services/notif_service.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -13,7 +15,7 @@ class NotificationPage extends StatefulWidget {
 
 class _NotificationPageState extends State<NotificationPage> {
   bool isLoading = true;
-  List<Map<String, dynamic>> notifikasiData = [];
+  List<Notifikasi> notifikasiList = [];
 
   @override
   void initState() {
@@ -23,21 +25,21 @@ class _NotificationPageState extends State<NotificationPage> {
 
   Future<void> loadNotifikasi() async {
     await Future.delayed(const Duration(seconds: 1));
-    setState(() {
-      notifikasiData = [
-        {
-          'Nomor': '1',
-          'Notifikasi':
-              'Kerja sama dengan PT. ABC akan berakhir dalam 3 bulan.',
-        },
-        {
-          'Nomor': '2',
-          'Notifikasi':
-              'Kerja sama dengan PT. XYZ akan berakhir dalam 1 bulan.',
-        },
-      ];
-      isLoading = false;
-    });
+    try {
+      final list = await NotifService().getAllNotif();
+      setState(() {
+        notifikasiList = list;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      // Tampilkan error kalau perlu
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal memuat notifikasi')));
+    }
   }
 
   @override
@@ -51,7 +53,7 @@ class _NotificationPageState extends State<NotificationPage> {
           child:
               isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : notifikasiData.isEmpty
+                  : notifikasiList.isEmpty
                   ? const Center(
                     child: Text(
                       "Belum ada notifikasi",
@@ -64,13 +66,16 @@ class _NotificationPageState extends State<NotificationPage> {
                   : ListView(
                     padding: const EdgeInsets.symmetric(vertical: 16),
                     children:
-                        notifikasiData.map((notif) {
+                        notifikasiList.map((notif) {
                           return Center(
                             child: ConstrainedBox(
                               constraints: const BoxConstraints(maxWidth: 1000),
                               child: NotificationCard(
                                 icon: Icons.notifications,
-                                description: notif['Notifikasi'],
+                                title: notif.judul,
+                                description: notif.isi,
+                                type: notif.type,
+                                date: notif.tanggalNotif,
                               ),
                             ),
                           );

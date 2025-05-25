@@ -4,26 +4,26 @@ enum KeteranganPks { diajukan, disetujui, dibatalkan }
 
 class Pks {
   final int? id;
-  final String nomormou;
-  final String nomorpks;
+  final String nomorMou;
+  final String nomorPks;
   final String judul;
   final DateTime tanggalMulai;
   final DateTime tanggalBerakhir;
   final String? filePks; // Nullable
-  final String namaunit;
+  final String namaUnit;
   final String tujuan;
   final StatusPks? status; // Nullable: "aktif", "nonaktif"
   final KeteranganPks keterangan; // "diajukan", "disetujui", "dibatalkan"
 
   Pks({
     this.id,
-    required this.nomormou,
-    required this.nomorpks,
+    required this.nomorMou,
+    required this.nomorPks,
     required this.judul,
     required this.tanggalMulai,
     required this.tanggalBerakhir,
     this.filePks,
-    required this.namaunit,
+    required this.namaUnit,
     required this.tujuan,
     this.status,
     required this.keterangan,
@@ -32,13 +32,13 @@ class Pks {
   factory Pks.fromJson(Map<String, dynamic> json) {
     return Pks(
       id: json['id'],
-      nomormou: json['nomormou'],
-      nomorpks: json['nomorpks'],
+      nomorMou: json['nomormou'],
+      nomorPks: json['nomorpks'],
       judul: json['judul'],
       tanggalMulai: DateTime.parse(json['tanggal_mulai']),
       tanggalBerakhir: DateTime.parse(json['tanggal_berakhir']),
       filePks: json['file_pks'] as String?,
-      namaunit: json['namaunit'],
+      namaUnit: json['namaunit'],
       tujuan: json['tujuan'],
       status: _statusFromString(json['status']),
       keterangan: _keteranganFromString(json['keterangan']),
@@ -47,13 +47,13 @@ class Pks {
 
   Map<String, dynamic> toJson() {
     return {
-      'nomormou': nomormou,
-      'nomorpks': nomorpks,
+      'nomormou': nomorMou,
+      'nomorpks': nomorPks,
       'judul': judul,
       'tanggal_mulai': tanggalMulai.toIso8601String(),
       'tanggal_berakhir': tanggalBerakhir.toIso8601String(),
       'file_pks': filePks,
-      'namaunit': namaunit,
+      'namaunit': namaUnit,
       'tujuan': tujuan,
       'status': status?.name,
       'keterangan': keterangan.name,

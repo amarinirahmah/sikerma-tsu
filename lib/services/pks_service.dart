@@ -4,25 +4,19 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/pks.dart';
+import '../services/auth_service.dart';
 
 class PksService {
-  final String baseUrl = 'http://192.168.100.238:8000/api';
-
-  Future<String> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('token') ?? '';
-  }
-
-  Future<Map<String, String>> _jsonHeaders() async => {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer ${await _getToken()}',
-  };
+  static const String baseUrl = 'http://192.168.100.238:8000/api';
+  static String? token;
+  static String? role;
 
   //list pks
-  Future<List<Pks>> getAllPks() async {
+  static Future<List<Pks>> getAllPks() async {
+    final token = await AuthService.getToken();
     final response = await http.get(
       Uri.parse('$baseUrl/getpks'),
-      headers: await _jsonHeaders(),
+      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
     );
 
     if (response.statusCode == 200) {
@@ -35,9 +29,13 @@ class PksService {
 
   //detail pks
   Future<Pks> getPksById(String id) async {
+    final token = await AuthService.getToken();
     final response = await http.get(
       Uri.parse('$baseUrl/getpks/$id'),
-      headers: await _jsonHeaders(),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
     );
 
     if (response.statusCode == 200) {
@@ -48,7 +46,7 @@ class PksService {
   }
 
   Future<void> uploadPks(Pks pks, {File? file}) async {
-    final token = await _getToken();
+    final token = await AuthService.getToken();
     final uri = Uri.parse('$baseUrl/uploadpks');
 
     if (file == null) {
@@ -60,12 +58,12 @@ class PksService {
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode({
-          'nomormou': pks.nomormou,
-          'nomorpks': pks.nomorpks,
+          'nomormou': pks.nomorMou,
+          'nomorpks': pks.nomorPks,
           'judul': pks.judul,
           'tanggal_mulai': pks.tanggalMulai.toIso8601String(),
           'tanggal_berakhir': pks.tanggalBerakhir.toIso8601String(),
-          'namaunit': pks.namaunit,
+          'namaunit': pks.namaUnit,
           'tujuan': pks.tujuan,
           'keterangan': pks.keterangan.name,
           if (pks.status != null) 'status': pks.status!.name,
@@ -80,12 +78,12 @@ class PksService {
       final request =
           http.MultipartRequest('POST', uri)
             ..headers['Authorization'] = 'Bearer $token'
-            ..fields['nomormou'] = pks.nomormou
-            ..fields['nomorpks'] = pks.nomorpks
+            ..fields['nomormou'] = pks.nomorMou
+            ..fields['nomorpks'] = pks.nomorPks
             ..fields['judul'] = pks.judul
             ..fields['tanggal_mulai'] = pks.tanggalMulai.toIso8601String()
             ..fields['tanggal_berakhir'] = pks.tanggalBerakhir.toIso8601String()
-            ..fields['namaunit'] = pks.namaunit
+            ..fields['namaunit'] = pks.namaUnit
             ..fields['tujuan'] = pks.tujuan
             ..fields['keterangan'] = pks.keterangan.name;
 
@@ -110,8 +108,8 @@ class PksService {
   }
 
   //edit pks
-  Future<void> updateMou(String id, Pks pks, {File? file}) async {
-    final token = await _getToken();
+  Future<void> updatePks(String id, Pks pks, {File? file}) async {
+    final token = await AuthService.getToken();
     final uri = Uri.parse('$baseUrl/updatepks/$id');
 
     if (file != null) {
@@ -119,13 +117,13 @@ class PksService {
       final request = http.MultipartRequest('POST', uri);
       request.headers['Authorization'] = 'Bearer $token';
 
-      request.fields['nomormou'] = pks.nomormou;
-      request.fields['nomorpks'] = pks.nomorpks;
+      request.fields['nomormou'] = pks.nomorMou;
+      request.fields['nomorpks'] = pks.nomorPks;
       request.fields['judul'] = pks.judul;
       request.fields['tanggal_mulai'] = pks.tanggalMulai.toIso8601String();
       request.fields['tanggal_berakhir'] =
           pks.tanggalBerakhir.toIso8601String();
-      request.fields['namaunit'] = pks.namaunit;
+      request.fields['namaunit'] = pks.namaUnit;
       request.fields['tujuan'] = pks.tujuan;
       if (pks.status != null) {
         request.fields['status'] = statusToBackend(pks.status);
@@ -150,12 +148,12 @@ class PksService {
       };
 
       final body = {
-        'nomormou': pks.nomormou,
-        'nomorpks': pks.nomorpks,
+        'nomormou': pks.nomorMou,
+        'nomorpks': pks.nomorPks,
         'judul': pks.judul,
         'tanggal_mulai': pks.tanggalMulai.toIso8601String(),
         'tanggal_berakhir': pks.tanggalBerakhir.toIso8601String(),
-        'namaunit': pks.namaunit,
+        'namaunit': pks.namaUnit,
         'tujuan': pks.tujuan,
         'status': pks.status != null ? statusToBackend(pks.status) : null,
         'keterangan': keteranganToBackend(pks.keterangan),
@@ -200,7 +198,10 @@ class PksService {
   Future<void> deletePks(String id) async {
     final response = await http.delete(
       Uri.parse('$baseUrl/deletepks/$id'),
-      headers: await _jsonHeaders(),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
     );
 
     if (response.statusCode != 200) {

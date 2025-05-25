@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
+import 'package:sikermatsu/widgets/table2.dart';
 import 'package:sikermatsu/pages/upload_pks.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/styles/style.dart';
+import 'package:sikermatsu/models/pks.dart';
+import 'package:sikermatsu/services/pks_service.dart';
 
 class PKSPage extends StatefulWidget {
   const PKSPage({super.key});
@@ -15,7 +18,6 @@ class PKSPage extends StatefulWidget {
 class _PKSPage extends State<PKSPage> {
   List<Map<String, dynamic>> allPKS = [];
   bool _isLoading = true;
-  String _searchQuery = '';
 
   @override
   void initState() {
@@ -24,43 +26,72 @@ class _PKSPage extends State<PKSPage> {
   }
 
   Future<void> _loadData() async {
-    await Future.delayed(const Duration(seconds: 1));
-    setState(() {
-      allPKS = [
-        {
-          'Nama Mitra': 'PT Maju Jaya',
-          'Tanggal Mulai': '2024-01-01',
-          'Tanggal Berakhir': '2025-01-01',
-          'Status': 'Aktif',
-        },
-        {
-          'Nama Mitra': 'CV Sukses Makmur',
-          'Tanggal Mulai': '2023-06-15',
-          'Tanggal Berakhir': '2024-06-14',
-          'Status': 'Nonaktif',
-        },
-        {
-          'Nama Mitra': 'CV Maju Wijaya',
-          'Tanggal Mulai': '2023-09-15',
-          'Tanggal Berakhir': '2024-09-15',
-          'Status': 'Nonaktif',
-        },
-      ];
-      _isLoading = false;
-    });
+    setState(() => _isLoading = true);
+    try {
+      List<Pks> listPks = await PksService.getAllPks();
+      setState(() {
+        allPKS =
+            listPks
+                .map(
+                  (pks) => {
+                    'id': pks.id.toString(),
+                    'Nomor MoU': pks.nomorMou,
+                    'Nomor PKS': pks.nomorPks,
+                    'Judul': pks.judul,
+                    'Tanggal Mulai': pks.tanggalMulai,
+                    'Tanggal Berakhir': pks.tanggalBerakhir,
+                    'Nama Unit': pks.namaUnit,
+                    'Tujuan': pks.tujuan,
+                    'Status': pks.status,
+                    'Keterangan': pks.keterangan,
+                  },
+                )
+                .toList();
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal memuat data PKS: $e')));
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
-  List<Map<String, dynamic>> get _filteredData {
-    if (_searchQuery.isEmpty) return allPKS;
-    return allPKS.where((item) {
-      return item['Nama Mitra'].toString().toLowerCase().contains(
-        _searchQuery.toLowerCase(),
-      );
-    }).toList();
-  }
+  // Future<void> _loadData() async {
+  //   await Future.delayed(const Duration(seconds: 1));
+  //   setState(() {
+  //     allPKS = [
+  //       {
+  //         'Nama Mitra': 'PT Maju Jaya',
+  //         'Tanggal Mulai': '2024-01-01',
+  //         'Tanggal Berakhir': '2025-01-01',
+  //         'Status': 'Aktif',
+  //       },
+  //       {
+  //         'Nama Mitra': 'CV Sukses Makmur',
+  //         'Tanggal Mulai': '2023-06-15',
+  //         'Tanggal Berakhir': '2024-06-14',
+  //         'Status': 'Nonaktif',
+  //       },
+  //       {
+  //         'Nama Mitra': 'CV Maju Wijaya',
+  //         'Tanggal Mulai': '2023-09-15',
+  //         'Tanggal Berakhir': '2024-09-15',
+  //         'Status': 'Nonaktif',
+  //       },
+  //     ];
+  //     _isLoading = false;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final List<String> statusOptions =
+        allPKS
+            .map((e) => e['Status']?.toString() ?? '')
+            .toSet()
+            .where((e) => e.isNotEmpty)
+            .toList();
     return ValueListenableBuilder<bool>(
       valueListenable: AppState.isLoggedIn,
       builder: (context, isLoggedIn, _) {
@@ -74,29 +105,6 @@ class _PKSPage extends State<PKSPage> {
                     children: [
                       Column(
                         children: [
-                          // SEARCH BAR
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 1000,
-                                ),
-                                child: TextField(
-                                  decoration: CustomStyle.inputDecoration(
-                                    hintText: 'Cari Nama Mitra',
-                                    prefixIcon: const Icon(Icons.search),
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _searchQuery = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-
                           // TABLE
                           Expanded(
                             child: Center(
@@ -104,21 +112,31 @@ class _PKSPage extends State<PKSPage> {
                                 constraints: const BoxConstraints(
                                   maxWidth: 1000,
                                 ),
-                                child: TableData(
+                                child: CustomPaginatedTable(
                                   title: 'Daftar PKS',
                                   columns: const [
-                                    'Nama Mitra',
+                                    'Nomor MoU',
+                                    'Nomor PKS',
+                                    'Judul',
                                     'Tanggal Mulai',
                                     'Tanggal Berakhir',
                                     'Status',
+                                    'Keterangan',
                                   ],
-                                  data: _filteredData,
-                                  actionLabel: 'Detail',
-                                  onActionPressed: (
+                                  statusOptions: statusOptions,
+                                  initialStatus: null,
+
+                                  data: allPKS,
+
+                                  onDetailPressed: (
                                     BuildContext context,
                                     Map<String, dynamic> rowData,
                                   ) {
-                                    Navigator.pushNamed(context, '/detailpks');
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/detailpks',
+                                      arguments: rowData['id'].toString(),
+                                    );
                                   },
                                 ),
                               ),

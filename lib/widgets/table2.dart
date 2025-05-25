@@ -137,9 +137,9 @@ class _CustomPaginatedTableState extends State<CustomPaginatedTable> {
   }
 
   Widget _buildFilterSection() {
-    if (widget.jenisOptions == null && widget.statusOptions == null) {
-      return const SizedBox.shrink();
-    }
+    // if (widget.jenisOptions == null && widget.statusOptions == null) {
+    //   return const SizedBox.shrink();
+    // }
 
     return Row(
       children: [
@@ -148,6 +148,7 @@ class _CustomPaginatedTableState extends State<CustomPaginatedTable> {
           child: TextField(
             controller: _searchController,
             decoration: CustomStyle.inputDecoration(
+              prefixIcon: const Icon(Icons.search),
               hintText: 'Cari...',
               suffixIcon:
                   _searchKeyword.isNotEmpty

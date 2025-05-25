@@ -4,6 +4,9 @@ import 'package:sikermatsu/widgets/table.dart';
 import 'upload_pkl.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import '../styles/style.dart';
+import 'package:sikermatsu/widgets/table2.dart';
+import 'package:sikermatsu/models/pkl.dart';
+import 'package:sikermatsu/services/pkl_service.dart';
 
 class PKLPage extends StatefulWidget {
   const PKLPage({super.key});
@@ -13,9 +16,8 @@ class PKLPage extends StatefulWidget {
 }
 
 class _PKLPageState extends State<PKLPage> {
-  List<Map<String, dynamic>> _dataPKL = [];
+  List<Map<String, dynamic>> dataPKL = [];
   bool _isLoading = true;
-  String _searchQuery = '';
 
   @override
   void initState() {
@@ -25,41 +27,32 @@ class _PKLPageState extends State<PKLPage> {
 
   Future<void> _loadData() async {
     await Future.delayed(const Duration(seconds: 1));
-    setState(() {
-      _dataPKL = [
-        {
-          'NISN': '1234567890',
-          'Nama Siswa': 'Andi',
-          'Tanggal Mulai': '2025-07-01',
-          'Tanggal Berakhir': '2025-09-30',
-          'Status': 'Disetujui',
-        },
-        {
-          'NISN': '9876543210',
-          'Nama Siswa': 'Budi',
-          'Tanggal Mulai': '2025-08-01',
-          'Tanggal Berakhir': '2025-10-31',
-          'Status': 'Diproses',
-        },
-        {
-          'NISN': '1122334455',
-          'Nama Siswa': 'Dina',
-          'Tanggal Mulai': '2025-09-01',
-          'Tanggal Berakhir': '2025-11-30',
-          'Status': 'Ditolak',
-        },
-      ];
-      _isLoading = false;
-    });
-  }
+    setState(() => _isLoading = true);
 
-  List<Map<String, dynamic>> get _filteredData {
-    return _dataPKL.where((item) {
-      final matchesSearch =
-          _searchQuery.isEmpty ||
-          item['Nama Siswa'].toLowerCase().contains(_searchQuery.toLowerCase());
-      return matchesSearch;
-    }).toList();
+    try {
+      List<Pkl> listPKL = await PklService.getAllPkl();
+      setState(() {
+        dataPKL =
+            listPKL
+                .map(
+                  (pkl) => {
+                    'id': pkl.id.toString(),
+                    'NISN': pkl.nisn,
+                    'Nama Siswa': pkl.nama,
+                    'Nama Sekolah': pkl.sekolah,
+                    'Tanggal Mulai': pkl.tanggalMulai,
+                    'Tanggal Berakhir': pkl.tanggalBerakhir,
+                  },
+                )
+                .toList();
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal memuat data PKL: $e')));
+    } finally {
+      setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -77,29 +70,6 @@ class _PKLPageState extends State<PKLPage> {
                     children: [
                       Column(
                         children: [
-                          // SEARCH BAR
-                          Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Center(
-                              child: ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  maxWidth: 1000,
-                                ),
-                                child: TextField(
-                                  decoration: CustomStyle.inputDecoration(
-                                    hintText: 'Cari Nama Siswa',
-                                    prefixIcon: const Icon(Icons.search),
-                                  ),
-                                  onChanged: (value) {
-                                    setState(() {
-                                      _searchQuery = value;
-                                    });
-                                  },
-                                ),
-                              ),
-                            ),
-                          ),
-
                           // TABLE
                           Expanded(
                             child: Center(
@@ -107,22 +77,25 @@ class _PKLPageState extends State<PKLPage> {
                                 constraints: const BoxConstraints(
                                   maxWidth: 1000,
                                 ),
-                                child: TableData(
+                                child: CustomPaginatedTable(
                                   title: 'Daftar Pengajuan PKL',
                                   columns: const [
                                     'NISN',
                                     'Nama Siswa',
+                                    'Nama Sekolah',
                                     'Tanggal Mulai',
                                     'Tanggal Berakhir',
-                                    'Status',
                                   ],
-                                  data: _filteredData,
-                                  actionLabel: 'Detail',
-                                  onActionPressed: (
+                                  data: dataPKL,
+                                  onDetailPressed: (
                                     BuildContext context,
                                     Map<String, dynamic> rowData,
                                   ) {
-                                    Navigator.pushNamed(context, '/detailpkl');
+                                    Navigator.pushNamed(
+                                      context,
+                                      '/detailpkl',
+                                      arguments: rowData['id'].toString(),
+                                    );
                                   },
                                 ),
                               ),

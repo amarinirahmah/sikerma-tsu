@@ -3,7 +3,8 @@ enum StatusMou { aktif, nonaktif }
 enum KeteranganMou { diajukan, disetujui, dibatalkan }
 
 class Mou {
-  final String nomormou;
+  final int? id;
+  final String nomorMou;
   final String nama;
   final String judul;
   final DateTime tanggalMulai;
@@ -14,7 +15,8 @@ class Mou {
   final KeteranganMou keterangan; // "diajukan", "disetujui", "dibatalkan"
 
   Mou({
-    required this.nomormou,
+    this.id,
+    required this.nomorMou,
     required this.nama,
     required this.judul,
     required this.tanggalMulai,
@@ -27,7 +29,8 @@ class Mou {
 
   factory Mou.fromJson(Map<String, dynamic> json) {
     return Mou(
-      nomormou: json['nomormou'],
+      id: json['id'],
+      nomorMou: json['nomormou'],
       nama: json['nama'],
       judul: json['judul'],
       tanggalMulai: DateTime.parse(json['tanggal_mulai']),
@@ -41,7 +44,8 @@ class Mou {
 
   Map<String, dynamic> toJson() {
     return {
-      'nomormou': nomormou,
+      'id': id,
+      'nomormou': nomorMou,
       'nama': nama,
       'judul': judul,
       'tanggal_mulai': tanggalMulai.toIso8601String(),
