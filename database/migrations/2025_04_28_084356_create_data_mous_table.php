@@ -14,12 +14,15 @@ return new class extends Migration
         Schema::create('data_mous', function (Blueprint $table) {
             $table->id();
             $table->string('nomormou');
+            $table->string('nomormou2');
             $table->string('nama');
             $table->string('judul');
             $table->date('tanggal_mulai');
             $table->date('tanggal_berakhir');
             $table->string('file_mou')->nullable();
-            $table->string('tujuan');
+            $table->string('ruanglingkup');
+            $table->json('pihak1')->nullable();
+            $table->json('pihak2')->nullable();
             $table->enum('status', ['Aktif', 'Tidak Aktif'])->default('Tidak Aktif');
             $table->enum('keterangan',['Diajukan','Disetujui','Dibatalkan'])->default('Diajukan');
             $table->timestamps();

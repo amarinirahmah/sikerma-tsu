@@ -16,4 +16,9 @@ class DataMou extends Model
     {
         return $this->belongsToMany(DataPks::class, 'mou_pks', 'mou_id', 'pks_id');
     }
+
+    public function pihak()
+    {
+        return $this->hasMany(pihak::class);
+    }
 }

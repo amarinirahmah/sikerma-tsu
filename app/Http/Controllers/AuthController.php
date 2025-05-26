@@ -31,7 +31,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Akun berhasil dibuat',
-            'access_token' => $token,
+            'token' => $token,
             'token_type' => 'Bearer',
             'user' => $user
         ]);
@@ -65,7 +65,7 @@ class AuthController extends Controller
         ]);
 
         return response()->json([
-            'message' => 'Akun berhasil dibuat oleh superadmin',
+            'message' => 'Akun berhasil dibuat oleh Admin',
             'user' => $user
         ]);
     }
@@ -81,7 +81,7 @@ class AuthController extends Controller
             'name' => 'sometimes|required',
             'email' => 'sometimes|required|email|unique:user,email,' . $id,
             'password' => 'sometimes|required',
-            'role' => 'sometimes|required|in:superadmin,admin,user,userpkl',
+            'role' => 'sometimes|required|in:admin,user,userpkl',
         ]);
 
         $user = User::find($id);
@@ -141,7 +141,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login berhasil',
-            'access_token' => $token,
+            'token' => $token,
             'token_type' => 'Bearer',
             'user' => $user,
             'role' => $user->role,

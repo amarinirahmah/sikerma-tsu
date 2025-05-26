@@ -14,4 +14,9 @@ class User extends Model
 
     protected $fillable = ['name','email','password','role'];
     protected $table = 'user';
+
+    // public function pkl()
+    // {
+    //     return $this->hasMany(pkl::class);
+    // }
 }

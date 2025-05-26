@@ -31,12 +31,20 @@ class DataController extends Controller
 
         $request->validate([
             'nomormou' => 'required',
+            'nomormou2' => 'required',
             'nama' => 'required',
             'judul' => 'required',
             'tanggal_mulai' => 'required|date',
             'tanggal_berakhir' => 'required|date',
-            'tujuan' => 'required',
+            'ruanglingkup' => 'required',
             'file_mou' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
+
+            'nama1' => 'required',
+            'jabatan1' => 'required',
+            'alamat1' => 'required',
+            'nama2' => 'required',
+            'jabatan2' => 'required',
+            'alamat2' => 'required',
         ]);
 
         $filePath = null;
@@ -50,13 +58,23 @@ class DataController extends Controller
 
         $data = DataMou::create([
             'nomormou' => $request->nomormou,
+            'nomormou2' => $request->nomormou,
             'nama' => $request->nama,
             'judul' => $request->judul,
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_berakhir' => $request->tanggal_berakhir,
-            'tujuan' => $request->tujuan,
+            'ruanglingkup' => $request->ruanglingkup,
             'file_mou' => $filePath,
-            // 'file_type' => $fileType,
+            'pihak1' => [
+                'nama' => $request->nama1,
+                'jabatan' => $request->jabatan1,
+                'alamat' => $request->alamat1,
+            ],
+            'pihak2' => [
+                'nama' => $request->nama2,
+                'jabatan' => $request->jabatan2,
+                'alamat' => $request->alamat2,
+            ],
         ]);
 
         ActivityLog::create([
@@ -79,13 +97,21 @@ class DataController extends Controller
         }
 
         $request->validate([
+            'nomormou2' => 'sometimes|required',
             'nama' => 'sometimes|required',
             'judul' => 'sometimes|required',
             'tanggal_mulai' => 'sometimes|required|date',
             'tanggal_berakhir' => 'sometimes|required|date',
-            'tujuan' => 'sometimes|required',
+            'ruanglingkup' => 'sometimes|required',
             'file_mou' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
             'keterangan' => 'sometimes|required|in:Diajukan,Disetujui,Dibatalkan',
+
+            'nama1' => 'sometimes|required',
+            'jabatan1' => 'sometimes|required',
+            'alamat1' => 'sometimes|required',
+            'nama2' => 'sometimes|required',
+            'jabatan2' => 'sometimes|required',
+            'alamat2' => 'sometimes|required',
         ]);
 
         $mou = DataMou::find($id);
@@ -102,6 +128,27 @@ class DataController extends Controller
         }
 
         $mou->fill($request->except('file_mou'));
+
+        //Update pihak1
+        if ($request->hasAny(['nama1', 'jabatan1', 'alamat1'])) {
+            $pihak1 = $mou->pihak1 ?? [];
+            $mou->pihak1 = [
+                'nama' => $request->nama1 ?? $pihak1['nama'] ?? null,
+                'jabatan' => $request->jabatan1 ?? $pihak1['jabatan'] ?? null,
+                'alamat' => $request->alamat1 ?? $pihak1['alamat'] ?? null,
+            ];
+        }
+
+        //Update pihak2
+        if($request->hasAny(['nama2', 'jabatan2', 'alamat2'])) {
+            $pihak2 = $mou->pihak2 ?? [];
+            $mou->pihak2 = [
+                'nama' => $request->nama2 ?? $pihak2['nama'] ?? null,
+                'jabatan' => $request->jabatan2 ?? $pihak2['jabatan'] ?? null,
+                'alamat' => $request->alamat2 ?? $pihak2['alamat'] ?? null,
+            ];
+        }
+
         $changes = $mou->getDirty();
 
         $mou->save();
@@ -181,7 +228,7 @@ class DataController extends Controller
             'tanggal_berakhir' => 'required|date',
             'namaunit' => 'required',
             'file_pks' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
-            'tujuan' => 'required',
+            'ruanglingkup' => 'required',
         ]);
 
         $mou = DataMou::where('nomormou', $validate['nomormou'])->first();
@@ -207,7 +254,7 @@ class DataController extends Controller
             'tanggal_berakhir' => $validate['tanggal_berakhir'],
             'namaunit' => $validate['namaunit'],
             'file_pks' => $filePath,
-            'tujuan' => $validate['tujuan'],
+            'ruanglingkup' => $validate['ruanglingkup'],
         ]);
         
         ActivityLog::create([
@@ -236,7 +283,7 @@ class DataController extends Controller
             'tanggal_mulai' => 'sometimes|required|date',
             'tanggal_berakhir' => 'sometimes|required|date',
             'namaunit' => 'sometimes|required',
-            'tujuan' => 'sometimes|required',
+            'ruanglingkup' => 'sometimes|required',
             'file_pks' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
             'keterangan' => 'sometimes|required|in:Diajukan,Disetujui,Dibatalkan',
         ]);
@@ -349,6 +396,7 @@ class DataController extends Controller
 
         try{
             $data = pkl::create([
+                'user_id' => $user->id,
                 'nisn' => $request->nisn,
                 'sekolah' => $request->sekolah,
                 'nama' => $request->nama,
@@ -401,6 +449,7 @@ class DataController extends Controller
             'file_pkl' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
             'telpemail' => 'sometimes|required',
             'alamat' => 'sometimes|required',
+            'status' => 'sometimes|required|in:Diproses,Disetujui,Ditolak'
         ]);
 
         $pkl = pkl::find($id);

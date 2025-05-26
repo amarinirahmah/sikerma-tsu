@@ -5,11 +5,13 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\NotifController;
+use App\Http\Controller\PklController;
 use Illuminate\Support\Facades\Auth;
 
 // Route::get('/user', function (Request $request) {
 //     return $request->user();
 // })->middleware('auth:sanctum');
+Route:: get('/users', [AuthController::class, 'getalluser']);
 Route::post('/registeruser', [AuthController::class, 'registeruser']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
@@ -26,6 +28,10 @@ Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
     Route::post('/uploadpkl', [DataController::class, 'uploadpkl']);
     Route::put('/updatepkl/{id}', [DataController::class, 'updatepkl']);
     Route::delete('/deletepkl/{id}', [DataController::class, 'deletepkl']);
+});
+Route::middleware(['auth:sanctum', 'role:userpkl'])->group(function() {
+    Route::get('/pklSaya', [PklController::class, 'pklSaya']);
+    Route::post('/uploadpkl', [DataController::class, 'uploadpkl']);
 });
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/registerbyadmin', [AuthController::class, 'registerbyadmin']);
