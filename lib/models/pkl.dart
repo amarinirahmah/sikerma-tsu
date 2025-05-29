@@ -1,5 +1,7 @@
 enum JenisKelamin { lakilaki, perempuan }
 
+enum StatusPkl { diproses, disetujui, ditolak }
+
 extension JenisKelaminExtension on JenisKelamin {
   String toBackend() {
     switch (this) {
@@ -33,6 +35,7 @@ class Pkl {
   final DateTime tanggalBerakhir;
   final String? filePkl;
   final String telpemail;
+  final StatusPkl? status;
   final String alamat;
   final String? createdAt;
   final String? updatedAt;
@@ -48,6 +51,7 @@ class Pkl {
     this.filePkl,
     required this.telpemail,
     required this.alamat,
+    this.status,
     this.createdAt,
     this.updatedAt,
   });
@@ -66,6 +70,7 @@ class Pkl {
       filePkl: json['file_pkl'] as String?,
       telpemail: json['telpemail'],
       alamat: json['alamat'],
+      status: _statusFromString(json['status']),
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );
@@ -83,5 +88,20 @@ class Pkl {
       'telpemail': telpemail,
       'alamat': alamat,
     };
+  }
+
+    // Helpers
+  static StatusPkl? _statusFromString(String? status) {
+    if (status == null) return null;
+    switch (status.toLowerCase()) {
+      case 'diproses':
+        return StatusPkl.diproses;
+      case 'disetujui':
+        return StatusPkl.disetujui;
+        case 'ditolak':
+        return StatusPkl.ditolak;
+      default:
+        return null;
+    }
   }
 }

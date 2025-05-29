@@ -66,7 +66,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                 onPressed: () => Navigator.pop(context, false),
                 child: const Text('Batal'),
               ),
-              ElevatedButton(
+              TextButton(
                 onPressed: () => Navigator.pop(context, true),
                 child: const Text('Ya, Hapus'),
               ),
@@ -157,6 +157,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                   data: _adminData,
                                   onDeletePressed: (context, rowData) async {
                                     await _delete(context, rowData);
+                                       _loadData();
                                   },
                                   onEditPressed: (
                                     BuildContext context,

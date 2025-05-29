@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/services/mou_service.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
+import 'package:sikermatsu/widgets/table2.dart';
 import 'package:sikermatsu/pages/upload_mou.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/styles/style.dart';
-import 'package:sikermatsu/widgets/table2.dart';
 import 'package:sikermatsu/models/mou.dart';
 import 'package:sikermatsu/services/mou_service.dart';
 
@@ -26,6 +27,7 @@ class _MoUPage extends State<MoUPage> {
   }
 
   Future<void> _loadData() async {
+     await Future.delayed(const Duration(seconds: 1));
     setState(() => _isLoading = true);
     try {
       List<Mou> listMou = await MouService.getAllMou();
@@ -35,13 +37,13 @@ class _MoUPage extends State<MoUPage> {
                 .map(
                   (mou) => {
                     'id': mou.id.toString(),
-                    'Nomor': mou.nomorMou,
+                    'Nomor MoU': mou.nomorMou,
                     'Nama Mitra': mou.nama,
                     'Judul': mou.judul,
                     'Tanggal Mulai': mou.tanggalMulai,
                     'Tanggal Berakhir': mou.tanggalBerakhir,
                     'Status': mou.status,
-                    'Keterangan': mou.keterangan,
+                    'Keterangan': mou.keterangan.name,
                   },
                 )
                 .toList();
@@ -72,118 +74,10 @@ class _MoUPage extends State<MoUPage> {
   //         'Status': 'Nonaktif',
   //       },
   //       {
-  //         'Nama Mitra': 'CV Sukses Makmur',
+  //         'Nama Mitra': 'CV Maju Wijaya',
   //         'Tanggal Mulai': '2023-09-15',
-  //         'Tanggal Berakhir': '2025-09-14',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Sentosa Abadi',
-  //         'Tanggal Mulai': '2023-03-10',
-  //         'Tanggal Berakhir': '2024-03-09',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Global Teknologi',
-  //         'Tanggal Mulai': '2022-12-01',
-  //         'Tanggal Berakhir': '2023-11-30',
+  //         'Tanggal Berakhir': '2024-09-15',
   //         'Status': 'Nonaktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'CV Cahaya Harapan',
-  //         'Tanggal Mulai': '2024-04-05',
-  //         'Tanggal Berakhir': '2025-04-04',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Harmoni Sejahtera',
-  //         'Tanggal Mulai': '2023-09-20',
-  //         'Tanggal Berakhir': '2024-09-19',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Lestari Mandiri',
-  //         'Tanggal Mulai': '2023-05-11',
-  //         'Tanggal Berakhir': '2024-05-10',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'CV Jaya Abadi',
-  //         'Tanggal Mulai': '2022-08-17',
-  //         'Tanggal Berakhir': '2023-08-16',
-  //         'Status': 'Nonaktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Prima Utama',
-  //         'Tanggal Mulai': '2024-02-28',
-  //         'Tanggal Berakhir': '2025-02-27',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'CV Sinar Baru',
-  //         'Tanggal Mulai': '2023-07-23',
-  //         'Tanggal Berakhir': '2024-07-22',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Mega Indah',
-  //         'Tanggal Mulai': '2023-01-15',
-  //         'Tanggal Berakhir': '2024-01-14',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Cahaya Timur',
-  //         'Tanggal Mulai': '2022-11-30',
-  //         'Tanggal Berakhir': '2023-11-29',
-  //         'Status': 'Nonaktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'CV Mandiri Sentosa',
-  //         'Tanggal Mulai': '2023-10-01',
-  //         'Tanggal Berakhir': '2024-09-30',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Berkah Abadi',
-  //         'Tanggal Mulai': '2023-04-18',
-  //         'Tanggal Berakhir': '2024-04-17',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'CV Sukses Bersama',
-  //         'Tanggal Mulai': '2024-03-22',
-  //         'Tanggal Berakhir': '2025-03-21',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Sejahtera Makmur',
-  //         'Tanggal Mulai': '2023-06-01',
-  //         'Tanggal Berakhir': '2024-05-31',
-  //         'Status': 'Nonaktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'CV Prima Jaya',
-  //         'Tanggal Mulai': '2024-05-10',
-  //         'Tanggal Berakhir': '2025-05-09',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Sentosa Gemilang',
-  //         'Tanggal Mulai': '2023-08-25',
-  //         'Tanggal Berakhir': '2024-08-24',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'CV Harapan Baru',
-  //         'Tanggal Mulai': '2023-12-05',
-  //         'Tanggal Berakhir': '2024-12-04',
-  //         'Status': 'Aktif',
-  //       },
-  //       {
-  //         'Nama Mitra': 'PT Mitra Mandiri',
-  //         'Tanggal Mulai': '2024-01-20',
-  //         'Tanggal Berakhir': '2025-01-19',
-  //         'Status': 'Aktif',
   //       },
   //     ];
   //     _isLoading = false;
@@ -211,7 +105,7 @@ class _MoUPage extends State<MoUPage> {
                     children: [
                       Column(
                         children: [
-                          // langsung tampilkan tabel tanpa search
+                          // TABLE
                           Expanded(
                             child: Center(
                               child: ConstrainedBox(
@@ -233,6 +127,7 @@ class _MoUPage extends State<MoUPage> {
                                   initialStatus: null,
 
                                   data: allMou,
+
                                   onDetailPressed: (
                                     BuildContext context,
                                     Map<String, dynamic> rowData,
@@ -243,6 +138,75 @@ class _MoUPage extends State<MoUPage> {
                                       arguments: rowData['id'].toString(),
                                     );
                                   },
+onEditPressed: (isLoggedIn && (AppState.role.value == 'admin' || AppState.role.value == 'user'))
+    ? (BuildContext context, Map<String, dynamic> rowData) {
+      
+        final mou = Mou.fromJson(rowData);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UploadMoUPage(mou: mou),
+          ),
+        ).then((value) {
+          if (value == true) {
+            _loadData();
+          }
+        });
+      }
+    : null,
+
+                                  // onEditPressed: (BuildContext context, Map<String, dynamic> rowData) {
+
+                                  //      Navigator.push(
+                                  //           context,
+                                  //           MaterialPageRoute(
+                                  //             builder: (context) => UploadMoUPage(mou: mou),
+                                  //           ),
+                                  //         ).then((value) {
+                                  //           if (value == true) {
+                                  //             _loadData();
+                                  //           }
+                                  //         });
+                                        
+
+                                  // },
+
+                                   onDeletePressed: (isLoggedIn && (AppState.role.value == 'admin' || AppState.role.value == 'user'))
+    ? (BuildContext context, Map<String, dynamic> rowData) async {
+        final id = rowData['id'].toString();
+
+        final confirm = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Konfirmasi'),
+            content: Text('Hapus PKS dengan ID $id?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Batal'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Hapus'),
+              ),
+            ],
+          ),
+        );
+        if (confirm == true) {
+          try {
+            await MouService.deleteMou(id);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Berhasil menghapus MoU')),
+            );
+            await _loadData();
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Gagal menghapus MoU: $e')),
+            );
+          }
+        }
+      }
+    : null,
                                 ),
                               ),
                             ),

@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
 
 class AuthService {
-  static const baseUrl = "http://192.168.224.238:8000/api";
+  static const baseUrl = "http://192.168.18.248:8000/api";
   static String? token;
   static String? role;
 

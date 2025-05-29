@@ -58,24 +58,24 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
     }
   }
 
-  Future<void> deletePkl() async {
-    try {
-      await PklService().deletePkl(id);
+  // Future<void> deletePkl() async {
+  //   try {
+  //     await PklService().deletePkl(id);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data siswa PKL berhasil dihapus!')),
-        );
-        Navigator.pop(context); // kembali ke halaman sebelumnya
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menghapus data siswa PKL: $e')),
-        );
-      }
-    }
-  }
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         const SnackBar(content: Text('Data siswa PKL berhasil dihapus!')),
+  //       );
+  //       Navigator.pop(context); // kembali ke halaman sebelumnya
+  //     }
+  //   } catch (e) {
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Gagal menghapus data siswa PKL: $e')),
+  //       );
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -132,7 +132,7 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
                                   TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
-                                      deletePkl();
+                                      // deletePkl();
                                     },
                                     child: const Text('Hapus'),
                                   ),

@@ -26,6 +26,7 @@ class _PKSPage extends State<PKSPage> {
   }
 
   Future<void> _loadData() async {
+     await Future.delayed(const Duration(seconds: 1));
     setState(() => _isLoading = true);
     try {
       List<Pks> listPks = await PksService.getAllPks();
@@ -41,9 +42,9 @@ class _PKSPage extends State<PKSPage> {
                     'Tanggal Mulai': pks.tanggalMulai,
                     'Tanggal Berakhir': pks.tanggalBerakhir,
                     'Nama Unit': pks.namaUnit,
-                    'Tujuan': pks.tujuan,
+                    'Ruang Lingkup': pks.ruangLingkup,
                     'Status': pks.status,
-                    'Keterangan': pks.keterangan,
+                    'Keterangan': pks.keterangan.name,
                   },
                 )
                 .toList();
@@ -115,7 +116,6 @@ class _PKSPage extends State<PKSPage> {
                                 child: CustomPaginatedTable(
                                   title: 'Daftar PKS',
                                   columns: const [
-                                    'Nomor MoU',
                                     'Nomor PKS',
                                     'Judul',
                                     'Tanggal Mulai',
@@ -138,6 +138,43 @@ class _PKSPage extends State<PKSPage> {
                                       arguments: rowData['id'].toString(),
                                     );
                                   },
+
+                                   onDeletePressed: (isLoggedIn && (AppState.role.value == 'admin' || AppState.role.value == 'user'))
+    ? (BuildContext context, Map<String, dynamic> rowData) async {
+        final id = rowData['id'].toString();
+
+        final confirm = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Konfirmasi'),
+            content: Text('Hapus PKS dengan ID $id?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Batal'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: const Text('Hapus'),
+              ),
+            ],
+          ),
+        );
+        if (confirm == true) {
+          try {
+            await PksService.deletePks(id);
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Berhasil menghapus MoU')),
+            );
+            await _loadData();
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Gagal menghapus MoU: $e')),
+            );
+          }
+        }
+      }
+    : null,
                                 ),
                               ),
                             ),

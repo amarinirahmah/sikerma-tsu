@@ -114,6 +114,7 @@ class CustomStyle {
   // Elevated Button Style
   static final baseButtonStyle = ElevatedButton.styleFrom(
     foregroundColor: Colors.white,
+     backgroundColor: Colors.teal,
     padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     textStyle: const TextStyle(fontSize: 14),

@@ -20,6 +20,7 @@ import 'pages/home.dart';
 import 'styles/style.dart';
 import 'models/app_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'pages/update_mou.dart';
 
 void main() {
   Future<void> loadLoginStatus() async {
@@ -66,6 +67,7 @@ class MyApp extends StatelessWidget {
         '/dashboard': (context) => const AdminDashboardPage(),
         '/uploadmou': (context) => const UploadMoUPage(),
         '/uploadpks': (context) => const UploadPKSPage(),
+        // '/updatemou': (context) => const UpdateMoUPage(),
         '/progres': (context) => const ProgressPage(),
         '/notifikasi': (context) => const NotificationPage(),
         '/detailprogres': (context) => const DetailProgressPage(),

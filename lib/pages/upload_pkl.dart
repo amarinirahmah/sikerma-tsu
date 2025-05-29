@@ -11,6 +11,8 @@ import 'dart:io';
 import 'package:sikermatsu/services/pkl_service.dart';
 import 'package:sikermatsu/models/pkl.dart';
 import 'package:path/path.dart' as p;
+import 'dart:io' show File;
+import 'package:flutter/foundation.dart'; 
 
 class UploadPKLPage extends StatefulWidget {
   const UploadPKLPage({super.key});
@@ -21,38 +23,19 @@ class UploadPKLPage extends StatefulWidget {
 
 class _UploadPKLPage extends State<UploadPKLPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nisn = TextEditingController();
-  final _namaSekolah = TextEditingController();
-  final _namaSiswa = TextEditingController();
-  final _telpEmail = TextEditingController();
-  final _alamat = TextEditingController();
-  String _jenisKelamin = 'Laki-laki';
-  DateTime? _tanggalMulai;
-  DateTime? _tanggalBerakhir;
+  final nisn = TextEditingController();
+  final sekolah = TextEditingController();
+  final nama = TextEditingController();
+  final telpEmail = TextEditingController();
+  final alamat = TextEditingController();
+  // String gender = 'Laki-laki';
+  JenisKelamin gender = JenisKelamin.lakilaki;
+  DateTime? tanggalMulai;
+  DateTime? tanggalBerakhir;
   String? fileName;
-  File? selectedFile;
-  Pkl? pklArgument;
+   PlatformFile? _pickedPlatformFile;
+    File? selectedFile;
 
-  @override
-  void initState() {
-    super.initState();
-    Future.microtask(() {
-      final args = ModalRoute.of(context)!.settings.arguments;
-      if (args != null && args is Pkl) {
-        setState(() {
-          pklArgument = args;
-          _nisn.text = args.nisn;
-          _namaSiswa.text = args.nama;
-          _namaSekolah.text = args.sekolah;
-          _telpEmail.text = args.telpemail;
-          _alamat.text = args.alamat;
-          _tanggalMulai = args.tanggalMulai;
-          _tanggalBerakhir = args.tanggalBerakhir;
-          fileName = "File lama digunakan";
-        });
-      }
-    });
-  }
 
   void _pickTanggalMulai() async {
     final picked = await showDatePicker(
@@ -63,8 +46,8 @@ class _UploadPKLPage extends State<UploadPKLPage> {
     );
     if (picked != null) {
       setState(() {
-        _tanggalMulai = picked;
-        _tanggalBerakhir = null;
+        tanggalMulai = picked;
+        tanggalBerakhir = null;
       });
     }
   }
@@ -72,71 +55,94 @@ class _UploadPKLPage extends State<UploadPKLPage> {
   void _pickTanggalBerakhir() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _tanggalMulai ?? DateTime.now(),
-      firstDate: _tanggalMulai ?? DateTime.now(),
+      initialDate: tanggalMulai ?? DateTime.now(),
+      firstDate: tanggalMulai ?? DateTime.now(),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
       setState(() {
-        _tanggalBerakhir = picked;
+        tanggalBerakhir = picked;
       });
     }
   }
 
-  void _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null) {
-      setState(() {
-        selectedFile = File(result.files.single.path!);
-        fileName = result.files.single.name;
-      });
-    }
-  }
+void _pickFile() async {
+  final result = await FilePicker.platform.pickFiles(
+    type: FileType.custom,
+    allowedExtensions: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'],
+    allowMultiple: false,
+    withData: true, // wajib supaya dapat bytes di web
+  );
 
-  void _submitForm() async {
+  if (result != null && result.files.isNotEmpty) {
+    final file = result.files.first;
+
+    final fileSizeInKB = (file.bytes?.lengthInBytes ?? 0) ~/ 1024;
+
+    if (fileSizeInKB > 5120) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Ukuran file melebihi 5MB!")),
+      );
+      return;
+    }
+
+    setState(() {
+      fileName = file.name;
+      selectedFile = null; // biar clear, kita simpan PlatformFile di variabel lain saja
+      _pickedPlatformFile = file; 
+    });
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Tidak ada file yang dipilih.")),
+    );
+  }
+}
+
+  Future<void> _submitForm() async {
     if (_formKey.currentState!.validate() &&
-        _tanggalMulai != null &&
-        _tanggalBerakhir != null &&
-        selectedFile != null) {
+        tanggalMulai != null &&
+        tanggalBerakhir != null) {
       final pkl = Pkl(
-        nisn: _nisn.text,
-        nama: _namaSiswa.text,
-        sekolah: _namaSekolah.text,
-        gender: JenisKelaminExtension.fromString(_jenisKelamin)!,
-        telpemail: _telpEmail.text,
-        alamat: _alamat.text,
-        tanggalMulai: _tanggalMulai!,
-        tanggalBerakhir: _tanggalBerakhir!,
+        nisn: nisn.text,
+        nama: nama.text,
+        sekolah: sekolah.text,
+        gender: gender,
+        telpemail: telpEmail.text,
+        alamat: alamat.text,
+        tanggalMulai: tanggalMulai!,
+        tanggalBerakhir: tanggalBerakhir!,
       );
 
-      try {
-        if (pklArgument != null) {
-          await PklService().updatePkl(
-            pklArgument!.id!.toString(),
-            pkl,
-            file: selectedFile,
-          );
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Data siswa PKL berhasil diperbarui!"),
-            ),
-          );
-        } else {
-          await PklService().uploadPkl(pkl, file: selectedFile);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Data siswa PKL berhasil diunggah!")),
-          );
-        }
-        // await PklService().uploadPkl(pkl, file: File(selectedFile!));
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   const SnackBar(content: Text("Data PKL berhasil diunggah!")),
-        // );
+    try {
+        await PklService().uploadPkl(pkl, file: _pickedPlatformFile);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Data siswa berhasil diunggah!")),
+        );
+        await Future.delayed(const Duration(milliseconds: 500));
+Navigator.pop(context);
+        // _formKey.currentState!.reset();
+        // setState(() {
+        //   tanggalMulai = null;
+        //   tanggalBerakhir = null;
+        //   fileName = null;
+        //   _pickedPlatformFile = null;
+        // });
       } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Gagal mengunggah: $e")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Gagal mengunggah: $e")),
+        );
       }
     } else {
+        print("DEBUG: Validasi gagal:");
+  print("NISN: '${nisn.text}'");
+  print("Nama: '${nama.text}'");
+  print("Sekolah: '${sekolah.text}'");
+  print("Gender: '$gender'");
+  print("Telp/Email: '${telpEmail.text}'");
+  print("Alamat: '${alamat.text}'");
+  print("Tanggal Mulai: $tanggalMulai");
+  print("Tanggal Berakhir: $tanggalBerakhir");
+  print("File: $selectedFile");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text("Harap lengkapi semua data!")),
       );
@@ -145,18 +151,18 @@ class _UploadPKLPage extends State<UploadPKLPage> {
 
   // void _submitForm() {
   //   if (_formKey.currentState!.validate() &&
-  //       _tanggalMulai != null &&
-  //       _tanggalBerakhir != null &&
+  //       tanggalMulai != null &&
+  //       tanggalBerakhir != null &&
   //       fileName != null) {
   //     ScaffoldMessenger.of(context).showSnackBar(
   //       const SnackBar(content: Text("Data Siswa berhasil diunggah!")),
   //     );
   //     _formKey.currentState!.reset();
   //     setState(() {
-  //       _tanggalMulai = null;
-  //       _tanggalBerakhir = null;
+  //       tanggalMulai = null;
+  //       tanggalBerakhir = null;
   //       fileName = null;
-  //       _jenisKelamin = 'Laki-laki';
+  //       gender = 'Laki-laki';
   //     });
   //   } else {
   //     ScaffoldMessenger.of(context).showSnackBar(
@@ -184,23 +190,23 @@ class _UploadPKLPage extends State<UploadPKLPage> {
                     title: "Form Pengajuan Siswa PKL",
                     onSubmit: _submitForm,
                     fields: [
-                      buildField("NISN", _nisn),
-                      buildField("Nama Siswa", _namaSiswa),
-                      buildField("Nama Sekolah", _namaSekolah),
+                      buildField("NISN", nisn),
+                      buildField("Nama Siswa", nama),
+                      buildField("Nama Sekolah", sekolah),
                       buildDropdownField("Jenis Kelamin"),
                       buildDateRow(
                         "Tanggal Mulai",
-                        _tanggalMulai,
+                        tanggalMulai,
                         _pickTanggalMulai,
                       ),
                       buildDateRow(
                         "Tanggal Berakhir",
-                        _tanggalBerakhir,
+                        tanggalBerakhir,
                         _pickTanggalBerakhir,
                       ),
                       buildFileRow(),
-                      buildField("No Telepon / Email", _telpEmail),
-                      buildField("Alamat", _alamat, maxLines: 3),
+                      buildField("No Telepon / Email", telpEmail),
+                      buildField("Alamat", alamat, maxLines: 3),
                     ],
                   ),
                 ),
@@ -266,6 +272,7 @@ class _UploadPKLPage extends State<UploadPKLPage> {
             onPressed: _pickFile,
             icon: const Icon(Icons.attach_file),
             label: Text(fileName ?? "Pilih File PKL"),
+              //  label: Text(fileName != null ? fileName! : "Pilih File"),
             style: CustomStyle.outlinedButtonStyle,
           ),
         ),
@@ -279,19 +286,21 @@ class _UploadPKLPage extends State<UploadPKLPage> {
         SizedBox(width: 130, child: Text(label)),
         const SizedBox(width: 16),
         Expanded(
-          child: DropdownButtonFormField<String>(
-            value: _jenisKelamin,
-            items:
-                ['Laki-laki', 'Perempuan']
-                    .map((jk) => DropdownMenuItem(value: jk, child: Text(jk)))
-                    .toList(),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() {
-                  _jenisKelamin = value;
-                });
-              }
-            },
+          child: DropdownButtonFormField<JenisKelamin>(
+            value: gender,
+          items: JenisKelamin.values.map((jk) {
+    return DropdownMenuItem(
+      value: jk,
+      child: Text(jk.toBackend()),
+    );
+  }).toList(),
+  onChanged: (value) {
+    if (value != null) {
+      setState(() {
+        gender = value;
+      });
+    }
+  },
             decoration: const InputDecoration(border: OutlineInputBorder()),
           ),
         ),

@@ -11,7 +11,7 @@ class Pks {
   final DateTime tanggalBerakhir;
   final String? filePks; // Nullable
   final String namaUnit;
-  final String tujuan;
+  final String ruangLingkup;
   final StatusPks? status; // Nullable: "aktif", "nonaktif"
   final KeteranganPks keterangan; // "diajukan", "disetujui", "dibatalkan"
 
@@ -24,7 +24,7 @@ class Pks {
     required this.tanggalBerakhir,
     this.filePks,
     required this.namaUnit,
-    required this.tujuan,
+    required this.ruangLingkup,
     this.status,
     required this.keterangan,
   });
@@ -39,7 +39,7 @@ class Pks {
       tanggalBerakhir: DateTime.parse(json['tanggal_berakhir']),
       filePks: json['file_pks'] as String?,
       namaUnit: json['namaunit'],
-      tujuan: json['tujuan'],
+      ruangLingkup: json['ruanglingkup'],
       status: _statusFromString(json['status']),
       keterangan: _keteranganFromString(json['keterangan']),
     );
@@ -47,6 +47,7 @@ class Pks {
 
   Map<String, dynamic> toJson() {
     return {
+       'id': id,
       'nomormou': nomorMou,
       'nomorpks': nomorPks,
       'judul': judul,
@@ -54,7 +55,7 @@ class Pks {
       'tanggal_berakhir': tanggalBerakhir.toIso8601String(),
       'file_pks': filePks,
       'namaunit': namaUnit,
-      'tujuan': tujuan,
+      'ruanglingkup': ruangLingkup,
       'status': status?.name,
       'keterangan': keterangan.name,
     };
@@ -66,7 +67,7 @@ class Pks {
     switch (status.toLowerCase()) {
       case 'aktif':
         return StatusPks.aktif;
-      case 'nonaktif':
+      case 'tidak aktif':
         return StatusPks.nonaktif;
       default:
         return null;

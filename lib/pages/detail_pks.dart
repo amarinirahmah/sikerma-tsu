@@ -54,23 +54,23 @@ class _DetailPKSPageState extends State<DetailPKSPage> {
     }
   }
 
-  Future<void> deletePks() async {
-    try {
-      await PksService().deletePks(id);
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('PKS berhasil dihapus!')));
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Gagal menghapus PKS: $e')));
-      }
-    }
-  }
+  // Future<void> deletePks() async {
+  //   try {
+  //     await PksService().deletePks(id);
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(
+  //         context,
+  //       ).showSnackBar(const SnackBar(content: Text('PKS berhasil dihapus!')));
+  //       Navigator.pop(context);
+  //     }
+  //   } catch (e) {
+  //     if (mounted) {
+  //       ScaffoldMessenger.of(
+  //         context,
+  //       ).showSnackBar(SnackBar(content: Text('Gagal menghapus PKS: $e')));
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -96,7 +96,7 @@ class _DetailPKSPageState extends State<DetailPKSPage> {
                         'Tanggal Berakhir': pks!.tanggalBerakhir.toString(),
                         'Nama Unit': pks!.namaUnit,
                         'File': pks!.filePks ?? 'Tidak ada file',
-                        'Tujuan': pks!.tujuan,
+                        'Ruang Lingkup': pks!.ruangLingkup,
                         'Keterangan': pks!.keterangan ?? '-',
                         'Status': pks!.status ?? '-',
                       },
@@ -126,7 +126,7 @@ class _DetailPKSPageState extends State<DetailPKSPage> {
                                   TextButton(
                                     onPressed: () {
                                       Navigator.of(context).pop();
-                                      deletePks();
+                                      // deletePks();
                                     },
                                     child: const Text('Hapus'),
                                   ),
