@@ -21,8 +21,8 @@ return new class extends Migration
             $table->date('tanggal_berakhir');
             $table->string('file_mou')->nullable();
             $table->string('ruanglingkup');
-            $table->json('pihak1')->nullable();
-            $table->json('pihak2')->nullable();
+            $table->json('pihak1');
+            $table->json('pihak2');
             $table->enum('status', ['Aktif', 'Tidak Aktif'])->default('Tidak Aktif');
             $table->enum('keterangan',['Diajukan','Disetujui','Dibatalkan'])->default('Diajukan');
             $table->timestamps();

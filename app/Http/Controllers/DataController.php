@@ -8,6 +8,7 @@ use App\Models\DataPks;
 use App\Models\pkl;
 use App\Models\User;
 use App\Models\ActivityLog;
+use App\Models\DetailProgress;
 use Illuminate\Support\Facades\Auth;
 
 class DataController extends Controller
@@ -16,6 +17,15 @@ class DataController extends Controller
     {
         $data = DataMou::all();
         return response()->json($data);
+    }
+
+    public function getmouid($id)
+    {
+        $mou = DataMou::find($id);
+        if (!$mou) {
+            return response()->json(['message' => 'Data MOU tidak ditemukan'], 404);
+        }
+        return response()->json($mou);
     }
 
     public function uploadmou(Request $request)
@@ -58,7 +68,7 @@ class DataController extends Controller
 
         $data = DataMou::create([
             'nomormou' => $request->nomormou,
-            'nomormou2' => $request->nomormou,
+            'nomormou2' => $request->nomormou2,
             'nama' => $request->nama,
             'judul' => $request->judul,
             'tanggal_mulai' => $request->tanggal_mulai,
@@ -77,6 +87,12 @@ class DataController extends Controller
             ],
         ]);
 
+        $progress = DetailProgress::create([
+            'data_mou_id' => $data->id,
+            'tanggal' => now()->toDateString(),
+            'aktivitas' => 'Draft MOU dikirim ke mitra',
+        ]);
+
         ActivityLog::create([
             'user_id' => $user->id,
             'action' => 'Upload MOU',
@@ -86,6 +102,7 @@ class DataController extends Controller
         return response()->json([
             'message' => 'Berhasil upload data MOU!',
             'data' => $data,
+            'progress' => $progress,
         ]);
     }
 
@@ -161,17 +178,24 @@ class DataController extends Controller
 
         $changedFields = implode(', ', array_keys($changes));
 
-        ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'Update MOU',
-            'description' => 'Memperbarui data MOU. Perubahan: ' . implode(', ', $detailChanges),
+        $progress = DetailProgress::create([
+            'data_mou_id' => $data->id,
+            'tanggal' => now()->toDateString(),
+            'aktivitas' => 'Revisi dokumen diterima dengan perubahan: ' . implode(', ', $detailChanges),
         ]);
+
+        // ActivityLog::create([
+        //     'user_id' => $user->id,
+        //     'action' => 'Update MOU',
+        //     'description' => 'Memperbarui data MOU. Perubahan: ' . implode(', ', $detailChanges),
+        // ]);
 
         $mou->fill($request->except('file_mou'))->save();
 
         return response()->json([
             'message' => 'Data MOU berhasil diupdate',
-            'data' => $mou
+            'progress' => $progress,
+            'data' => $mou,
         ]);
     }
 
@@ -211,6 +235,15 @@ class DataController extends Controller
     {
         $data = DataPks::all();
         return response()->json($data);
+    }
+
+    public function getpksid($id)
+    {
+        $pks = DataPks::find($id);
+        if (!$pks) {
+            return response()->json(['message' => 'Data PKS tidak ditemukan'], 404);
+        }
+        return response()->json($pks);
     }
 
     public function uploadpks(Request $request)
@@ -314,11 +347,11 @@ class DataController extends Controller
 
         $changedFields = implode(', ', array_keys($changes));
 
-        ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'Update PKS',
-            'description' => 'Memperbarui data PKS. Perubahan: ' . implode(', ', $detailChanges),
-        ]);
+        // ActivityLog::create([
+        //     'user_id' => $user->id,
+        //     'action' => 'Update PKS',
+        //     'description' => 'Memperbarui data PKS. Perubahan: ' . implode(', ', $detailChanges),
+        // ]);
 
         $pks->fill($request->except('file_pks'))->save();
 
@@ -366,11 +399,29 @@ class DataController extends Controller
         return response()->json($data);
     }
 
+    public function getpklid($id)
+    {
+        $pkl = pkl::find($id);
+        if (!$pkl) {
+            return response()->json(['message' => 'Data PKL tidak ditemukan'], 404);
+        }
+        return response()->json('$pkl');
+    }
+
     public function uploadpkl(Request $request)
     {
         $user = $request->user();
         if (!$user) {
             return response()->json(['message' => 'Unauthorized'], 401);
+        }
+
+        if ($user->role === 'userpkl') {
+            $jumlahPkl = pkl::where('user_id', $user->id)->count();
+            if ($jumlahPkl >= 3) {
+                return response()->json([
+                    'message' => 'Anda hanya bisa mengajukan PKL maksimal 3 NISN.'
+                ], 403);
+            }
         }
 
         $request->validate([
@@ -478,11 +529,11 @@ class DataController extends Controller
 
         $changedFields = implode(', ', array_keys($changes));
 
-        ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'Update PKL',
-            'description' => 'Memperbarui data PKL. Perubahan: ' . implode(', ', $detailChanges),
-        ]);
+        // ActivityLog::create([
+        //     'user_id' => $user->id,
+        //     'action' => 'Update PKL',
+        //     'description' => 'Memperbarui data PKL. Perubahan: ' . implode(', ', $detailChanges),
+        // ]);
 
         $pkl->fill($request->except('file_pkl'))->save();
 

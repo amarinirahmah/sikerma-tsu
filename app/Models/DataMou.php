@@ -9,7 +9,11 @@ class DataMou extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nomormou', 'nama', 'judul', 'tanggal_mulai', 'tanggal_berakhir', 'file_mou', 'tujuan','status','keterangan'];
+    protected $fillable = ['nomormou', 'nomormou2', 'nama', 'judul', 'tanggal_mulai', 'tanggal_berakhir', 'file_mou', 'ruanglingkup','status','keterangan','pihak1','pihak2'];
+    protected $casts = [
+        'pihak1' => 'array',
+        'pihak2' => 'array',
+    ];
     protected $table = 'data_mous';
 
     public function pks()
@@ -20,5 +24,10 @@ class DataMou extends Model
     public function pihak()
     {
         return $this->hasMany(pihak::class);
+    }
+
+    public function progress()
+    {
+        return $this->hasMany(DetailProgress::class, 'data_mou_id');
     }
 }
