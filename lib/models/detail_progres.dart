@@ -15,11 +15,11 @@ class DetailProgress {
 
   factory DetailProgress.fromJson(Map<String, dynamic> json) {
     return DetailProgress(
-      id: json['id'],
-      tanggal: json['tanggal'],
-      proses: json['proses'],
-      aktivitas: json['aktivitas'],
-      dataMouId: json['data_mou_id'],
+      id: json['id'] ?? 0,
+      tanggal: json['tanggal'] as String? ?? '',
+      proses: json['proses'] as String? ?? '',
+      aktivitas: json['aktivitas'] as String? ?? '',
+      dataMouId: json['data_mou_id'] ?? 0,
     );
   }
 

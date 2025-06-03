@@ -100,7 +100,8 @@ class _ProgressPageState extends State<ProgressPage> {
       filteredData =
           allData.where((data) {
             final statusMatch =
-                selectedStatus == 'Semua' || data['Status'] == selectedStatus;
+                selectedStatus == 'Semua' ||
+                data['Status MoU'] == selectedStatus;
             final nameMatch = data['Nama Mitra']
                 .toString()
                 .toLowerCase()
@@ -226,140 +227,155 @@ class _ProgressPageState extends State<ProgressPage> {
                                   const SizedBox(height: 16),
                                   SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
-                                    child: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        // minWidth:
-                                        //     MediaQuery.of(context).size.width *
-                                        //     0.8, // minimal 80% layar
-                                        maxWidth: 1000,
-                                      ),
-                                      child: SizedBox(
-                                        width: double.infinity,
-                                        child: DataTable(
-                                          headingRowColor:
-                                              MaterialStateProperty.all<Color>(
-                                                Colors.grey[300]!,
-                                              ),
-                                          headingTextStyle: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          border: TableBorder.all(
-                                            color: Colors.grey,
-                                          ),
-                                          columns: [
-                                            DataColumn(
-                                              label: Text('Nomor MoU'),
-                                            ),
-                                            DataColumn(
-                                              label: Text('Nomor PKS'),
-                                            ),
-                                            DataColumn(
-                                              label: Text('Nama Mitra'),
-                                            ),
-                                            DataColumn(
-                                              label: Text('Tanggal Mulai MoU'),
-                                            ),
-                                            DataColumn(
-                                              label: Text('Status MoU'),
-                                            ),
-                                            DataColumn(
-                                              label: Text('Tanggal Mulai PKS'),
-                                            ),
-                                            DataColumn(
-                                              label: Text('Status PKS'),
-                                            ),
-                                            DataColumn(label: Text('Aksi')),
-                                          ],
-                                          rows:
-                                              displayedRows.map((data) {
-                                                return DataRow(
-                                                  cells: [
-                                                    DataCell(
-                                                      Text(
-                                                        data['Nomor MoU'] ?? '',
-                                                      ),
-                                                    ),
-                                                    DataCell(
-                                                      Text(
-                                                        data['Nomor PKS'] ?? '',
-                                                      ),
-                                                    ),
-                                                    DataCell(
-                                                      Text(
-                                                        data['Nama Mitra'] ??
-                                                            '',
-                                                      ),
-                                                    ),
-                                                    DataCell(
-                                                      Text(
-                                                        data['Tanggal Mulai MoU'] ??
-                                                            '',
-                                                      ),
-                                                    ),
-                                                    DataCell(
-                                                      Text(
-                                                        data['Status MoU'] ??
-                                                            '',
-                                                      ),
-                                                    ),
-                                                    DataCell(
-                                                      Text(
-                                                        data['Tanggal Mulai PKS'] ??
-                                                            '',
-                                                      ),
-                                                    ),
-                                                    DataCell(
-                                                      Text(
-                                                        data['Status PKS'] ??
-                                                            '',
-                                                      ),
-                                                    ),
-                                                    DataCell(
-                                                      Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          IconButton(
-                                                            icon: const Icon(
-                                                              Icons.info,
-                                                              color:
-                                                                  Colors.teal,
-                                                            ),
-                                                            tooltip: 'Detail',
-                                                            onPressed: () {
-                                                              final int? mouId =
-                                                                  data['mouId'];
 
-                                                              if (mouId !=
-                                                                  null) {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder:
-                                                                        (
-                                                                          context,
-                                                                        ) => DetailProgressPage(
-                                                                          mouId:
-                                                                              mouId,
-                                                                        ),
-                                                                  ),
-                                                                ).then((value) {
-                                                                  if (value ==
-                                                                      true) {
-                                                                    _loadData();
-                                                                  }
-                                                                });
-                                                              }
-                                                            },
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                );
-                                              }).toList(),
-                                        ),
+                                    child: DataTable(
+                                      headingRowColor:
+                                          MaterialStateProperty.all<Color>(
+                                            Colors.grey[300]!,
+                                          ),
+                                      headingTextStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
                                       ),
+                                      border: TableBorder.all(
+                                        color: Colors.grey,
+                                      ),
+                                      columns: [
+                                        DataColumn(
+                                          label: Text(
+                                            'Nomor MoU',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Nomor PKS',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Nama Mitra',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Tanggal Mulai MoU',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Status MoU',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Tanggal Mulai PKS',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Status PKS',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Aksi',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                      ],
+                                      rows:
+                                          displayedRows.map((data) {
+                                            return DataRow(
+                                              cells: [
+                                                DataCell(
+                                                  Text(data['Nomor MoU'] ?? ''),
+                                                ),
+                                                DataCell(
+                                                  Text(data['Nomor PKS'] ?? ''),
+                                                ),
+                                                DataCell(
+                                                  Text(
+                                                    data['Nama Mitra'] ?? '',
+                                                  ),
+                                                ),
+                                                DataCell(
+                                                  Text(
+                                                    data['Tanggal Mulai MoU'] ??
+                                                        '',
+                                                  ),
+                                                ),
+                                                DataCell(
+                                                  Text(
+                                                    data['Status MoU'] ?? '',
+                                                  ),
+                                                ),
+                                                DataCell(
+                                                  Text(
+                                                    data['Tanggal Mulai PKS'] ??
+                                                        '',
+                                                  ),
+                                                ),
+                                                DataCell(
+                                                  Text(
+                                                    data['Status PKS'] ?? '',
+                                                  ),
+                                                ),
+                                                DataCell(
+                                                  Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      IconButton(
+                                                        icon: const Icon(
+                                                          Icons.info,
+                                                          color: Colors.teal,
+                                                        ),
+                                                        tooltip: 'Detail',
+                                                        onPressed: () {
+                                                          final int? mouId =
+                                                              data['mouId'];
+
+                                                          if (mouId != null) {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (
+                                                                      context,
+                                                                    ) => DetailProgressPage(
+                                                                      mouId:
+                                                                          mouId,
+                                                                    ),
+                                                              ),
+                                                            ).then((value) {
+                                                              if (value ==
+                                                                  true) {
+                                                                _loadData();
+                                                              }
+                                                            });
+                                                          }
+                                                        },
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            );
+                                          }).toList(),
                                     ),
                                   ),
                                   const SizedBox(height: 16),

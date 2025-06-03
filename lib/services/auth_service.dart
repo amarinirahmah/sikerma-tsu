@@ -5,7 +5,7 @@ import '../models/user.dart';
 import '../models/app_state.dart';
 
 class AuthService {
-  static const baseUrl = "http://192.168.18.248:8000/api";
+  static const baseUrl = "http://192.168.100.6:8000/api";
   static String? token;
   static String? role;
 

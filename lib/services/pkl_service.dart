@@ -9,7 +9,7 @@ import 'package:file_picker/file_picker.dart';
 
 class PklService {
   // static const String baseUrl = 'http://192.168.18.248:8000/api';
-  static const String baseUrl = "http://192.168.18.248:8000/api";
+  static const String baseUrl = "http://192.168.100.6:8000/api";
   static String? token;
   static String? role;
 
@@ -280,23 +280,23 @@ class PklService {
     }
   }
 
-  static Future<void> updateStatus({
-    required int id,
-    required StatusPkl status,
-    required String token,
-  }) async {
-    final url = Uri.parse('$baseUrl/pkl/$id');
-    final response = await http.put(
-      url,
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({'status': status.toBackend()}),
-    );
+  // static Future<void> updateStatus({
+  //   required int id,
+  //   required StatusPkl status,
+  //   required String token,
+  // }) async {
+  //   final url = Uri.parse('$baseUrl/pkl/$id');
+  //   final response = await http.put(
+  //     url,
+  //     headers: {
+  //       'Authorization': 'Bearer $token',
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: jsonEncode({'status': status.toBackend()}),
+  //   );
 
-    if (response.statusCode != 200) {
-      throw Exception('Failed to update status');
-    }
-  }
+  //   if (response.statusCode != 200) {
+  //     throw Exception('Failed to update status');
+  //   }
+  // }
 }

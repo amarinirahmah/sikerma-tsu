@@ -165,4 +165,17 @@ class Pkl {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
+
+  String get statusText {
+    switch (status) {
+      case StatusPkl.diproses:
+        return 'Diproses';
+      case StatusPkl.disetujui:
+        return 'Disetujui';
+      case StatusPkl.ditolak:
+        return 'Ditolak';
+      default:
+        return '-';
+    }
+  }
 }

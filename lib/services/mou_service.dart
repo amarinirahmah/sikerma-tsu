@@ -9,7 +9,7 @@ import 'package:file_picker/file_picker.dart';
 
 class MouService {
   // static const String baseUrl = 'http://192.168.18.248:8000/api';
-  static const baseUrl = "http://192.168.18.248:8000/api";
+  static const baseUrl = "http://192.168.100.6:8000/api";
   static String? token;
   static String? role;
   static File? selectedFile;

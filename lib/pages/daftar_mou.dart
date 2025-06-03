@@ -432,20 +432,22 @@ class _MoUPageState extends State<MoUPage> {
                                                 DataCell(
                                                   Text(
                                                     mou.tanggalMulai!
-                                                        .toString(),
+                                                        .toIso8601String()
+                                                        .split('T')
+                                                        .first,
                                                   ),
                                                 ),
                                                 DataCell(
                                                   Text(
                                                     mou.tanggalBerakhir
-                                                        .toString(),
+                                                        .toIso8601String()
+                                                        .split('T')
+                                                        .first,
                                                   ),
                                                 ),
+                                                DataCell(Text(mou.statusText)),
                                                 DataCell(
-                                                  Text(mou.status.toString()),
-                                                ),
-                                                DataCell(
-                                                  Text(mou.keterangan.name),
+                                                  Text(mou.keteranganText),
                                                 ),
 
                                                 DataCell(

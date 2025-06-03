@@ -88,7 +88,7 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
 
     try {
       await DetailProgressService.addProgress(
-        mouId: widget.mouId,
+        id: widget.mouId,
         tanggal: DateFormat('yyyy-MM-dd').format(tanggal!),
         aktivitas: aktivitas.text,
         proses: selectedProses!,

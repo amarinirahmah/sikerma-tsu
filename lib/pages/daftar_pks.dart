@@ -194,20 +194,22 @@ class _PKSPageState extends State<PKSPage> {
                                                 DataCell(
                                                   Text(
                                                     pks.tanggalMulai!
-                                                        .toString(),
+                                                        .toIso8601String()
+                                                        .split('T')
+                                                        .first,
                                                   ),
                                                 ),
                                                 DataCell(
                                                   Text(
                                                     pks.tanggalBerakhir
-                                                        .toString(),
+                                                        .toIso8601String()
+                                                        .split('T')
+                                                        .first,
                                                   ),
                                                 ),
+                                                DataCell(Text(pks.statusText)),
                                                 DataCell(
-                                                  Text(pks.status.toString()),
-                                                ),
-                                                DataCell(
-                                                  Text(pks.keterangan.name),
+                                                  Text(pks.keteranganText),
                                                 ),
 
                                                 DataCell(

@@ -5,7 +5,7 @@ import '../services/auth_service.dart'; // untuk token auth
 
 class NotifService {
   // static const String baseUrl = 'http://192.168.18.248:8000/api';
-  static const String baseUrl = "http://192.168.18.248:8000/api";
+  static const String baseUrl = "http://192.168.100.6:8000/api";
 
   Future<List<Notifikasi>> getAllNotif({String? type, String? tanggal}) async {
     final token = await AuthService.getToken();

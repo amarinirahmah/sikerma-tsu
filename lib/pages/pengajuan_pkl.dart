@@ -195,18 +195,20 @@ class _PKLPageState extends State<PKLPage> {
                                                 DataCell(
                                                   Text(
                                                     pkl.tanggalMulai!
-                                                        .toString(),
+                                                        .toIso8601String()
+                                                        .split('T')
+                                                        .first,
                                                   ),
                                                 ),
                                                 DataCell(
                                                   Text(
                                                     pkl.tanggalBerakhir
-                                                        .toString(),
+                                                        .toIso8601String()
+                                                        .split('T')
+                                                        .first,
                                                   ),
                                                 ),
-                                                DataCell(
-                                                  Text(pkl.status.toString()),
-                                                ),
+                                                DataCell(Text(pkl.statusText)),
 
                                                 DataCell(
                                                   Row(
