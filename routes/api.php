@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DataController;
 use App\Http\Controllers\NotifController;
 use App\Http\Controller\PklController;
+use App\Http\Controller\FileController;
 use Illuminate\Support\Facades\Auth;
 
 // Route::get('/user', function (Request $request) {
@@ -18,6 +19,7 @@ Route::get('/getmou', [DataController::class, 'getmou']);
 Route::get('/getpks', [DataController::class, 'getpks']);
 Route::get('/getmouid/{id}', [DataController::class, 'getmouid']);
 Route::get('/getpksid/{id}', [DataController::class, 'getpksid']);
+Route::middleware('auth:sanctum')->get('/download/{filename}', [FileController::class, 'download']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
     Route::get('/getmou', [DataController::class, 'getmou']);
@@ -25,21 +27,23 @@ Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
     Route::get('/getpkl', [DataController::class, 'getpkl']);
     Route::get('/getmouid/{id}', [DataController::class, 'getmouid']);
     Route::get('/getpksid/{id}', [DataController::class, 'getpksid']);
-    Route::post('/uploadmou', [DataController::class, 'uploadmou']);
+    Route::post('/uploadmou', [DataController::class, 'uploadmou']); 
     Route::post('/uploadpks', [DataController::class, 'uploadpks']);
     Route::put('/updatemou/{id}', [DataController::class, 'updatemou']);
     Route::put('/updatepks/{id}', [DataController::class, 'updatepks']);
+    Route::patch('ketupdate/{id}', [DataController::class, 'updatepks']);
     Route::delete('/deletemou/{id}', [DataController::class, 'deletemou']);
     Route::delete('/deletepks/{id}', [DataController::class, 'deletepks']);
     Route::post('/uploadpkl', [DataController::class, 'uploadpkl']);
     Route::put('/updatepkl/{id}', [DataController::class, 'updatepkl']);
+    Route::patch('statupdate/{id{', [DataController::class, 'updatepkl']);
     Route::delete('/deletepkl/{id}', [DataController::class, 'deletepkl']);
     Route::get('/getpklid/{id}', [DataController::class, 'getpklid']);
 });
 Route::middleware(['auth:sanctum', 'role:userpkl'])->group(function() {
     Route::get('/pklSaya', [PklController::class, 'pklSaya']);
-    Route::post('/uploadpkl', [DataController::class, 'uploadpkl']);
-    Route::get('/getpklid/{id}', [DataController::class, 'getpklid']);
+    Route::post('/useruploadpkl', [DataController::class, 'uploadpkl']);
+    //Route::get('/getpklid/{id}', [DataController::class, 'getpklid']);
 });
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::post('/registerbyadmin', [AuthController::class, 'registerbyadmin']);

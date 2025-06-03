@@ -179,7 +179,7 @@ class DataController extends Controller
         $changedFields = implode(', ', array_keys($changes));
 
         $progress = DetailProgress::create([
-            'data_mou_id' => $data->id,
+            'data_mou_id' => $mou->id,
             'tanggal' => now()->toDateString(),
             'aktivitas' => 'Revisi dokumen diterima dengan perubahan: ' . implode(', ', $detailChanges),
         ]);
@@ -405,7 +405,7 @@ class DataController extends Controller
         if (!$pkl) {
             return response()->json(['message' => 'Data PKL tidak ditemukan'], 404);
         }
-        return response()->json('$pkl');
+        return response()->json($pkl);
     }
 
     public function uploadpkl(Request $request)
