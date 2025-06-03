@@ -7,6 +7,7 @@ use App\Http\Controllers\DataController;
 use App\Http\Controllers\NotifController;
 use App\Http\Controller\PklController;
 use App\Http\Controller\FileController;
+use App\Http\Controller\ProgressController;
 use Illuminate\Support\Facades\Auth;
 
 // Route::get('/user', function (Request $request) {
@@ -36,9 +37,10 @@ Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
     Route::delete('/deletepks/{id}', [DataController::class, 'deletepks']);
     Route::post('/uploadpkl', [DataController::class, 'uploadpkl']);
     Route::put('/updatepkl/{id}', [DataController::class, 'updatepkl']);
-    Route::patch('statupdate/{id{', [DataController::class, 'updatepkl']);
+    Route::patch('statupdate/{id}', [DataController::class, 'updatepkl']);
     Route::delete('/deletepkl/{id}', [DataController::class, 'deletepkl']);
     Route::get('/getpklid/{id}', [DataController::class, 'getpklid']);
+    Route::post('addprogress/{id}', [ProgressController::class, 'addProgress']);
 });
 Route::middleware(['auth:sanctum', 'role:userpkl'])->group(function() {
     Route::get('/pklSaya', [PklController::class, 'pklSaya']);
