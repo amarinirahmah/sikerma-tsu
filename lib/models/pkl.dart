@@ -1,5 +1,7 @@
 enum JenisKelamin { lakilaki, perempuan }
 
+enum StatusPkl { diproses, disetujui, ditolak }
+
 extension JenisKelaminExtension on JenisKelamin {
   String toBackend() {
     switch (this) {
@@ -23,6 +25,33 @@ extension JenisKelaminExtension on JenisKelamin {
   }
 }
 
+extension StatusPklExtension on StatusPkl {
+  String toBackend() {
+    switch (this) {
+      case StatusPkl.diproses:
+        return 'Diproses';
+      case StatusPkl.disetujui:
+        return 'Disetujui';
+      case StatusPkl.ditolak:
+        return 'Ditolak';
+    }
+  }
+
+  static StatusPkl? fromString(String? value) {
+    if (value == null) return null;
+    switch (value.toLowerCase()) {
+      case 'diproses':
+        return StatusPkl.diproses;
+      case 'disetujui':
+        return StatusPkl.disetujui;
+      case 'ditolak':
+        return StatusPkl.ditolak;
+      default:
+        return null;
+    }
+  }
+}
+
 class Pkl {
   final int? id;
   final String nisn;
@@ -32,7 +61,8 @@ class Pkl {
   final DateTime tanggalMulai;
   final DateTime tanggalBerakhir;
   final String? filePkl;
-  final String telpemail;
+  final String telpEmail;
+  final StatusPkl? status;
   final String alamat;
   final String? createdAt;
   final String? updatedAt;
@@ -46,8 +76,9 @@ class Pkl {
     required this.tanggalMulai,
     required this.tanggalBerakhir,
     this.filePkl,
-    required this.telpemail,
+    required this.telpEmail,
     required this.alamat,
+    this.status,
     this.createdAt,
     this.updatedAt,
   });
@@ -64,8 +95,10 @@ class Pkl {
       tanggalMulai: DateTime.parse(json['tanggal_mulai']),
       tanggalBerakhir: DateTime.parse(json['tanggal_berakhir']),
       filePkl: json['file_pkl'] as String?,
-      telpemail: json['telpemail'],
+      telpEmail: json['telpemail'],
       alamat: json['alamat'],
+      status: StatusPklExtension.fromString(json['status']),
+      // status: _statusFromString(json['status']),
       createdAt: json['created_at'],
       updatedAt: json['updated_at'],
     );
@@ -73,6 +106,7 @@ class Pkl {
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
       'nisn': nisn,
       'sekolah': sekolah,
       'nama': nama,
@@ -80,8 +114,55 @@ class Pkl {
       'tanggal_mulai': tanggalMulai.toIso8601String(),
       'tanggal_berakhir': tanggalBerakhir.toIso8601String(),
       'file_pkl': filePkl,
-      'telpemail': telpemail,
+      'telpemail': telpEmail,
       'alamat': alamat,
     };
+  }
+
+  // Helpers
+  static StatusPkl? _statusFromString(String? status) {
+    if (status == null) return null;
+    switch (status.toLowerCase()) {
+      case 'diproses':
+        return StatusPkl.diproses;
+      case 'disetujui':
+        return StatusPkl.disetujui;
+      case 'ditolak':
+        return StatusPkl.ditolak;
+      default:
+        return null;
+    }
+  }
+
+  Pkl copyWith({
+    int? id,
+    String? nisn,
+    String? sekolah,
+    String? nama,
+    JenisKelamin? gender,
+    DateTime? tanggalMulai,
+    DateTime? tanggalBerakhir,
+    String? filePkl,
+    String? telpEmail,
+    StatusPkl? status,
+    String? alamat,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    return Pkl(
+      id: id ?? this.id,
+      nisn: nisn ?? this.nisn,
+      sekolah: sekolah ?? this.sekolah,
+      nama: nama ?? this.nama,
+      gender: gender ?? this.gender,
+      tanggalMulai: tanggalMulai ?? this.tanggalMulai,
+      tanggalBerakhir: tanggalBerakhir ?? this.tanggalBerakhir,
+      filePkl: filePkl ?? this.filePkl,
+      telpEmail: telpEmail ?? this.telpEmail,
+      status: status ?? this.status,
+      alamat: alamat ?? this.alamat,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
   }
 }

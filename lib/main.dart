@@ -21,15 +21,15 @@ import 'styles/style.dart';
 import 'models/app_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  Future<void> loadLoginStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    final role = prefs.getString('role') ?? 'guest';
+void main() async {
+  // Future<void> loadLoginStatus() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final prefs = await SharedPreferences.getInstance();
+  final token = prefs.getString('token');
+  final role = prefs.getString('role') ?? 'guest';
 
-    if (token != null && token.isNotEmpty) {
-      AppState.loginAs(role);
-    }
+  if (token != null && token.isNotEmpty) {
+    AppState.loginAs(role);
   }
 
   runApp(const MyApp());
@@ -68,7 +68,7 @@ class MyApp extends StatelessWidget {
         '/uploadpks': (context) => const UploadPKSPage(),
         '/progres': (context) => const ProgressPage(),
         '/notifikasi': (context) => const NotificationPage(),
-        '/detailprogres': (context) => const DetailProgressPage(),
+        // '/detailprogres': (context) => const DetailProgressPage(),
         '/mou': (context) => const MoUPage(),
         '/detailmou': (context) => const DetailMoUPage(),
         '/pks': (context) => const PKSPage(),

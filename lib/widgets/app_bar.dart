@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../helpers/responsive.dart'; // import class Responsive
 import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/styles/style.dart';
+import '../services/auth_service.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final GlobalKey<ScaffoldState>? scaffoldKey;
@@ -33,14 +34,15 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       backgroundColor: Colors.white,
       automaticallyImplyLeading: false,
-      leading: showMenuIcon
-          ? IconButton(
-              icon: const Icon(Icons.menu),
-              onPressed: () {
-                scaffoldKey?.currentState?.openDrawer();
-              },
-            )
-          : null,
+      leading:
+          showMenuIcon
+              ? IconButton(
+                icon: const Icon(Icons.menu),
+                onPressed: () {
+                  scaffoldKey?.currentState?.openDrawer();
+                },
+              )
+              : null,
       title: Row(
         children: [
           Image.asset('assets/images/logo.png', height: 32),
@@ -51,7 +53,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             if (!isLoggedIn)
               TextButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/home');
+                  Navigator.pushNamedAndRemoveUntil(
+                    context,
+                    '/home',
+                    (route) => false,
+                  );
                 },
                 child: const Text('Home'),
               ),
@@ -70,7 +76,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ],
         ],
       ),
-      actions: actions ??
+      actions:
+          actions ??
           [
             // Notifications icon (only if logged in and role admin/user)
             ValueListenableBuilder<String>(
@@ -99,7 +106,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onSelected: (value) {
                   switch (value) {
                     case 'home':
-                      Navigator.pushReplacementNamed(context, '/home');
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/home',
+                        (route) => false,
+                      );
                       break;
                     case 'mou':
                       Navigator.pushReplacementNamed(context, '/mou');
@@ -113,29 +124,32 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     case 'logout':
                       showDialog(
                         context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Konfirmasi Logout'),
-                          content: const Text(
-                            'Apakah Anda yakin ingin logout?',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text('Batal'),
+                        builder:
+                            (context) => AlertDialog(
+                              title: const Text('Konfirmasi Logout'),
+                              content: const Text(
+                                'Apakah Anda yakin ingin logout?',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Batal'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                    await AuthService.logout();
+                                    AppState.logout();
+                                    Navigator.pushNamedAndRemoveUntil(
+                                      context,
+                                      '/home',
+                                      (route) => false,
+                                    );
+                                  },
+                                  child: const Text('Logout'),
+                                ),
+                              ],
                             ),
-                            TextButton(
-                              onPressed: () {
-                                AppState.logout();
-                                Navigator.pushNamedAndRemoveUntil(
-                                  context,
-                                  '/home',
-                                  (route) => false,
-                                );
-                              },
-                              child: const Text('Logout'),
-                            ),
-                          ],
-                        ),
                       );
                       break;
                   }
@@ -144,11 +158,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   return [
                     if (!isLoggedIn)
                       const PopupMenuItem(value: 'home', child: Text('Home')),
-                    const PopupMenuItem(value: 'mou', child: Text('Daftar MoU')),
-                    const PopupMenuItem(value: 'pks', child: Text('Daftar PKS')),
+                    const PopupMenuItem(
+                      value: 'mou',
+                      child: Text('Daftar MoU'),
+                    ),
+                    const PopupMenuItem(
+                      value: 'pks',
+                      child: Text('Daftar PKS'),
+                    ),
                     PopupMenuItem(
-                        value: isLoggedIn ? 'logout' : 'login',
-                        child: Text(isLoggedIn ? 'Logout' : 'Login')),
+                      value: isLoggedIn ? 'logout' : 'login',
+                      child: Text(isLoggedIn ? 'Logout' : 'Login'),
+                    ),
                   ];
                 },
               )
@@ -162,29 +183,30 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   if (isLoggedIn) {
                     showDialog(
                       context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Konfirmasi Logout'),
-                        content: const Text(
-                          'Apakah Anda yakin ingin logout?',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Batal'),
+                      builder:
+                          (context) => AlertDialog(
+                            title: const Text('Konfirmasi Logout'),
+                            content: const Text(
+                              'Apakah Anda yakin ingin logout?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text('Batal'),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  AppState.logout();
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    '/home',
+                                    (route) => false,
+                                  );
+                                },
+                                child: const Text('Logout'),
+                              ),
+                            ],
                           ),
-                          TextButton(
-                            onPressed: () {
-                              AppState.logout();
-                              Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                '/home',
-                                (route) => false,
-                              );
-                            },
-                            child: const Text('Logout'),
-                          ),
-                        ],
-                      ),
                     );
                   } else {
                     Navigator.pushReplacementNamed(context, '/login');

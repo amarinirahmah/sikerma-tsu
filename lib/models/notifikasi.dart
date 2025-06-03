@@ -1,24 +1,21 @@
 class Notifikasi {
   final int id;
-  final String judul;
-  final String isi;
   final String type;
+  final String message;
   final DateTime tanggalNotif;
 
   Notifikasi({
     required this.id,
-    required this.judul,
-    required this.isi,
     required this.type,
+    required this.message,
     required this.tanggalNotif,
   });
 
   factory Notifikasi.fromJson(Map<String, dynamic> json) {
     return Notifikasi(
       id: json['id'],
-      judul: json['judul'],
-      isi: json['isi'],
       type: json['type'],
+      message: json['message'],
       tanggalNotif: DateTime.parse(json['tanggal_notif']),
     );
   }
@@ -26,9 +23,8 @@ class Notifikasi {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'judul': judul,
-      'isi': isi,
       'type': type,
+      'message': message,
       'tanggal_notif': tanggalNotif.toIso8601String(),
     };
   }

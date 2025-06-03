@@ -109,11 +109,49 @@ class CustomStyle {
     );
   }
 
+  static InputDecoration searchInputDecoration({
+    String? labelText,
+    Widget? prefixIcon,
+    Widget? suffixIcon,
+  }) {
+    return InputDecoration(
+      labelText: labelText ?? 'Cari...',
+      hintStyle: const TextStyle(color: Colors.grey),
+      contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.grey),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: Colors.grey),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: BorderSide(color: Colors.teal.shade700, width: 2),
+      ),
+      filled: true,
+      fillColor: Colors.grey.shade100,
+      isDense: true,
+      prefixIcon: prefixIcon,
+      suffixIcon: suffixIcon,
+    );
+  }
+
+  static BoxDecoration dropdownBoxDecoration() {
+    return BoxDecoration(
+      color: Colors.grey.shade100,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: Colors.grey),
+    );
+  }
+
   static TextStyle get hintTextStyle => hintText;
 
   // Elevated Button Style
   static final baseButtonStyle = ElevatedButton.styleFrom(
     foregroundColor: Colors.white,
+    backgroundColor: Colors.teal,
     padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     textStyle: const TextStyle(fontSize: 14),

@@ -1,41 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
-import 'package:sikermatsu/widgets/detail_card.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/models/pkl.dart';
 import 'package:sikermatsu/services/pkl_service.dart';
 import 'package:sikermatsu/services/auth_service.dart';
+import 'package:sikermatsu/helpers/download_file.dart';
+import 'package:sikermatsu/styles/style.dart';
 
 class DetailPKLPage extends StatefulWidget {
   const DetailPKLPage({super.key});
 
   @override
-  _DetailPKLPageState createState() => _DetailPKLPageState();
+  State<DetailPKLPage> createState() => _DetailPKLPageState();
 }
 
 class _DetailPKLPageState extends State<DetailPKLPage> {
-  String currentStatus = 'Diproses'; // default status
   late String id;
   Pkl? pkl;
   bool isLoading = true;
   String? error;
 
-  @override
-  void initState() {
-    super.initState();
-    getDetailPkl(); // panggil saat awal
-  }
+  final isLoggedIn = AppState.isLoggedIn.value;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args != null && args is String) {
       id = args;
       getDetailPkl();
     } else {
-      // Kalau argumen id tidak valid, kembali ke halaman sebelumnya
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pop();
       });
@@ -44,8 +38,7 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
 
   Future<void> getDetailPkl() async {
     try {
-      final result = await PklService.getPklById(id);
-
+      final result = await PklService().getPklById(id);
       setState(() {
         pkl = result;
         isLoading = false;
@@ -58,32 +51,30 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
     }
   }
 
-  Future<void> deletePkl() async {
-    try {
-      await PklService().deletePkl(id);
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Data siswa PKL berhasil dihapus!')),
-        );
-        Navigator.pop(context); // kembali ke halaman sebelumnya
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menghapus data siswa PKL: $e')),
-        );
-      }
-    }
+  Widget buildRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(flex: 3, child: Text(value)),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final role = AppState.role.value; // ambil role
-
     return MainLayout(
-      title: '',
-      isLoggedIn: AppState.isLoggedIn.value,
+      title: 'Detail PKL',
+      isLoggedIn: isLoggedIn,
       child:
           isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -93,53 +84,69 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
                 padding: const EdgeInsets.all(16),
                 child: Center(
                   child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1000),
-                    child: DetailCard(
-                      data: {
-                        'NISN': pkl!.nisn,
-                        'Nama Siswa': pkl!.nama,
-                        'Nama Sekolah': pkl!.sekolah,
-                        'Jenis Kelamin': pkl!.gender,
-                        'Tanggal Mulai': pkl!.tanggalMulai,
-                        'Tanggal Berakhir': pkl!.tanggalBerakhir,
-                        'File PKL': pkl!.filePkl,
-                        'Nomor Telepon / Email': pkl!.telpemail,
-                        'Alamat': pkl!.alamat,
-                      },
-                      role: AppState.role.value,
-                      onEdit: () {
-                        Navigator.pushNamed(
-                          context,
-                          '/uploadpkl',
-                          arguments: pkl,
-                        );
-                      },
-                      onDelete: () {
-                        showDialog(
-                          context: context,
-                          builder:
-                              (context) => AlertDialog(
-                                title: const Text('Konfirmasi'),
-                                content: const Text(
-                                  'Yakin hapus data siswa ini?',
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed:
-                                        () => Navigator.of(context).pop(),
-                                    child: const Text('Batal'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.of(context).pop();
-                                      deletePkl();
-                                    },
-                                    child: const Text('Hapus'),
-                                  ),
-                                ],
-                              ),
-                        );
-                      },
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: Container(
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(4),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.12),
+                            blurRadius: 1.5,
+                            offset: const Offset(0, 1),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Detail PKL', style: CustomStyle.headline1),
+                          const SizedBox(height: 20),
+                          buildRow('NISN', pkl!.nisn),
+                          buildRow('Nama Siswa', pkl!.nama),
+                          buildRow('Asal Sekolah', pkl!.sekolah),
+                          buildRow('Jenis Kelamin', pkl!.gender.toBackend()),
+                          buildRow(
+                            'Tanggal Mulai',
+                            pkl!.tanggalMulai.toLocal().toString().split(
+                              ' ',
+                            )[0],
+                          ),
+                          buildRow(
+                            'Tanggal Berakhir',
+                            pkl!.tanggalBerakhir.toLocal().toString().split(
+                              ' ',
+                            )[0],
+                          ),
+                          buildRow('Nomor Telepon / Email', pkl!.telpEmail),
+                          buildRow('Alamat', pkl!.alamat),
+                          buildRow(
+                            'Status',
+                            pkl!.status?.toBackend() ?? 'Diproses',
+                          ),
+                          buildRow(
+                            'File PKL',
+                            pkl!.filePkl ?? 'Tidak ada file',
+                          ),
+                          if (pkl!.filePkl != null)
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.download),
+                              style: CustomStyle.baseButtonStyle,
+                              label: const Text('Download File'),
+                              onPressed: () async {
+                                final token = await AuthService.getToken();
+                                final url =
+                                    'http://192.168.18.248:8000/storage/${pkl!.filePkl}';
+                                await downloadFile(
+                                  url,
+                                  'pkl-${pkl!.nisn}',
+                                  token.toString(),
+                                );
+                              },
+                            ),
+                        ],
+                      ),
                     ),
                   ),
                 ),

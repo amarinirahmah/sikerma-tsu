@@ -1,14 +1,19 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
-import 'package:sikermatsu/widgets/table.dart';
-import 'package:sikermatsu/widgets/upload_card.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import '../styles/style.dart';
-import 'package:sikermatsu/widgets/table2.dart';
-// import 'package:sikermatsu/models/progres_service.dart';
+import 'package:sikermatsu/services/detail_progres_service.dart';
+import 'package:sikermatsu/models/detail_progres.dart';
+import 'package:sikermatsu/services/auth_service.dart';
+import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
 
 class DetailProgressPage extends StatefulWidget {
-  const DetailProgressPage({super.key});
+  // final DetailProgress? detailprogres;
+  final int mouId;
+
+  const DetailProgressPage({super.key, required this.mouId});
 
   @override
   State<DetailProgressPage> createState() => _DetailProgressPageState();
@@ -16,212 +21,235 @@ class DetailProgressPage extends StatefulWidget {
 
 class _DetailProgressPageState extends State<DetailProgressPage> {
   final _formKey = GlobalKey<FormState>();
-  DateTime? _selectedDate;
-  final TextEditingController _aktivitasController = TextEditingController();
-  final List<Map<String, dynamic>> _progresList = [];
-  String judulAktivitas = 'Diajukan';
+  final aktivitas = TextEditingController();
+  List<DetailProgress> progresList = [];
+  DateTime? tanggal;
+  String? selectedProses;
+  bool isLoading = false;
+
+  static const List<String> prosesOptions = [
+    'PembuatanDraft',
+    'PengajuanDraft',
+    'PenyerahanMOU',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchProgress();
+  }
 
   void _pickTanggal() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: tanggal ?? DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
-
     if (picked != null) {
       setState(() {
-        _selectedDate = picked;
+        tanggal = picked;
       });
     }
   }
 
-  // void _simpanData() async {
-  //   if (_formKey.currentState!.validate() && _selectedDate != null) {
-  //     setState(() {
-  //       _progresList.add({
-  //         'No': (_progresList.length + 1).toString(),
-  //         'Tanggal': "${_selectedDate!.toLocal()}".split(' ')[0],
-  //         'Proses': judulAktivitas,
-  //         'Aktivitas': _aktivitasController.text,
-  //       });
-  //     });
+  Future<void> fetchProgress() async {
+    setState(() => isLoading = true);
 
-  //     try {
-  //       await uploadProgress(
-  //         userId: 1, // <--- Ganti ini dengan ID user sebenarnya
-  //         action: judulAktivitas,
-  //         description: _aktivitasController.text,
-  //       );
+    try {
+      final token = await AuthService.getToken();
+      final response = await http.get(
+        Uri.parse('${DetailProgressService.baseUrl}/progress/${widget.mouId}'),
+        headers: {'Authorization': 'Bearer $token'},
+      );
 
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         const SnackBar(
-  //           content: Text("Data progres berhasil disimpan dan dikirim!"),
-  //         ),
-  //       );
-  //     } catch (e) {
-  //       ScaffoldMessenger.of(
-  //         context,
-  //       ).showSnackBar(SnackBar(content: Text("Gagal mengirim progres: $e")));
-  //     }
-
-  //     _selectedDate = null;
-  //     _aktivitasController.clear();
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("Harap lengkapi semua data!")),
-  //     );
-  //   }
-  // }
-
-  void _simpanData() {
-    if (_formKey.currentState!.validate() && _selectedDate != null) {
-      setState(() {
-        _progresList.add({
-          'No': (_progresList.length + 1).toString(),
-          'Tanggal': "${_selectedDate!.toLocal()}".split(' ')[0],
-          'Proses': judulAktivitas,
-          'Aktivitas': _aktivitasController.text,
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body)['data'] as List;
+        setState(() {
+          progresList = data.map((e) => DetailProgress.fromJson(e)).toList();
         });
-        _selectedDate = null;
-        _aktivitasController.clear();
+      } else {
+        setState(() {
+          progresList = [];
+        });
+      }
+    } catch (e) {
+      setState(() {
+        progresList = [];
       });
+      debugPrint('Gagal mengambil log aktivitas: $e');
+    } finally {
+      setState(() => isLoading = false);
+    }
+  }
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Data progres berhasil disimpan!")),
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate() || tanggal == null) return;
+
+    try {
+      await DetailProgressService.addProgress(
+        mouId: widget.mouId,
+        tanggal: DateFormat('yyyy-MM-dd').format(tanggal!),
+        aktivitas: aktivitas.text,
+        proses: selectedProses!,
       );
-    } else {
+      aktivitas.clear();
+      tanggal = null;
+      selectedProses = null;
+      await fetchProgress();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Harap lengkapi semua data!")),
+        const SnackBar(content: Text('Berhasil menambah log aktivitas')),
       );
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: AppState.isLoggedIn,
-      builder: (context, isLoggedIn, _) {
-        return MainLayout(
-          title: "",
-          isLoggedIn: isLoggedIn,
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 800),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Form(
-                      key: _formKey,
-                      child: UploadCard(
-                        title: "Log Aktivitas Kerja Sama",
-                        fields: [
-                          buildDateRow("Tanggal", _selectedDate, _pickTanggal),
-                          const SizedBox(height: 16),
-                          buildDropdownRow(),
-                          const SizedBox(height: 16),
-                          buildAktivitasField(),
-                        ],
-                        onSubmit: _simpanData,
+    return MainLayout(
+      title: "",
+      isLoggedIn: AppState.isLoggedIn.value,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 700),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 1.5,
                       ),
-                    ),
-                    const SizedBox(height: 32),
-                    // const Text(
-                    //   "Daftar Progres",
-                    //   style: TextStyle(
-                    //     fontSize: 18,
-                    //     fontWeight: FontWeight.bold,
-                    //   ),
-                    // ),
-                    // const SizedBox(height: 16),
-                    _progresList.isEmpty
-                        ? const Text("Belum ada data progres.")
-                        : CustomPaginatedTable(
-                          title: 'Daftar Progres',
-                          columns: const [
-                            'No',
-                            'Tanggal',
-                            'Proses',
-                            'Aktivitas',
-                          ],
-                          data: _progresList,
+                    ],
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Log Aktivitas Kerja Sama',
+                          style: CustomStyle.headline1,
                         ),
-                  ],
+                        const SizedBox(height: 16),
+                        OutlinedButton.icon(
+                          icon: const Icon(Icons.date_range),
+                          label: Text(
+                            tanggal == null
+                                ? "Pilih Tanggal"
+                                : 'Tanggal: ${DateFormat('dd MMM yyyy').format(tanggal!)}',
+                          ),
+                          onPressed: _pickTanggal,
+                        ),
+                        const SizedBox(height: 20),
+                        DropdownButtonFormField<String>(
+                          decoration: CustomStyle.inputDecorationWithLabel(
+                            labelText: 'Proses',
+                          ),
+                          value: selectedProses,
+                          items:
+                              prosesOptions
+                                  .map(
+                                    (p) => DropdownMenuItem(
+                                      value: p,
+                                      child: Text(p),
+                                    ),
+                                  )
+                                  .toList(),
+                          validator:
+                              (value) => value == null ? 'Wajib diisi' : null,
+                          onChanged:
+                              (value) => setState(() => selectedProses = value),
+                        ),
+
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: aktivitas,
+                          decoration: CustomStyle.inputDecorationWithLabel(
+                            labelText: 'Deskripsi',
+                          ),
+                          validator:
+                              (val) =>
+                                  val == null || val.isEmpty
+                                      ? 'Wajib diisi'
+                                      : null,
+                        ),
+
+                        const SizedBox(height: 16),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton(
+                            style: CustomStyle.baseButtonStyle,
+                            onPressed: _submit,
+                            child: const Text("Simpan"),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
+                const SizedBox(height: 30),
+                Text('Riwayat Progres', style: CustomStyle.headline1),
+                const SizedBox(height: 10),
+                isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : progresList.isEmpty
+                    ? const Text('Belum ada data progres.')
+                    : DataTable(
+                      headingRowColor: MaterialStateProperty.all<Color>(
+                        Colors.grey[300]!,
+                      ),
+                      headingTextStyle: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                      border: TableBorder.all(color: Colors.grey),
+                      columns: const [
+                        DataColumn(label: Text('Tanggal')),
+                        DataColumn(label: Text('Proses')),
+                        DataColumn(label: Text('Aktivitas')),
+                      ],
+
+                      rows:
+                          progresList.map((e) {
+                            final formattedDate = DateFormat(
+                              'dd MMM yyyy',
+                            ).format(DateTime.parse(e.tanggal));
+                            return DataRow(
+                              cells: [
+                                DataCell(Text(formattedDate)),
+                                DataCell(Text(e.proses)),
+                                DataCell(Text(e.aktivitas)),
+                              ],
+                            );
+                          }).toList(),
+                    ),
+                //   rows:
+                //       progresList
+                //           .map(
+                //             (e) => DataRow(
+                //               cells: [
+                //                 DataCell(Text(e.tanggal)),
+                //                 DataCell(Text(e.aktivitas)),
+                //               ],
+                //             ),
+                //           )
+                //           .toList(),
+                // ),
+              ],
             ),
           ),
-        );
-      },
-    );
-  }
-
-  Widget buildDateRow(String label, DateTime? date, VoidCallback onTap) {
-    return Row(
-      children: [
-        SizedBox(width: 130, child: Text(label)),
-        const SizedBox(width: 16),
-        Expanded(
-          child: OutlinedButton(
-            style: CustomStyle.outlinedButtonStyle,
-            onPressed: onTap,
-            child: Text(
-              date == null
-                  ? "Pilih Tanggal"
-                  : "${date.toLocal()}".split(' ')[0],
-              style: CustomStyle.dateTextStyle,
-            ),
-          ),
         ),
-      ],
-    );
-  }
-
-  Widget buildDropdownRow() {
-    return Row(
-      children: [
-        const SizedBox(width: 130, child: Text("Proses")),
-        const SizedBox(width: 16),
-        Expanded(
-          child: DropdownButtonFormField<String>(
-            value: judulAktivitas,
-            decoration: CustomStyle.dropdownDecoration(hintText: 'Diajukan'),
-            items:
-                ['Diajukan', 'Disetujui', 'Ditolak']
-                    .map(
-                      (status) =>
-                          DropdownMenuItem(value: status, child: Text(status)),
-                    )
-                    .toList(),
-            onChanged: (value) {
-              setState(() {
-                judulAktivitas = value!;
-              });
-            },
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget buildAktivitasField() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const SizedBox(width: 130, child: Text("Aktivitas")),
-        const SizedBox(width: 16),
-        Expanded(
-          child: TextFormField(
-            controller: _aktivitasController,
-            maxLines: 3,
-            decoration: CustomStyle.inputDecoration(),
-            validator:
-                (value) => value!.isEmpty ? "Aktivitas wajib diisi" : null,
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

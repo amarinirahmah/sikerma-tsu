@@ -2,20 +2,22 @@ import 'package:flutter/material.dart';
 
 class NotificationCard extends StatelessWidget {
   final IconData icon;
-  final String title;
-  final String description;
+  // final String title;
   final String type;
+  final String message;
   final DateTime date;
   final Color iconColor;
+  final VoidCallback? onDelete;
 
   const NotificationCard({
     super.key,
     required this.icon,
-    required this.title,
-    required this.description,
+    // required this.title,
     required this.type,
+    required this.message,
     required this.date,
     this.iconColor = Colors.orange,
+    this.onDelete,
   });
 
   @override
@@ -35,16 +37,29 @@ class NotificationCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  // Text(
+                  //   title,
+                  //   style: const TextStyle(
+                  //     fontSize: 16,
+                  //     fontWeight: FontWeight.bold,
+                  //   ),
+                  // ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          message,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                      if (onDelete != null) // Icon X untuk hapus
+                        IconButton(
+                          icon: const Icon(Icons.close, size: 18),
+                          tooltip: 'Hapus Notifikasi',
+                          onPressed: onDelete,
+                        ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(description, style: const TextStyle(fontSize: 14)),
-                  const SizedBox(height: 8),
                   Row(
                     children: [
                       Chip(

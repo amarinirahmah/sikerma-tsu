@@ -72,10 +72,30 @@ class _NotificationPageState extends State<NotificationPage> {
                               constraints: const BoxConstraints(maxWidth: 1000),
                               child: NotificationCard(
                                 icon: Icons.notifications,
-                                title: notif.judul,
-                                description: notif.isi,
                                 type: notif.type,
+                                message: notif.message,
                                 date: notif.tanggalNotif,
+                                // onDelete: () async {
+                                //   try {
+                                //     await NotifService().deleteNotif(notif.id!);
+                                //     setState(() {
+                                //       notifikasiList.remove(notif);
+                                //     });
+                                //     ScaffoldMessenger.of(context).showSnackBar(
+                                //       const SnackBar(
+                                //         content: Text(
+                                //           'Notifikasi berhasil dihapus',
+                                //         ),
+                                //       ),
+                                //     );
+                                //   } catch (e) {
+                                //     ScaffoldMessenger.of(context).showSnackBar(
+                                //       SnackBar(
+                                //         content: Text('Gagal menghapus: $e'),
+                                //       ),
+                                //     );
+                                //   }
+                                // },
                               ),
                             ),
                           );

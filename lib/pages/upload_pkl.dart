@@ -1,57 +1,378 @@
-import 'dart:js_interop';
+// import 'dart:js_interop';
+
+// import 'package:flutter/material.dart';
+// import 'package:file_picker/file_picker.dart';
+// import 'package:sikermatsu/widgets/main_layout.dart';
+// import 'package:sikermatsu/widgets/upload_card.dart';
+// import 'package:sikermatsu/models/app_state.dart';
+// import '../styles/style.dart';
+
+// import 'dart:io';
+// import 'package:sikermatsu/services/pkl_service.dart';
+// import 'package:sikermatsu/models/pkl.dart';
+// import 'package:path/path.dart' as p;
+// import 'dart:io' show File;
+// import 'package:flutter/foundation.dart';
+
+// class UploadPKLPage extends StatefulWidget {
+//   const UploadPKLPage({super.key});
+
+//   @override
+//   State<UploadPKLPage> createState() => _UploadPKLPage();
+// }
+
+// class _UploadPKLPage extends State<UploadPKLPage> {
+//   final _formKey = GlobalKey<FormState>();
+//   final nisn = TextEditingController();
+//   final sekolah = TextEditingController();
+//   final nama = TextEditingController();
+//   final telpEmail = TextEditingController();
+//   final alamat = TextEditingController();
+//   // String gender = 'Laki-laki';
+//   JenisKelamin gender = JenisKelamin.lakilaki;
+//   DateTime? tanggalMulai;
+//   DateTime? tanggalBerakhir;
+//   String? fileName;
+//    PlatformFile? _pickedPlatformFile;
+//     File? selectedFile;
+
+//   void _pickTanggalMulai() async {
+//     final picked = await showDatePicker(
+//       context: context,
+//       initialDate: DateTime.now(),
+//       firstDate: DateTime(2020),
+//       lastDate: DateTime(2100),
+//     );
+//     if (picked != null) {
+//       setState(() {
+//         tanggalMulai = picked;
+//         tanggalBerakhir = null;
+//       });
+//     }
+//   }
+
+//   void _pickTanggalBerakhir() async {
+//     final picked = await showDatePicker(
+//       context: context,
+//       initialDate: tanggalMulai ?? DateTime.now(),
+//       firstDate: tanggalMulai ?? DateTime.now(),
+//       lastDate: DateTime(2100),
+//     );
+//     if (picked != null) {
+//       setState(() {
+//         tanggalBerakhir = picked;
+//       });
+//     }
+//   }
+
+// void _pickFile() async {
+//   final result = await FilePicker.platform.pickFiles(
+//     type: FileType.custom,
+//     allowedExtensions: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'],
+//     allowMultiple: false,
+//     withData: true, // wajib supaya dapat bytes di web
+//   );
+
+//   if (result != null && result.files.isNotEmpty) {
+//     final file = result.files.first;
+
+//     final fileSizeInKB = (file.bytes?.lengthInBytes ?? 0) ~/ 1024;
+
+//     if (fileSizeInKB > 5120) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(content: Text("Ukuran file melebihi 5MB!")),
+//       );
+//       return;
+//     }
+
+//     setState(() {
+//       fileName = file.name;
+//       selectedFile = null; // biar clear, kita simpan PlatformFile di variabel lain saja
+//       _pickedPlatformFile = file;
+//     });
+//   } else {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       const SnackBar(content: Text("Tidak ada file yang dipilih.")),
+//     );
+//   }
+// }
+
+//   Future<void> _submitForm() async {
+//     if (_formKey.currentState!.validate() &&
+//         tanggalMulai != null &&
+//         tanggalBerakhir != null) {
+//       final pkl = Pkl(
+//         nisn: nisn.text,
+//         nama: nama.text,
+//         sekolah: sekolah.text,
+//         gender: gender,
+//         telpemail: telpEmail.text,
+//         alamat: alamat.text,
+//         tanggalMulai: tanggalMulai!,
+//         tanggalBerakhir: tanggalBerakhir!,
+//       );
+
+//     try {
+//         await PklService().uploadPkl(pkl, file: _pickedPlatformFile);
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           const SnackBar(content: Text("Data siswa berhasil diunggah!")),
+//         );
+//         await Future.delayed(const Duration(milliseconds: 500));
+// Navigator.pop(context);
+//         // _formKey.currentState!.reset();
+//         // setState(() {
+//         //   tanggalMulai = null;
+//         //   tanggalBerakhir = null;
+//         //   fileName = null;
+//         //   _pickedPlatformFile = null;
+//         // });
+//       } catch (e) {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text("Gagal mengunggah: $e")),
+//         );
+//       }
+//     } else {
+//         print("DEBUG: Validasi gagal:");
+//   print("NISN: '${nisn.text}'");
+//   print("Nama: '${nama.text}'");
+//   print("Sekolah: '${sekolah.text}'");
+//   print("Gender: '$gender'");
+//   print("Telp/Email: '${telpEmail.text}'");
+//   print("Alamat: '${alamat.text}'");
+//   print("Tanggal Mulai: $tanggalMulai");
+//   print("Tanggal Berakhir: $tanggalBerakhir");
+//   print("File: $selectedFile");
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         const SnackBar(content: Text("Harap lengkapi semua data!")),
+//       );
+//     }
+//   }
+
+//   // void _submitForm() {
+//   //   if (_formKey.currentState!.validate() &&
+//   //       tanggalMulai != null &&
+//   //       tanggalBerakhir != null &&
+//   //       fileName != null) {
+//   //     ScaffoldMessenger.of(context).showSnackBar(
+//   //       const SnackBar(content: Text("Data Siswa berhasil diunggah!")),
+//   //     );
+//   //     _formKey.currentState!.reset();
+//   //     setState(() {
+//   //       tanggalMulai = null;
+//   //       tanggalBerakhir = null;
+//   //       fileName = null;
+//   //       gender = 'Laki-laki';
+//   //     });
+//   //   } else {
+//   //     ScaffoldMessenger.of(context).showSnackBar(
+//   //       const SnackBar(content: Text("Harap lengkapi semua data!")),
+//   //     );
+//   //   }
+//   // }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return ValueListenableBuilder<bool>(
+//       valueListenable: AppState.isLoggedIn,
+//       builder: (context, isLoggedIn, _) {
+//         return MainLayout(
+//           title: "",
+//           isLoggedIn: isLoggedIn,
+//           child: SingleChildScrollView(
+//             padding: const EdgeInsets.all(16),
+//             child: Center(
+//               child: ConstrainedBox(
+//                 constraints: const BoxConstraints(maxWidth: 700),
+//                 child: Form(
+//                   key: _formKey,
+//                   child: UploadCard(
+//                     title: "Form Pengajuan Siswa PKL",
+//                     onSubmit: _submitForm,
+//                     fields: [
+//                       buildField("NISN", nisn),
+//                       buildField("Nama Siswa", nama),
+//                       buildField("Nama Sekolah", sekolah),
+//                       buildDropdownField("Jenis Kelamin"),
+//                       buildDateRow(
+//                         "Tanggal Mulai",
+//                         tanggalMulai,
+//                         _pickTanggalMulai,
+//                       ),
+//                       buildDateRow(
+//                         "Tanggal Berakhir",
+//                         tanggalBerakhir,
+//                         _pickTanggalBerakhir,
+//                       ),
+//                       buildFileRow(),
+//                       buildField("No Telepon / Email", telpEmail),
+//                       buildField("Alamat", alamat, maxLines: 3),
+//                     ],
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ),
+//         );
+//       },
+//     );
+//   }
+
+//   Widget buildField(
+//     String label,
+//     TextEditingController controller, {
+//     int maxLines = 1,
+//   }) {
+//     return Row(
+//       crossAxisAlignment:
+//           maxLines > 1 ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+//       children: [
+//         SizedBox(width: 130, child: Text(label)),
+//         const SizedBox(width: 16),
+//         Expanded(
+//           child: TextFormField(
+//             controller: controller,
+//             decoration: CustomStyle.inputDecoration(),
+//             maxLines: maxLines,
+//             validator: (value) => value!.isEmpty ? "$label wajib diisi" : null,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget buildDateRow(String label, DateTime? date, VoidCallback onTap) {
+//     return Row(
+//       children: [
+//         SizedBox(width: 130, child: Text(label)),
+//         const SizedBox(width: 16),
+//         Expanded(
+//           child: OutlinedButton(
+//             style: CustomStyle.outlinedButtonStyle,
+//             onPressed: onTap,
+//             child: Text(
+//               date == null
+//                   ? "Pilih Tanggal"
+//                   : "${date.toLocal()}".split(' ')[0],
+//               style: CustomStyle.dateTextStyle,
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget buildFileRow() {
+//     return Row(
+//       children: [
+//         const SizedBox(width: 130, child: Text("Upload File")),
+//         const SizedBox(width: 16),
+//         Expanded(
+//           child: OutlinedButton.icon(
+//             onPressed: _pickFile,
+//             icon: const Icon(Icons.attach_file),
+//             label: Text(fileName ?? "Pilih File PKL"),
+//               //  label: Text(fileName != null ? fileName! : "Pilih File"),
+//             style: CustomStyle.outlinedButtonStyle,
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+
+//   Widget buildDropdownField(String label) {
+//     return Row(
+//       children: [
+//         SizedBox(width: 130, child: Text(label)),
+//         const SizedBox(width: 16),
+//         Expanded(
+//           child: DropdownButtonFormField<JenisKelamin>(
+//             value: gender,
+//           items: JenisKelamin.values.map((jk) {
+//     return DropdownMenuItem(
+//       value: jk,
+//       child: Text(jk.toBackend()),
+//     );
+//   }).toList(),
+//   onChanged: (value) {
+//     if (value != null) {
+//       setState(() {
+//         gender = value;
+//       });
+//     }
+//   },
+//             decoration: const InputDecoration(border: OutlineInputBorder()),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/widgets.dart';
+import 'package:sikermatsu/models/pkl.dart';
+import 'package:sikermatsu/services/pkl_service.dart';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
-import 'package:sikermatsu/widgets/upload_card.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import '../styles/style.dart';
-
-import 'dart:io';
-import 'package:sikermatsu/services/pkl_service.dart';
-import 'package:sikermatsu/models/pkl.dart';
 import 'package:path/path.dart' as p;
+import 'dart:io' show File;
+import 'package:flutter/foundation.dart';
 
 class UploadPKLPage extends StatefulWidget {
-  const UploadPKLPage({super.key});
+  final Pkl? pkl;
+  const UploadPKLPage({super.key, this.pkl});
 
   @override
-  State<UploadPKLPage> createState() => _UploadPKLPage();
+  State<UploadPKLPage> createState() => _UploadPKLPageState();
 }
 
-class _UploadPKLPage extends State<UploadPKLPage> {
+class _UploadPKLPageState extends State<UploadPKLPage> {
   final _formKey = GlobalKey<FormState>();
-  final _nisn = TextEditingController();
-  final _namaSekolah = TextEditingController();
-  final _namaSiswa = TextEditingController();
-  final _telpEmail = TextEditingController();
-  final _alamat = TextEditingController();
-  String _jenisKelamin = 'Laki-laki';
-  DateTime? _tanggalMulai;
-  DateTime? _tanggalBerakhir;
+  final nisn = TextEditingController();
+  final nama = TextEditingController();
+  final sekolah = TextEditingController();
+  final telpEmail = TextEditingController();
+  final alamat = TextEditingController();
+
+  PlatformFile? _pickedPlatformFile;
+  DateTime? tanggalMulai;
+  DateTime? tanggalBerakhir;
   String? fileName;
   File? selectedFile;
-  Pkl? pklArgument;
+  JenisKelamin gender = JenisKelamin.lakilaki;
 
   @override
   void initState() {
+    if (widget.pkl != null) {
+      final pkl = widget.pkl!;
+      nisn.text = pkl.nisn;
+      nama.text = pkl.nama;
+      sekolah.text = pkl.sekolah;
+      telpEmail.text = pkl.telpEmail;
+      alamat.text = pkl.alamat;
+
+      // Set tanggal
+      tanggalMulai = pkl.tanggalMulai;
+      tanggalBerakhir = pkl.tanggalBerakhir;
+
+      fileName = pkl.filePkl;
+    }
     super.initState();
-    Future.microtask(() {
-      final args = ModalRoute.of(context)!.settings.arguments;
-      if (args != null && args is Pkl) {
-        setState(() {
-          pklArgument = args;
-          _nisn.text = args.nisn;
-          _namaSiswa.text = args.nama;
-          _namaSekolah.text = args.sekolah;
-          _telpEmail.text = args.telpemail;
-          _alamat.text = args.alamat;
-          _tanggalMulai = args.tanggalMulai;
-          _tanggalBerakhir = args.tanggalBerakhir;
-          fileName = "File lama digunakan";
-        });
-      }
-    });
+  }
+
+  @override
+  void dispose() {
+    nisn.dispose();
+    nama.dispose();
+    sekolah.dispose();
+    telpEmail.dispose();
+    alamat.dispose();
+    super.dispose();
   }
 
   void _pickTanggalMulai() async {
@@ -63,8 +384,8 @@ class _UploadPKLPage extends State<UploadPKLPage> {
     );
     if (picked != null) {
       setState(() {
-        _tanggalMulai = picked;
-        _tanggalBerakhir = null;
+        tanggalMulai = picked;
+        tanggalBerakhir = null;
       });
     }
   }
@@ -72,98 +393,112 @@ class _UploadPKLPage extends State<UploadPKLPage> {
   void _pickTanggalBerakhir() async {
     final picked = await showDatePicker(
       context: context,
-      initialDate: _tanggalMulai ?? DateTime.now(),
-      firstDate: _tanggalMulai ?? DateTime.now(),
+      initialDate: tanggalMulai ?? DateTime.now(),
+      firstDate: tanggalMulai ?? DateTime.now(),
       lastDate: DateTime(2100),
     );
     if (picked != null) {
       setState(() {
-        _tanggalBerakhir = picked;
+        tanggalBerakhir = picked;
       });
     }
   }
 
   void _pickFile() async {
-    final result = await FilePicker.platform.pickFiles();
-    if (result != null) {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png'],
+      allowMultiple: false,
+      withData: true, // wajib supaya dapat bytes di web
+    );
+
+    if (result != null && result.files.isNotEmpty) {
+      final file = result.files.first;
+
+      final fileSizeInKB = (file.bytes?.lengthInBytes ?? 0) ~/ 1024;
+
+      if (fileSizeInKB > 5120) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Ukuran file melebihi 5MB!")),
+        );
+        return;
+      }
+
       setState(() {
-        selectedFile = File(result.files.single.path!);
-        fileName = result.files.single.name;
+        fileName = file.name;
+        selectedFile = null;
+        _pickedPlatformFile = file;
       });
     }
+    // } else {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     const SnackBar(content: Text("Tidak ada file yang dipilih.")),
+    //   );
+    // }
   }
 
-  void _submitForm() async {
-    if (_formKey.currentState!.validate() &&
-        _tanggalMulai != null &&
-        _tanggalBerakhir != null &&
-        selectedFile != null) {
-      final pkl = Pkl(
-        nisn: _nisn.text,
-        nama: _namaSiswa.text,
-        sekolah: _namaSekolah.text,
-        gender: JenisKelaminExtension.fromString(_jenisKelamin)!,
-        telpemail: _telpEmail.text,
-        alamat: _alamat.text,
-        tanggalMulai: _tanggalMulai!,
-        tanggalBerakhir: _tanggalBerakhir!,
-      );
+  Future<void> _submitData() async {
+    if (!_formKey.currentState!.validate()) return;
 
-      try {
-        if (pklArgument != null) {
-          await PklService().updatePkl(
-            pklArgument!.id!.toString(),
-            pkl,
-            file: selectedFile,
-          );
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Data siswa PKL berhasil diperbarui!"),
-            ),
-          );
-        } else {
-          await PklService().uploadPkl(pkl, file: selectedFile);
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text("Data siswa PKL berhasil diunggah!")),
-          );
-        }
-        // await PklService().uploadPkl(pkl, file: File(selectedFile!));
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   const SnackBar(content: Text("Data PKL berhasil diunggah!")),
-        // );
-      } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text("Gagal mengunggah: $e")));
-      }
-    } else {
+    if (tanggalMulai == null || tanggalBerakhir == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Harap lengkapi semua data!")),
+        const SnackBar(
+          content: Text('Tanggal mulai dan berakhir wajib dipilih.'),
+        ),
+      );
+      return;
+    }
+
+    try {
+      if (widget.pkl == null) {
+        // Upload
+        final pkl = Pkl(
+          nisn: nisn.text,
+          nama: nama.text,
+          sekolah: sekolah.text,
+          gender: gender,
+          tanggalMulai: tanggalMulai!, // Ganti sesuai form
+          tanggalBerakhir: tanggalBerakhir!, // Ganti sesuai form
+          telpEmail: telpEmail.text,
+          alamat: alamat.text,
+          status: widget.pkl?.status ?? StatusPkl.diproses,
+          // status: widget.pkl?.status,
+        );
+
+        await PklService.uploadPkl(pkl, file: _pickedPlatformFile);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Berhasil mengunggah data siswa!')),
+        );
+      } else {
+        // Update
+        final mou = Pkl(
+          nisn: nisn.text,
+          nama: nama.text,
+          sekolah: sekolah.text,
+          gender: gender,
+          tanggalMulai: widget.pkl!.tanggalMulai,
+          tanggalBerakhir: widget.pkl!.tanggalBerakhir,
+          telpEmail: telpEmail.text,
+          alamat: alamat.text,
+          status: widget.pkl!.status,
+        );
+
+        await PklService.updatePkl(
+          widget.pkl!.id.toString(),
+          mou,
+          file: _pickedPlatformFile,
+        );
+      }
+
+      if (!mounted) return;
+      Navigator.pop(context, true);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal mengunggah data siswa: $e')),
       );
     }
   }
-
-  // void _submitForm() {
-  //   if (_formKey.currentState!.validate() &&
-  //       _tanggalMulai != null &&
-  //       _tanggalBerakhir != null &&
-  //       fileName != null) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("Data Siswa berhasil diunggah!")),
-  //     );
-  //     _formKey.currentState!.reset();
-  //     setState(() {
-  //       _tanggalMulai = null;
-  //       _tanggalBerakhir = null;
-  //       fileName = null;
-  //       _jenisKelamin = 'Laki-laki';
-  //     });
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text("Harap lengkapi semua data!")),
-  //     );
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -178,30 +513,170 @@ class _UploadPKLPage extends State<UploadPKLPage> {
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 700),
-                child: Form(
-                  key: _formKey,
-                  child: UploadCard(
-                    title: "Form Pengajuan Siswa PKL",
-                    onSubmit: _submitForm,
-                    fields: [
-                      buildField("NISN", _nisn),
-                      buildField("Nama Siswa", _namaSiswa),
-                      buildField("Nama Sekolah", _namaSekolah),
-                      buildDropdownField("Jenis Kelamin"),
-                      buildDateRow(
-                        "Tanggal Mulai",
-                        _tanggalMulai,
-                        _pickTanggalMulai,
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(4),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.12),
+                        blurRadius: 1.5,
+                        offset: const Offset(0, 1),
                       ),
-                      buildDateRow(
-                        "Tanggal Berakhir",
-                        _tanggalBerakhir,
-                        _pickTanggalBerakhir,
-                      ),
-                      buildFileRow(),
-                      buildField("No Telepon / Email", _telpEmail),
-                      buildField("Alamat", _alamat, maxLines: 3),
                     ],
+                  ),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Form Upload PKS', style: CustomStyle.headline1),
+                        const SizedBox(height: 20),
+                        TextFormField(
+                          controller: nisn,
+                          decoration: CustomStyle.inputDecorationWithLabel(
+                            labelText: 'NISN',
+                          ),
+
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Wajib diisi'
+                                      : null,
+                        ),
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: nama,
+                          decoration: CustomStyle.inputDecorationWithLabel(
+                            labelText: 'Nama Siswa',
+                          ),
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Wajib diisi'
+                                      : null,
+                        ),
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: sekolah,
+                          decoration: CustomStyle.inputDecorationWithLabel(
+                            labelText: 'Asal Sekolah',
+                          ),
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Wajib diisi'
+                                      : null,
+                        ),
+                        const SizedBox(height: 16),
+
+                        DropdownButtonFormField<JenisKelamin>(
+                          value: gender,
+                          decoration: CustomStyle.inputDecorationWithLabel(
+                            labelText: 'Jenis Kelamin',
+                          ),
+                          items:
+                              JenisKelamin.values.map((jk) {
+                                return DropdownMenuItem<JenisKelamin>(
+                                  value: jk,
+                                  child: Text(jk.toBackend()),
+                                );
+                              }).toList(),
+                          onChanged: (val) {
+                            if (val != null) {
+                              setState(() {
+                                gender = val;
+                              });
+                            }
+                          },
+                          validator:
+                              (value) => value == null ? 'Wajib dipilih' : null,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Tanggal Mulai
+                        OutlinedButton.icon(
+                          style: CustomStyle.outlinedButtonStyle,
+                          icon: const Icon(Icons.date_range),
+                          label: Text(
+                            tanggalMulai == null
+                                ? 'Pilih Tanggal Mulai'
+                                : 'Mulai: ${tanggalMulai!.toLocal().toString().split(' ')[0]}',
+                            style: CustomStyle.dateTextStyle,
+                          ),
+
+                          onPressed: _pickTanggalMulai,
+                        ),
+                        const SizedBox(height: 8),
+
+                        // Tanggal Berakhir
+                        OutlinedButton.icon(
+                          style: CustomStyle.outlinedButtonStyle,
+                          icon: const Icon(Icons.date_range),
+                          label: Text(
+                            tanggalBerakhir == null
+                                ? 'Pilih Tanggal Berakhir'
+                                : 'Berakhir: ${tanggalBerakhir!.toLocal().toString().split(' ')[0]}',
+                            style: CustomStyle.dateTextStyle,
+                          ),
+
+                          onPressed:
+                              tanggalMulai == null
+                                  ? null
+                                  : _pickTanggalBerakhir,
+                        ),
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: telpEmail,
+                          decoration: CustomStyle.inputDecorationWithLabel(
+                            labelText: 'No. Telepon / Email',
+                          ),
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Wajib diisi'
+                                      : null,
+                        ),
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: alamat,
+                          decoration: CustomStyle.inputDecorationWithLabel(
+                            labelText: 'Alamat',
+                          ),
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Wajib diisi'
+                                      : null,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Tombol pilih file
+                        OutlinedButton.icon(
+                          icon: const Icon(Icons.attach_file),
+                          style: CustomStyle.outlinedButtonStyle,
+                          label: Text(fileName ?? 'Pilih File'),
+                          onPressed: _pickFile,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // Tombol submit
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton.icon(
+                            onPressed: _submitData,
+                            style: CustomStyle.baseButtonStyle,
+                            // icon: const Icon(Icons.save),
+                            label: const Text("Simpan"),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -209,93 +684,6 @@ class _UploadPKLPage extends State<UploadPKLPage> {
           ),
         );
       },
-    );
-  }
-
-  Widget buildField(
-    String label,
-    TextEditingController controller, {
-    int maxLines = 1,
-  }) {
-    return Row(
-      crossAxisAlignment:
-          maxLines > 1 ? CrossAxisAlignment.start : CrossAxisAlignment.center,
-      children: [
-        SizedBox(width: 130, child: Text(label)),
-        const SizedBox(width: 16),
-        Expanded(
-          child: TextFormField(
-            controller: controller,
-            decoration: CustomStyle.inputDecoration(),
-            maxLines: maxLines,
-            validator: (value) => value!.isEmpty ? "$label wajib diisi" : null,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget buildDateRow(String label, DateTime? date, VoidCallback onTap) {
-    return Row(
-      children: [
-        SizedBox(width: 130, child: Text(label)),
-        const SizedBox(width: 16),
-        Expanded(
-          child: OutlinedButton(
-            style: CustomStyle.outlinedButtonStyle,
-            onPressed: onTap,
-            child: Text(
-              date == null
-                  ? "Pilih Tanggal"
-                  : "${date.toLocal()}".split(' ')[0],
-              style: CustomStyle.dateTextStyle,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget buildFileRow() {
-    return Row(
-      children: [
-        const SizedBox(width: 130, child: Text("Upload File")),
-        const SizedBox(width: 16),
-        Expanded(
-          child: OutlinedButton.icon(
-            onPressed: _pickFile,
-            icon: const Icon(Icons.attach_file),
-            label: Text(fileName ?? "Pilih File PKL"),
-            style: CustomStyle.outlinedButtonStyle,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget buildDropdownField(String label) {
-    return Row(
-      children: [
-        SizedBox(width: 130, child: Text(label)),
-        const SizedBox(width: 16),
-        Expanded(
-          child: DropdownButtonFormField<String>(
-            value: _jenisKelamin,
-            items:
-                ['Laki-laki', 'Perempuan']
-                    .map((jk) => DropdownMenuItem(value: jk, child: Text(jk)))
-                    .toList(),
-            onChanged: (value) {
-              if (value != null) {
-                setState(() {
-                  _jenisKelamin = value;
-                });
-              }
-            },
-            decoration: const InputDecoration(border: OutlineInputBorder()),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -2,9 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
+import '../models/app_state.dart';
 
 class AuthService {
-  static const baseUrl = "http://192.168.224.238:8000/api";
+  static const baseUrl = "http://192.168.18.248:8000/api";
   static String? token;
   static String? role;
 
@@ -28,6 +29,9 @@ class AuthService {
 
       await prefs.setString('token', token);
       await prefs.setString('role', role);
+
+      AppState.loginAs(user.role);
+      // await AppState.loginAs(token, role);
 
       return user;
     }
@@ -55,38 +59,40 @@ class AuthService {
   }
 
   // Fetch data user dari API, throw exception jika error
-  static Future<Map<String, dynamic>> fetchUserFromAPI() async {
-    final token = await getToken();
-    if (token == null) throw Exception("Token tidak ditemukan. Silakan login.");
+  // static Future<Map<String, dynamic>> fetchUserFromAPI() async {
+  //   final token = await getToken();
+  //   if (token == null) throw Exception("Token tidak ditemukan. Silakan login.");
 
-    final response = await http.get(
-      Uri.parse('$baseUrl/users'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-    );
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      if (data is List && data.isNotEmpty) {
-        return data.first;
-      } else if (data is Map<String, dynamic>) {
-        return data;
-      } else {
-        throw Exception("Data user tidak valid.");
-      }
-    } else {
-      throw Exception("Gagal mengambil data user: ${response.statusCode}");
-    }
-  }
+  //   final response = await http.get(
+  //     Uri.parse('$baseUrl/users'),
+  //     headers: {
+  //       'Authorization': 'Bearer $token',
+  //       'Content-Type': 'application/json',
+  //     },
+  //   );
+  //   if (response.statusCode == 200) {
+  //     final data = jsonDecode(response.body);
+  //     if (data is List && data.isNotEmpty) {
+  //       return data.first;
+  //     } else if (data is Map<String, dynamic>) {
+  //       return data;
+  //     } else {
+  //       throw Exception("Data user tidak valid.");
+  //     }
+  //   } else {
+  //     throw Exception("Gagal mengambil data user: ${response.statusCode}");
+  //   }
+  // }
 
   // Logout: hapus token & role di memori dan SharedPreferences
   static Future<void> logout() async {
-    token = null;
-    role = null;
+    // token = null;
+    // role = null;
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
     await prefs.remove('role');
+
+    AppState.logout();
   }
 
   //register user by admin

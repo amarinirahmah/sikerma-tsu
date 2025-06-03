@@ -1,12 +1,3 @@
-// import 'package:flutter/material.dart';
-
-// class AppState {
-//   static ValueNotifier<bool> isLoggedIn = ValueNotifier(false);
-//   static ValueNotifier<String> role = ValueNotifier(
-//     'guest',
-//   ); // 'admin', 'user', 'user_pkl'
-// }
-
 import 'package:flutter/material.dart';
 
 class AppState {
@@ -25,3 +16,23 @@ class AppState {
     role.value = 'guest';
   }
 }
+
+// import 'package:flutter/material.dart';
+
+// class AppState {
+//   static final ValueNotifier<bool> isLoggedIn = ValueNotifier(false);
+//   static final ValueNotifier<String> role = ValueNotifier('guest');
+//   static String? token;
+
+//   static Future<void> loginAs(String newToken, String newRole) async {
+//     token = newToken;
+//     isLoggedIn.value = true;
+//     role.value = newRole;
+//   }
+
+//   static Future<void> logout() async {
+//     token = null;
+//     isLoggedIn.value = false;
+//     role.value = 'guest';
+//   }
+// }
