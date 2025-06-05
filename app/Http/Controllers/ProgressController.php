@@ -19,13 +19,23 @@ class ProgressController extends Controller
 
         $progress = $mou->progress()->create([
             'tanggal' => $request->tanggal,
-            'proses' => $requrest->proses,
+            'proses' => $request->proses,
             'aktivitas' => $request->aktivitas,
         ]);
 
         return response()->json([
             'message' => 'progress berhasil ditambahkan',
             'data' => $progress,
+        ]);
+    }
+
+    public function getProgress($id)
+    {
+        $mou = DataMou::with('progress')->findOrFail($id);
+
+        return response()->json([
+            'message' => 'Data progress ditemukan',
+            'data' => $mou->progress,
         ]);
     }
 }

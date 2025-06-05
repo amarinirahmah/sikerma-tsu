@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth' => \App\Http\Middleware\Authenticate::class,
             'auth:sanctum' => \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
             'role' => \App\Http\Middleware\RoleMiddleware::class,
+            'cors' => \App\Http\Middleware\CorsMiddleware::class
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
