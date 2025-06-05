@@ -20,9 +20,11 @@ Route::get('/getmou', [DataController::class, 'getmou']);
 Route::get('/getpks', [DataController::class, 'getpks']);
 Route::get('/getmouid/{id}', [DataController::class, 'getmouid']);
 Route::get('/getpksid/{id}', [DataController::class, 'getpksid']);
-Route::middleware('auth:sanctum')->get('/download/{filename}', [FileController::class, 'download']);
+// Route::middleware('auth:sanctum')->get('/download/{filename}', [FileController::class, 'download']);
+// Route::get('/download/{filename}', [FileController::class, 'download']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
+    Route::get('/download/{filename}', [FileController::class, 'download']);
     Route::get('/getmou', [DataController::class, 'getmou']);
     Route::get('/getpks', [DataController::class, 'getpks']);
     Route::get('/getpkl', [DataController::class, 'getpkl']);
@@ -31,6 +33,7 @@ Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
     Route::post('/uploadmou', [DataController::class, 'uploadmou']); 
     Route::post('/uploadpks', [DataController::class, 'uploadpks']);
     Route::put('/updatemou/{id}', [DataController::class, 'updatemou']);
+    Route::patch('ketmouupdate/{id}', [DataController::class, 'updatemou']);
     Route::put('/updatepks/{id}', [DataController::class, 'updatepks']);
     Route::patch('ketupdate/{id}', [DataController::class, 'updatepks']);
     Route::delete('/deletemou/{id}', [DataController::class, 'deletemou']);
@@ -88,6 +91,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     });
 });
 
-Route::options('{any}', function () {
-    return response()->json([], 200);
-})->where('any', '.*');
+// Route::options('{any}', function () {
+//     return response()->json([], 200);
+// })->where('any', '.*');
