@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
-    public function download($folder, $filename)
+    public function download($filename)
     {
         try {
             $allowedFolders = ['mou_files', 'pks_files', 'pkl_files'];
@@ -16,7 +16,7 @@ class FileController extends Controller
                 return response()->json(['error' => 'Folder tidak diizinkan'], 403);
             }
 
-            $filepath = "public/{$folder}/{$filename}";
+            $filepath = "public/{$filename}";
 
             if (!Storage::exists($filepath)) {
                 return response()->json(['error' => 'File tidak ditemukan'], 404);

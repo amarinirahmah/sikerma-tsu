@@ -24,7 +24,7 @@ Route::get('/getpksid/{id}', [DataController::class, 'getpksid']);
 // Route::get('/download/{filename}', [FileController::class, 'download']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
-    Route::get('/download/{folder}/{filename}', [FileController::class, 'download']);
+    Route::get('/download/{filename}', [FileController::class, 'download']);
     // Route::get('/getmou', [DataController::class, 'getmou']);
     // Route::get('/getpks', [DataController::class, 'getpks']);
     Route::get('/getpkl', [DataController::class, 'getpkl']);
@@ -40,10 +40,10 @@ Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
     Route::delete('/deletepks/{id}', [DataController::class, 'deletepks']);
     Route::post('/uploadpkl', [DataController::class, 'uploadpkl']);
     Route::put('/updatepkl/{id}', [DataController::class, 'updatepkl']);
-    Route::patch('statupdate/{id}', [DataController::class, 'updatepkl']);
+    Route::patch('/statupdate/{id}', [DataController::class, 'updatepkl']);
     Route::delete('/deletepkl/{id}', [DataController::class, 'deletepkl']);
     Route::get('/getpklid/{id}', [DataController::class, 'getpklid']);
-    Route::post('addprogress/{id}', [ProgressController::class, 'addProgress']);
+    Route::post('/addprogress/{id}', [ProgressController::class, 'addProgress']);
     Route::get('/mou/{id}/progress', [ProgressController::class, 'getProgress']);
 });
 Route::middleware(['auth:sanctum', 'role:userpkl'])->group(function() {
