@@ -47,7 +47,7 @@ class DataController extends Controller
             'tanggal_mulai' => 'required|date',
             'tanggal_berakhir' => 'required|date',
             'ruanglingkup' => 'required',
-            'file_mou' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
+            'file_mou' => 'nullable|file|mimes:pdf,doc,docs,docx,jpg,jpeg,png|max:5120',
 
             'nama1' => 'required',
             'jabatan1' => 'required',
@@ -58,11 +58,13 @@ class DataController extends Controller
         ]);
 
         $filePath = null;
+        $fileName = null;
         // $fileType = null;
 
         if ($request->hasFile('file_mou')) {
             $file = $request->file('file_mou');
-            $filePath = $file->store('mou_files', 'public');
+            $fileName = $file->getClientOriginalName();
+            $filePath = $file->storeAs('mou_files',$fileName,'public');
             // $fileType = $file->getClientMimeType();
         }
 
@@ -75,6 +77,7 @@ class DataController extends Controller
             'tanggal_berakhir' => $request->tanggal_berakhir,
             'ruanglingkup' => $request->ruanglingkup,
             'file_mou' => $filePath,
+            'file_name' => $fileName,
             'pihak1' => [
                 'nama' => $request->nama1,
                 'jabatan' => $request->jabatan1,
@@ -121,6 +124,7 @@ class DataController extends Controller
             'tanggal_berakhir' => 'sometimes|required|date',
             'ruanglingkup' => 'sometimes|required',
             'file_mou' => 'nullable|file|mimes:pdf,doc,docs,jpg,jpeg,png|max:5120',
+            'file_name' => 'sometimes|required',
             'keterangan' => 'sometimes|required|in:Diajukan,Disetujui,Dibatalkan',
 
             'nama1' => 'sometimes|required',
@@ -199,6 +203,48 @@ class DataController extends Controller
         ]);
     }
 
+    public function patchKeteranganMou(Request $request, $id)
+{
+    $user = $request->user();
+    if (!$user) {
+        return response()->json(['message' => 'Unauthorized'], 401);
+    }
+
+    $request->validate([
+        'keterangan' => 'required|in:Diajukan,Disetujui,Dibatalkan',
+    ]);
+
+    $mou = DataMou::find($id);
+    if (!$mou) {
+        return response()->json(['message' => 'Data MOU tidak ditemukan'], 404);
+    }
+
+    $oldValue = $mou->keterangan;
+    $mou->keterangan = $request->keterangan;
+    $mou->save();
+
+    // Tambahkan log progress
+    $progress = DetailProgress::create([
+        'data_mou_id' => $mou->id,
+        'tanggal' => now()->toDateString(),
+        'aktivitas' => "Status MOU diubah dari '$oldValue' menjadi '{$request->keterangan}'",
+    ]);
+
+    // Tambahkan log aktivitas
+    ActivityLog::create([
+        'user_id' => $user->id,
+        'action' => 'Update Keterangan MOU',
+        'description' => "Mengubah status keterangan MOU dengan nomor {$mou->nomormou} dari '$oldValue' ke '{$request->keterangan}'",
+    ]);
+
+    return response()->json([
+        'message' => 'Keterangan MOU berhasil diperbarui',
+        'data' => $mou,
+        'progress' => $progress,
+    ]);
+}
+
+
     public function deletemou(Request $request, $id)
     {
         $user = $request->user();
@@ -272,10 +318,12 @@ class DataController extends Controller
             ], 404);
         }
         $filePath = null;
+        $fileName = null;
 
         if ($request->hasFile('file_pks')) {
             $file = $request->file('file_pks');
-            $filePath = $file->store('pks_files', 'public');
+            $fileName = $file->getClientOriginalName();
+            $filePath = $file->storeAs('pks_files',$fileName,'public');
             // $fileType = $file->getClientMimeType();
         }
 
@@ -287,6 +335,7 @@ class DataController extends Controller
             'tanggal_berakhir' => $validate['tanggal_berakhir'],
             'namaunit' => $validate['namaunit'],
             'file_pks' => $filePath,
+            'file_name' => $fileName,
             'ruanglingkup' => $validate['ruanglingkup'],
         ]);
         
@@ -437,11 +486,13 @@ class DataController extends Controller
         ]);
 
         $filePath = null;
+        $fileName = null;
         // $fileType = null;
 
         if ($request->hasFile('file_pkl')) {
             $file = $request->file('file_pkl');
-            $filePath = $file->store('pkl_files', 'public');
+            $fileName = $file->getClientOriginalName();
+            $filePath = $file->storeAs('pkl_files',$fileName,'public');
             // $fileType = $file->getClientMimeType();
         }
 
@@ -455,6 +506,7 @@ class DataController extends Controller
                 'tanggal_mulai' => $request->tanggal_mulai,
                 'tanggal_berakhir' => $request->tanggal_berakhir,
                 'file_pkl' => $filePath,
+                'file_name' => $fileName,
                 'telpemail' => $request->telpemail,
                 'alamat' => $request->alamat,
                 // 'file_type' => $fileType,
@@ -528,6 +580,8 @@ class DataController extends Controller
         }
 
         $changedFields = implode(', ', array_keys($changes));
+
+        // \Log::info('Perubahan PKL: ', $changes);
 
         // ActivityLog::create([
         //     'user_id' => $user->id,

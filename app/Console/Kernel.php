@@ -29,7 +29,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('check:mou-pks-notification')->everyMinute();
         $schedule->command('cek:notifikasi')->everyMinute();
         $schedule->command(MouPksStatus::class)->everyMinute();
-        $schedule->command('status:update')->daily();
+        $schedule->command('status:update')->everyMinute();
     }
 
     /**

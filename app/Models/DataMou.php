@@ -9,7 +9,7 @@ class DataMou extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nomormou', 'nomormou2', 'nama', 'judul', 'tanggal_mulai', 'tanggal_berakhir', 'file_mou', 'ruanglingkup','status','keterangan','pihak1','pihak2'];
+    protected $fillable = ['nomormou', 'nomormou2', 'nama', 'judul', 'tanggal_mulai', 'tanggal_berakhir', 'file_mou','file_name','ruanglingkup','status','keterangan','pihak1','pihak2'];
     protected $casts = [
         'pihak1' => 'array',
         'pihak2' => 'array',

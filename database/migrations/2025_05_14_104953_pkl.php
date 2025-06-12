@@ -21,6 +21,7 @@ return new class extends Migration
             $table->date('tanggal_mulai');
             $table->date('tanggal_berakhir');
             $table->string('file_pkl')->nullable();
+            $table->string('file_name')->nullable();
             $table->string('telpemail');
             $table->string('alamat');
             $table->enum('status',['Diproses','Disetujui','Ditolak'])->default('Diproses');

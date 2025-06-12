@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('tanggal_berakhir');
             $table->string('namaunit');
             $table->string('file_pks')->nullable();
+            $table->string('file_name')->nullable();
             $table->string('ruanglingkup');
             $table->enum('status',['Aktif', 'Tidak Aktif'])->default('Tidak Aktif');
             $table->enum('keterangan',['Diajukan','Disetujui','Dibatalkan'])->default('Diajukan');

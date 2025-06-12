@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('tanggal_mulai');
             $table->date('tanggal_berakhir');
             $table->string('file_mou')->nullable();
+            $table->string('file_name')->nullable();
             $table->string('ruanglingkup');
             $table->json('pihak1');
             $table->json('pihak2');

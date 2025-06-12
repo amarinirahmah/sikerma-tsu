@@ -9,7 +9,7 @@ class pkl extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nisn','user_id','sekolah','nama','gender','tanggal_mulai','tanggal_berakhir','file_pkl','telpemail','alamat'];
+    protected $fillable = ['nisn','user_id','sekolah','nama','gender','tanggal_mulai','tanggal_berakhir','file_pkl','file_name','telpemail','alamat','status'];
     protected $table = 'pkl';
 
     // public function user()
