@@ -4,7 +4,8 @@ import 'package:sikermatsu/models/detail_progres.dart';
 import 'auth_service.dart';
 
 class DetailProgressService {
-  static const String baseUrl = "http://192.168.100.6:8000/api";
+  static const String baseUrl = "http://192.168.100.111:8000/api";
+  // static const String baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
   static String? token;
   static String? role;
   static Future<DetailProgress> addProgress({
@@ -44,6 +45,23 @@ class DetailProgressService {
       }
     } catch (e) {
       throw Exception('Terjadi kesalahan: $e');
+    }
+  }
+
+  static Future<List<DetailProgress>> getProgress(int mouId) async {
+    final token = await AuthService.getToken();
+
+    final response = await http.get(
+      Uri.parse('$baseUrl/mou/$mouId/progress'),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      final jsonData = jsonDecode(response.body);
+      final List data = jsonData['data'];
+      return data.map((e) => DetailProgress.fromJson(e)).toList();
+    } else {
+      throw Exception('Gagal mengambil data progress');
     }
   }
 }

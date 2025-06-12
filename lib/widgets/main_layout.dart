@@ -45,98 +45,114 @@ class _MainLayoutState extends State<MainLayout> {
                     valueListenable: AppState.role,
                     builder: (context, role, _) {
                       print('Role aktif: $role');
-                      return Drawer(
-                        child: ListView(
-                          padding: EdgeInsets.zero,
-                          children: [
-                            DrawerHeader(
-                              decoration: BoxDecoration(color: Colors.teal),
-                              // child: Text(
-                              //   'SIKERMA TSU',
-                              //   style: TextStyle(
-                              //     color: Colors.white,
-                              //     fontSize: 24,
-                              //   ),
-                              // ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SizedBox(
-                                    height: 60,
-                                    child: Image.asset(
-                                      'assets/images/logo-white.png',
-                                      fit: BoxFit.contain,
-                                    ),
+                      return ValueListenableBuilder<String?>(
+                        valueListenable: AppState.token,
+                        builder: (context, token, _) {
+                          print('Token aktif = $token');
+                          return Drawer(
+                            child: ListView(
+                              padding: EdgeInsets.zero,
+                              children: [
+                                DrawerHeader(
+                                  decoration: BoxDecoration(color: Colors.teal),
+                                  // child: Text(
+                                  //   'SIKERMA TSU',
+                                  //   style: TextStyle(
+                                  //     color: Colors.white,
+                                  //     fontSize: 24,
+                                  //   ),
+                                  // ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      SizedBox(
+                                        height: 60,
+                                        child: Image.asset(
+                                          'assets/images/logo-white.png',
+                                          fit: BoxFit.contain,
+                                        ),
+                                      ),
+                                      SizedBox(height: 12),
+                                      Text(
+                                        'SiKERMA TSU',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  SizedBox(height: 12),
-                                  Text(
-                                    'SiKERMA TSU',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                                ),
+
+                                if (role != 'userpkl') ...[
+                                  _buildDrawerItem(
+                                    context,
+                                    'Dashboard',
+                                    '/dashboard',
+                                    Icons.dashboard,
                                   ),
                                 ],
-                              ),
+
+                                if (role == 'userpkl') ...[
+                                  _buildDrawerItem(
+                                    context,
+                                    'Dashboard',
+                                    '/dashboard2',
+                                    Icons.dashboard_customize,
+                                  ),
+                                ],
+
+                                if (role == 'admin' || role == 'user') ...[
+                                  // _buildDrawerItem(
+                                  //   context,
+                                  //   'Upload MoU',
+                                  //   '/uploadmou',
+                                  //   Icons.upload_file,
+                                  // ),
+                                  // _buildDrawerItem(
+                                  //   context,
+                                  //   'Upload PKS',
+                                  //   '/uploadpks',
+                                  //   Icons.drive_folder_upload,
+                                  // ),
+                                  _buildDrawerItem(
+                                    context,
+                                    'Progres Kerja Sama',
+                                    '/progres',
+                                    Icons.timeline,
+                                  ),
+                                  _buildDrawerItem(
+                                    context,
+                                    'Pengajuan PKL',
+                                    '/pkl',
+                                    Icons.work,
+                                  ),
+                                ],
+
+                                if (role == 'userpkl') ...[
+                                  _buildDrawerItem(
+                                    context,
+                                    'Pengajuan PKL',
+                                    '/pkl',
+                                    Icons.work,
+                                  ),
+                                ],
+
+                                if (role == 'admin') ...[
+                                  _buildDrawerItem(
+                                    context,
+                                    'Admin',
+                                    '/superadmin',
+                                    Icons.accessibility,
+                                  ),
+                                ],
+                              ],
                             ),
-
-                            if (role != 'userpkl') ...[
-                              _buildDrawerItem(
-                                context,
-                                'Dashboard',
-                                '/dashboard',
-                                Icons.dashboard,
-                              ),
-                            ],
-
-                            if (role == 'admin' || role == 'user') ...[
-                              _buildDrawerItem(
-                                context,
-                                'Upload MoU',
-                                '/uploadmou',
-                                Icons.upload_file,
-                              ),
-                              _buildDrawerItem(
-                                context,
-                                'Upload PKS',
-                                '/uploadpks',
-                                Icons.drive_folder_upload,
-                              ),
-                              _buildDrawerItem(
-                                context,
-                                'Progres Kerja Sama',
-                                '/progres',
-                                Icons.timeline,
-                              ),
-                              _buildDrawerItem(
-                                context,
-                                'Pengajuan PKL',
-                                '/pkl',
-                                Icons.work,
-                              ),
-                            ],
-
-                            if (role == 'userpkl') ...[
-                              _buildDrawerItem(
-                                context,
-                                'Pengajuan PKL',
-                                '/pkl',
-                                Icons.work,
-                              ),
-                            ],
-
-                            if (role == 'admin') ...[
-                              _buildDrawerItem(
-                                context,
-                                'Admin',
-                                '/superadmin',
-                                Icons.accessibility,
-                              ),
-                            ],
-                          ],
-                        ),
+                          );
+                        },
                       );
                     },
                   )

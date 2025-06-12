@@ -74,9 +74,13 @@
 //             TextButton(
 //               child: const Text('OK'),
 //               onPressed: () {
+//                 String role = user['role'];
+//                 String targetRoute =
+//                     (role == 'userpkl') ? '/dashboard2' : '/dashboard';
+
 //                 Navigator.pushNamedAndRemoveUntil(
 //                   context,
-//                   '/dashboard',
+//                   targetRoute,
 //                   (route) => false,
 //                 );
 //               },
@@ -186,13 +190,13 @@ class _LoginPageState extends State<LoginPage> {
 
     try {
       final user = await AuthService.login(email.text, password.text);
-      AppState.loginAs(user.role);
+      // AppState.loginAs(user.role, user.token);
       await _showBerhasil(user);
 
       if (user.role == 'admin' || user.role == 'user') {
         Navigator.pushReplacementNamed(context, '/dashboard');
       } else if (user.role == 'userpkl') {
-        Navigator.pushReplacementNamed(context, '/pkl');
+        Navigator.pushReplacementNamed(context, '/dashboard2');
       } else {
         _showGagal("Role tidak valid");
       }

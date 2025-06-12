@@ -1,3 +1,5 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/models/app_state.dart';
@@ -19,8 +21,11 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
   Pkl? pkl;
   bool isLoading = true;
   String? error;
+  StatusPkl? selectedStatus;
+  bool isSaving = false;
 
   final isLoggedIn = AppState.isLoggedIn.value;
+  final role = AppState.role.value;
 
   @override
   void didChangeDependencies() {
@@ -41,6 +46,7 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
       final result = await PklService().getPklById(id);
       setState(() {
         pkl = result;
+        selectedStatus = result.status;
         isLoading = false;
       });
     } catch (e) {
@@ -68,6 +74,14 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
         ],
       ),
     );
+  }
+
+  String _getExtension(String path) {
+    final dotIndex = path.lastIndexOf('.');
+    if (dotIndex != -1 && dotIndex + 1 < path.length) {
+      return path.substring(dotIndex + 1).toLowerCase();
+    }
+    return 'pdf';
   }
 
   @override
@@ -121,10 +135,12 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
                           ),
                           buildRow('Nomor Telepon / Email', pkl!.telpEmail),
                           buildRow('Alamat', pkl!.alamat),
-                          buildRow(
-                            'Status',
-                            pkl!.status?.toBackend() ?? 'Diproses',
-                          ),
+                          buildRow('Status', pkl!.statusText),
+
+                          // buildRow(
+                          //   'Status',
+                          //   pkl!.status?.toBackend() ?? 'Diproses',
+                          // ),
                           buildRow(
                             'File PKL',
                             pkl!.filePkl ?? 'Tidak ada file',
@@ -135,15 +151,26 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
                               style: CustomStyle.baseButtonStyle,
                               label: const Text('Download File'),
                               onPressed: () async {
-                                final token = await AuthService.getToken();
-                                final url =
-                                    'http://192.168.18.248:8000/storage/${pkl!.filePkl}';
                                 await downloadFile(
-                                  url,
-                                  'pkl-${pkl!.nisn}',
-                                  token.toString(),
+                                  'pkl_files',
+                                  '${pkl!.filePkl}',
                                 );
                               },
+                              // onPressed: () async {
+                              //   try {
+                              //     await downloadFile(
+                              //       pkl!.filePkl!,
+                              //       'pkl-${pkl!.nisn}',
+                              //     );
+                              //   } catch (e) {
+                              //     debugPrint('Download error: $e');
+                              //     ScaffoldMessenger.of(context).showSnackBar(
+                              //       SnackBar(
+                              //         content: Text('Gagal mengunduh file'),
+                              //       ),
+                              //     );
+                              //   }
+                              // },
                             ),
                         ],
                       ),

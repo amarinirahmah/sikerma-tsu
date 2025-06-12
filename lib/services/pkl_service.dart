@@ -9,7 +9,8 @@ import 'package:file_picker/file_picker.dart';
 
 class PklService {
   // static const String baseUrl = 'http://192.168.18.248:8000/api';
-  static const String baseUrl = "http://192.168.100.6:8000/api";
+  static const String baseUrl = "http://192.168.100.111:8000/api";
+  // static const String baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
   static String? token;
   static String? role;
 
@@ -87,6 +88,7 @@ class PklService {
         headers: {
           'Accept': 'application/json',
           'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
         },
         body: jsonEncode(fields),
       );
@@ -99,7 +101,8 @@ class PklService {
       final request =
           http.MultipartRequest('POST', uri)
             ..headers['Authorization'] = 'Bearer $token'
-            ..headers['Accept'] = 'application/json'
+            // ..headers['Accept'] = 'application/json'
+            ..headers['Content-Type'] = 'application/json'
             ..fields.addAll(fields);
 
       if (file.bytes != null) {
@@ -172,24 +175,30 @@ class PklService {
     final token = await AuthService.getToken();
     final uri = Uri.parse('$baseUrl/updatepkl/$id');
 
-    final fields = {
+    final request =
+        http.MultipartRequest('POST', uri)
+          ..headers['Authorization'] = 'Bearer $token'
+          ..headers['Accept'] = 'application/json';
+
+    // Kirim field sesuai validasi backend
+    request.fields.addAll({
+      '_method': 'PUT',
       'nisn': pkl.nisn,
       'nama': pkl.nama,
       'sekolah': pkl.sekolah,
       'gender': pkl.gender.toBackend(),
-      'tanggalmulai': pkl.tanggalMulai.toIso8601String(),
-      'tanggalberakhir': pkl.tanggalBerakhir.toIso8601String(),
+      'tanggal_mulai': pkl.tanggalMulai.toIso8601String(),
+      'tanggal_berakhir': pkl.tanggalBerakhir.toIso8601String(),
       'telpemail': pkl.telpEmail,
       'alamat': pkl.alamat,
-      '_method': 'PUT',
-      if (pkl.status != null) 'status': statusToBackend(pkl.status),
-    };
+    });
 
-    final request =
-        http.MultipartRequest('POST', uri)
-          ..headers['Authorization'] = 'Bearer $token'
-          ..fields.addAll(fields);
+    // Tambahkan status hanya jika tidak null
+    if (pkl.status != null) {
+      request.fields['status'] = pkl.status!.toBackend();
+    }
 
+    // Upload file jika ada
     if (file != null && file.bytes != null) {
       request.files.add(
         http.MultipartFile.fromBytes(
@@ -200,6 +209,7 @@ class PklService {
       );
     }
 
+    // Kirim request
     final streamedResponse = await request.send();
     final responseBody = await streamedResponse.stream.bytesToString();
 
@@ -207,6 +217,65 @@ class PklService {
       throw Exception('Gagal memperbarui PKL: $responseBody');
     }
   }
+
+  // static Future<void> updatePkl(
+  //   String id,
+  //   Pkl pkl, {
+  //   PlatformFile? file,
+  // }) async {
+  //   final token = await AuthService.getToken();
+  //   final uri = Uri.parse('$baseUrl/updatepkl/$id');
+
+  //   final fields = {
+  //     'nisn': pkl.nisn,
+  //     'nama': pkl.nama,
+  //     'sekolah': pkl.sekolah,
+  //     'gender': pkl.gender.toBackend(),
+  //     'tanggal_mulai': pkl.tanggalMulai.toIso8601String(),
+  //     'tanggal_berakhir': pkl.tanggalBerakhir.toIso8601String(),
+  //     'telpemail': pkl.telpEmail,
+  //     'alamat': pkl.alamat,
+  //     'status': statusToBackend(pkl.status),
+  //     '_method': 'PUT',
+  //     // if (pkl.status != null) 'status': pkl.status!.toBackend(),
+  //     // if (pkl.status != null) 'status': statusToBackend(pkl.status),
+  //   };
+
+  //   final request =
+  //       http.MultipartRequest('POST', uri)
+  //         ..headers['Authorization'] = 'Bearer $token'
+  //         ..headers['Accept'] = 'application/json';
+  //   fields['nisn'] = pkl.nisn;
+  //   fields['nama'] = pkl.nama;
+  //   fields['sekolah'] = pkl.sekolah;
+  //   fields['gender'] = pkl.gender.toBackend();
+  //   fields['tanggal_mulai'] = pkl.tanggalMulai.toIso8601String();
+  //   fields['tanggal_berakhir'] = pkl.tanggalBerakhir.toIso8601String();
+  //   fields['telpemail'] = pkl.telpEmail;
+  //   fields['alamat'] = pkl.alamat;
+
+  //   fields['status'] = pkl.status!.toBackend();
+  //   request.fields.addAll(fields);
+
+  //   // ..fields.addAll(fields);
+
+  //   if (file != null && file.bytes != null) {
+  //     request.files.add(
+  //       http.MultipartFile.fromBytes(
+  //         'file_pkl',
+  //         file.bytes!,
+  //         filename: file.name,
+  //       ),
+  //     );
+  //   }
+
+  //   final streamedResponse = await request.send();
+  //   final responseBody = await streamedResponse.stream.bytesToString();
+
+  //   if (streamedResponse.statusCode >= 400) {
+  //     throw Exception('Gagal memperbarui PKL: $responseBody');
+  //   }
+  // }
 
   // Future<void> updatePkl(String id, Pkl pkl, {File? file}) async {
   //   final token = await AuthService.getToken();
@@ -280,23 +349,23 @@ class PklService {
     }
   }
 
-  // static Future<void> updateStatus({
-  //   required int id,
-  //   required StatusPkl status,
-  //   required String token,
-  // }) async {
-  //   final url = Uri.parse('$baseUrl/pkl/$id');
-  //   final response = await http.put(
-  //     url,
-  //     headers: {
-  //       'Authorization': 'Bearer $token',
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: jsonEncode({'status': status.toBackend()}),
-  //   );
+  Future<Pkl> updateStatus(String id, StatusPkl status) async {
+    final token = await AuthService.getToken();
+    final url = Uri.parse('$baseUrl/statupdate/$id');
 
-  //   if (response.statusCode != 200) {
-  //     throw Exception('Failed to update status');
-  //   }
-  // }
+    final response = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'status': status.name}),
+    );
+
+    if (response.statusCode == 200) {
+      return Pkl.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Gagal update status: ${response.reasonPhrase}');
+    }
+  }
 }

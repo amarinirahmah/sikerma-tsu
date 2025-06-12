@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/styles/style.dart';
 import 'package:sikermatsu/widgets/app_bar.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sikermatsu/helpers/responsive.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -14,17 +16,28 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildWelcomeSection(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
+    final isTablet = Responsive.isTablet(context);
+
+    double titleFontSize = isMobile ? 24 : (isTablet ? 32 : 42);
+    double subtitleFontSize = isMobile ? 14 : (isTablet ? 18 : 22);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Center(
-        child: Text(
-          'Selamat Datang di SiKERMA TSU!',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+            'Selamat Datang di Sistem Informasi Kerja Sama\nTiga Serangkai University!',
+            style: CustomStyle.title.copyWith(fontSize: titleFontSize),
+            textAlign: TextAlign.center,
           ),
-          textAlign: TextAlign.center,
-        ),
+          const SizedBox(height: 28),
+          Text(
+            '"Jembatan Kolaborasi untuk Mewujudkan Inovasi, Keunggulan, dan Pertumbuhan Bersama\nSecara Berkelanjutan dalam Dunia Pendidikan dan Kemitraan"',
+            style: CustomStyle.subtitle.copyWith(fontSize: subtitleFontSize),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
@@ -32,17 +45,14 @@ class HomePage extends StatelessWidget {
   Widget _buildIntroSection(BuildContext context) {
     return Container(
       width: double.infinity,
-      color: Colors.grey[100],
+      color: Colors.white,
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
             'Apa itu SiKERMA TSU?',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: Colors.teal.shade800,
-            ),
+            style: CustomStyle.headline1,
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20),
@@ -67,30 +77,41 @@ class HomePage extends StatelessWidget {
     // Fitur / informasi singkat tanpa background gelap
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
-      child: Wrap(
-        spacing: 16,
-        runSpacing: 16,
-        alignment: WrapAlignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _featureCard(
-            Icons.school,
-            'Kerja Sama Sekolah',
-            'Mudah dan cepat menjalin kerja sama',
+          Text(
+            'Fitur Unggulan',
+            style: CustomStyle.headline1,
+            textAlign: TextAlign.center,
           ),
-          _featureCard(
-            Icons.work_outline,
-            'Pengajuan PKL',
-            'Sistem pengajuan praktikum yang terintegrasi',
-          ),
-          _featureCard(
-            Icons.people,
-            'Mitra Terpercaya',
-            'Bermitra dengan berbagai instansi terpercaya',
-          ),
-          _featureCard(
-            Icons.people,
-            'Mitra Terpercaya',
-            'Bermitra dengan berbagai instansi terpercaya',
+          const SizedBox(height: 20),
+          Wrap(
+            spacing: 16,
+            runSpacing: 16,
+            alignment: WrapAlignment.center,
+            children: [
+              _featureCard(
+                Icons.school,
+                'Kerja Sama Sekolah',
+                'Mudah dan cepat menjalin kerja sama',
+              ),
+              _featureCard(
+                Icons.work_outline,
+                'Pengajuan PKL',
+                'Sistem pengajuan praktikum yang terintegrasi',
+              ),
+              _featureCard(
+                Icons.people,
+                'Mitra Terpercaya',
+                'Bermitra dengan berbagai instansi terpercaya',
+              ),
+              _featureCard(
+                Icons.people,
+                'Mitra Terpercaya',
+                'Bermitra dengan berbagai instansi terpercaya',
+              ),
+            ],
           ),
         ],
       ),
@@ -126,38 +147,53 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildFooter(BuildContext context) {
+    final isMobile = Responsive.isMobile(context);
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
           color: Colors.teal,
           padding: const EdgeInsets.symmetric(vertical: 32, horizontal: 20),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _footerSectionAbout(),
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _footerSectionLocation(),
-                ),
-              ),
-              const SizedBox(width: 16), // margin antar section
-
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: _footerSectionContact(),
-                ),
-              ),
-            ],
-          ),
+          child:
+              isMobile
+                  ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _footerSectionAbout(),
+                      const SizedBox(height: 24),
+                      _footerSectionHours(),
+                      const SizedBox(height: 24),
+                      _footerSectionContact(),
+                    ],
+                  )
+                  : Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _footerSectionAbout(),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _footerSectionHours(),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _footerSectionContact(),
+                        ),
+                      ),
+                    ],
+                  ),
         ),
         Container(
           color: Colors.teal.shade700,
@@ -178,6 +214,8 @@ class HomePage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Image.asset('assets/images/logo-white.png', height: 48),
+        const SizedBox(height: 12),
         const Text(
           'Tentang Kami',
           style: TextStyle(
@@ -259,7 +297,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _footerSectionLocation() {
+  Widget _footerSectionHours() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -278,6 +316,15 @@ class HomePage extends StatelessWidget {
           style: TextStyle(color: Colors.white70),
         ),
         const SizedBox(height: 20),
+        const Text(
+          'Ikuti Kami',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox(height: 8),
         Row(
           children: [
             IconButton(
@@ -316,7 +363,7 @@ class HomePage extends StatelessWidget {
                 ),
               ),
               child: Container(
-                color: Colors.black.withOpacity(0.4),
+                color: Colors.black.withOpacity(0.65),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [_buildWelcomeSection(context)],
@@ -328,6 +375,7 @@ class HomePage extends StatelessWidget {
                 // child: Column(children: [_buildWelcomeSection(context)]),
               ),
             ),
+            const SizedBox(height: 20),
 
             _buildIntroSection(context),
             // Bagian feature cards dan footer tanpa background image

@@ -433,10 +433,10 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                           Navigator.pushNamed(context, '/addrole').then((
                             result,
                           ) {
-                            _loadUser();
-                            // if (result == true) {
-                            //   _loadUser();
-                            // }
+                            // _loadUser();
+                            if (result == true) {
+                              _loadUser();
+                            }
                           });
                         },
 

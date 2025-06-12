@@ -9,7 +9,8 @@ import 'package:file_picker/file_picker.dart';
 
 class PksService {
   // static const String baseUrl = 'http://192.168.18.248:8000/api';
-  static const String baseUrl = "http://192.168.100.6:8000/api";
+  static const String baseUrl = "http://192.168.100.111:8000/api";
+  // static const String baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
   static String? token;
   static String? role;
 
@@ -18,7 +19,7 @@ class PksService {
     final token = await AuthService.getToken();
     final response = await http.get(
       Uri.parse('$baseUrl/getpks'),
-      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
+      headers: {'Accept': 'application/json'},
     );
 
     if (response.statusCode == 200) {
@@ -35,7 +36,8 @@ class PksService {
     final response = await http.get(
       Uri.parse('$baseUrl/getpksid/$id'),
       headers: {
-        'Content-Type': 'application/json',
+        // 'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': 'Bearer $token',
       },
     );
@@ -312,6 +314,26 @@ class PksService {
 
     if (response.statusCode != 200) {
       throw Exception('Gagal menghapus PKS');
+    }
+  }
+
+  Future<Pks> updateKeterangan(String id, KeteranganPks keterangan) async {
+    final token = await AuthService.getToken();
+    final url = Uri.parse('$baseUrl/ketupdate/$id');
+
+    final response = await http.patch(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({'keterangan': keterangan.name}),
+    );
+
+    if (response.statusCode == 200) {
+      return Pks.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Gagal update keterangan PKS: ${response.reasonPhrase}');
     }
   }
 }

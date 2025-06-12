@@ -14,6 +14,8 @@ class PKLPage extends StatefulWidget {
 }
 
 class _PKLPageState extends State<PKLPage> {
+  final TextEditingController _searchController = TextEditingController();
+
   List<Pkl> allPkl = [];
   List<Pkl> filteredPkl = [];
   bool isLoading = true;
@@ -26,6 +28,12 @@ class _PKLPageState extends State<PKLPage> {
   void initState() {
     super.initState();
     _loadPkl();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadPkl() async {
@@ -112,18 +120,37 @@ class _PKLPageState extends State<PKLPage> {
                                     children: [
                                       Expanded(
                                         child: TextField(
-                                          // decoration:
-                                          //     CustomStyle.inputDecoration(
-                                          //       prefixIcon: const Icon(
-                                          //         Icons.search,
-                                          //       ),
-                                          //       hintText: 'Cari...',
-                                          //     ),
-                                          decoration: const InputDecoration(
-                                            labelText: 'Cari Nama Siswa',
-                                            border: OutlineInputBorder(),
-                                            isDense: true,
-                                          ),
+                                          controller: _searchController,
+                                          // decoration: const InputDecoration(
+                                          //   labelText: 'Cari Nama Siswa',
+                                          //   border: OutlineInputBorder(),
+                                          //   isDense: true,
+                                          // ),
+                                          decoration:
+                                              CustomStyle.searchInputDecoration(
+                                                labelText: 'Cari Nama Siswa',
+                                                prefixIcon: Icon(
+                                                  Icons.search,
+                                                  color: Colors.grey,
+                                                ),
+                                                suffixIcon:
+                                                    searchQuery.isNotEmpty
+                                                        ? IconButton(
+                                                          icon: const Icon(
+                                                            Icons.clear,
+                                                            color: Colors.grey,
+                                                          ),
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              searchQuery = '';
+                                                              _searchController
+                                                                  .clear();
+                                                              _applyFilter();
+                                                            });
+                                                          },
+                                                        )
+                                                        : null,
+                                              ),
                                           onChanged: (value) {
                                             searchQuery = value;
                                             _applyFilter();
@@ -131,220 +158,289 @@ class _PKLPageState extends State<PKLPage> {
                                         ),
                                       ),
                                       const SizedBox(width: 16),
-                                      DropdownButton<String>(
-                                        // decoration:
-                                        //     CustomStyle.dropdownDecoration(),
-                                        value: selectedStatus,
-                                        onChanged: (value) {
-                                          if (value != null) {
-                                            selectedStatus = value;
-                                            _applyFilter();
-                                          }
-                                        },
-                                        items:
-                                            [
-                                                  'Semua',
-                                                  'Diproses',
-                                                  'Disetujui',
-                                                  'Ditolak',
-                                                ]
-                                                .map(
-                                                  (status) => DropdownMenuItem(
-                                                    value: status,
-                                                    child: Text(status),
-                                                  ),
-                                                )
-                                                .toList(),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                        ),
+                                        decoration:
+                                            CustomStyle.dropdownBoxDecoration(),
+                                        child: DropdownButton<String>(
+                                          // decoration:
+                                          //     CustomStyle.dropdownDecoration(),
+                                          value: selectedStatus,
+                                          // isDense: true,
+                                          underline: const SizedBox(),
+                                          onChanged: (value) {
+                                            if (value != null) {
+                                              selectedStatus = value;
+                                              _applyFilter();
+                                            }
+                                          },
+                                          items:
+                                              [
+                                                    'Semua',
+                                                    'Diproses',
+                                                    'Disetujui',
+                                                    'Ditolak',
+                                                  ]
+                                                  .map(
+                                                    (role) => DropdownMenuItem(
+                                                      value: role,
+                                                      child: Text(role),
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                        ),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 16),
                                   SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
-                                    child: DataTable(
-                                      // headingRowColor:
-                                      //     MaterialStateProperty.all<Color>(
-                                      //       Colors.grey[300]!,
-                                      //     ),
-                                      // headingTextStyle: const TextStyle(
-                                      //   fontWeight: FontWeight.bold,
-                                      // ),
-                                      border: TableBorder.all(
-                                        color: Colors.grey,
+                                    child: ConstrainedBox(
+                                      constraints: BoxConstraints(
+                                        maxWidth: 1000,
                                       ),
-                                      columns: [
-                                        DataColumn(label: Text('NISN')),
-                                        DataColumn(label: Text('Nama Siswa')),
-                                        DataColumn(label: Text('Sekolah')),
-                                        DataColumn(
-                                          label: Text('Tanggal Mulai'),
-                                        ),
-                                        DataColumn(
-                                          label: Text('Tanggal Berakhir'),
-                                        ),
-                                        DataColumn(label: Text('Status')),
-                                        DataColumn(label: Text('Aksi')),
-                                      ],
-                                      rows:
-                                          displayedRows.map((pkl) {
-                                            return DataRow(
-                                              cells: [
-                                                DataCell(Text(pkl.nisn)),
-                                                DataCell(Text(pkl.nama)),
-                                                DataCell(Text(pkl.sekolah)),
-                                                DataCell(
-                                                  Text(
-                                                    pkl.tanggalMulai!
-                                                        .toIso8601String()
-                                                        .split('T')
-                                                        .first,
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Text(
-                                                    pkl.tanggalBerakhir
-                                                        .toIso8601String()
-                                                        .split('T')
-                                                        .first,
-                                                  ),
-                                                ),
-                                                DataCell(Text(pkl.statusText)),
-
-                                                DataCell(
-                                                  Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      IconButton(
-                                                        icon: const Icon(
-                                                          Icons.info,
-                                                          color: Colors.teal,
-                                                        ),
-                                                        tooltip: 'Detail',
-                                                        onPressed: () {
-                                                          Navigator.pushNamed(
-                                                            context,
-                                                            '/detailpkl',
-                                                            arguments:
-                                                                pkl.id
-                                                                    .toString(),
-                                                          );
-                                                        },
+                                      child: SizedBox(
+                                        width: double.infinity,
+                                        child: DataTable(
+                                          headingRowColor:
+                                              MaterialStateProperty.all<Color>(
+                                                Colors.grey[300]!,
+                                              ),
+                                          headingTextStyle: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          border: TableBorder.all(
+                                            color: Colors.grey,
+                                          ),
+                                          columns: [
+                                            DataColumn(
+                                              label: Text(
+                                                'NISN',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Nama Siswa',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Sekolah',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Tanggal Mulai',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Tanggal Berakhir',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Status',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Aksi',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                          ],
+                                          rows:
+                                              displayedRows.map((pkl) {
+                                                return DataRow(
+                                                  cells: [
+                                                    DataCell(Text(pkl.nisn)),
+                                                    DataCell(Text(pkl.nama)),
+                                                    DataCell(Text(pkl.sekolah)),
+                                                    DataCell(
+                                                      Text(
+                                                        pkl.tanggalMulai!
+                                                            .toIso8601String()
+                                                            .split('T')
+                                                            .first,
                                                       ),
-                                                      if (isLoggedIn &&
-                                                          (role == 'admin' ||
-                                                              role == 'user'))
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.edit,
-                                                            color:
-                                                                Colors.orange,
+                                                    ),
+                                                    DataCell(
+                                                      Text(
+                                                        pkl.tanggalBerakhir
+                                                            .toIso8601String()
+                                                            .split('T')
+                                                            .first,
+                                                      ),
+                                                    ),
+                                                    DataCell(
+                                                      Text(pkl.statusText),
+                                                    ),
+
+                                                    DataCell(
+                                                      Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          IconButton(
+                                                            icon: const Icon(
+                                                              Icons.info,
+                                                              color:
+                                                                  Colors.teal,
+                                                            ),
+                                                            tooltip: 'Detail',
+                                                            onPressed: () {
+                                                              Navigator.pushNamed(
+                                                                context,
+                                                                '/detailpkl',
+                                                                arguments:
+                                                                    pkl.id
+                                                                        .toString(),
+                                                              );
+                                                            },
                                                           ),
-                                                          tooltip: 'Edit',
-                                                          onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder:
-                                                                    (
-                                                                      context,
-                                                                    ) => UploadPKLPage(
-                                                                      pkl: pkl,
-                                                                    ),
+                                                          if (isLoggedIn &&
+                                                              (role ==
+                                                                      'admin' ||
+                                                                  role ==
+                                                                      'user'))
+                                                            IconButton(
+                                                              icon: const Icon(
+                                                                Icons.edit,
+                                                                color:
+                                                                    Colors
+                                                                        .orange,
                                                               ),
-                                                            ).then((value) {
-                                                              if (value ==
-                                                                  true) {
-                                                                _loadPkl();
-                                                              }
-                                                            });
-                                                          },
-                                                        ),
-                                                      if (isLoggedIn &&
-                                                          (role == 'admin' ||
-                                                              role == 'user'))
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.delete,
-                                                            color: Colors.red,
-                                                          ),
-                                                          tooltip: 'Hapus',
-                                                          onPressed: () async {
-                                                            final confirm = await showDialog<
-                                                              bool
-                                                            >(
-                                                              context: context,
-                                                              builder:
-                                                                  (
-                                                                    context,
-                                                                  ) => AlertDialog(
-                                                                    title: const Text(
-                                                                      'Konfirmasi',
-                                                                    ),
-                                                                    content: Text(
-                                                                      'Hapus data siswa dengan nama ${pkl.nama}?',
-                                                                    ),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () => Navigator.pop(
-                                                                              context,
-                                                                              false,
-                                                                            ),
-                                                                        child: const Text(
-                                                                          'Batal',
-                                                                        ),
-                                                                      ),
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () => Navigator.pop(
-                                                                              context,
-                                                                              true,
-                                                                            ),
-                                                                        child: const Text(
-                                                                          'Hapus',
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                            );
-                                                            if (confirm ==
-                                                                true) {
-                                                              try {
-                                                                await PklService.deletePkl(
-                                                                  pkl.id
-                                                                      .toString(),
-                                                                );
-                                                                ScaffoldMessenger.of(
+                                                              tooltip: 'Edit',
+                                                              onPressed: () {
+                                                                Navigator.push(
                                                                   context,
-                                                                ).showSnackBar(
-                                                                  const SnackBar(
-                                                                    content: Text(
-                                                                      'Berhasil menghapus data siswa',
-                                                                    ),
+                                                                  MaterialPageRoute(
+                                                                    builder:
+                                                                        (
+                                                                          context,
+                                                                        ) => UploadPKLPage(
+                                                                          pkl:
+                                                                              pkl,
+                                                                        ),
                                                                   ),
+                                                                ).then((value) {
+                                                                  if (value ==
+                                                                      true) {
+                                                                    _loadPkl();
+                                                                  }
+                                                                });
+                                                              },
+                                                            ),
+                                                          if (isLoggedIn &&
+                                                              (role ==
+                                                                      'admin' ||
+                                                                  role ==
+                                                                      'user'))
+                                                            IconButton(
+                                                              icon: const Icon(
+                                                                Icons.delete,
+                                                                color:
+                                                                    Colors.red,
+                                                              ),
+                                                              tooltip: 'Hapus',
+                                                              onPressed: () async {
+                                                                final confirm = await showDialog<
+                                                                  bool
+                                                                >(
+                                                                  context:
+                                                                      context,
+                                                                  builder:
+                                                                      (
+                                                                        context,
+                                                                      ) => AlertDialog(
+                                                                        title: const Text(
+                                                                          'Konfirmasi',
+                                                                        ),
+                                                                        content:
+                                                                            Text(
+                                                                              'Hapus data siswa dengan nama ${pkl.nama}?',
+                                                                            ),
+                                                                        actions: [
+                                                                          TextButton(
+                                                                            onPressed:
+                                                                                () => Navigator.pop(
+                                                                                  context,
+                                                                                  false,
+                                                                                ),
+                                                                            child: const Text(
+                                                                              'Batal',
+                                                                            ),
+                                                                          ),
+                                                                          TextButton(
+                                                                            onPressed:
+                                                                                () => Navigator.pop(
+                                                                                  context,
+                                                                                  true,
+                                                                                ),
+                                                                            child: const Text(
+                                                                              'Hapus',
+                                                                            ),
+                                                                          ),
+                                                                        ],
+                                                                      ),
                                                                 );
-                                                                await _loadPkl();
-                                                              } catch (e) {
-                                                                ScaffoldMessenger.of(
-                                                                  context,
-                                                                ).showSnackBar(
-                                                                  SnackBar(
-                                                                    content: Text(
-                                                                      'Gagal menghapus data siswa: $e',
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                              }
-                                                            }
-                                                          },
-                                                        ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            );
-                                          }).toList(),
+                                                                if (confirm ==
+                                                                    true) {
+                                                                  try {
+                                                                    await PklService.deletePkl(
+                                                                      pkl.id
+                                                                          .toString(),
+                                                                    );
+                                                                    ScaffoldMessenger.of(
+                                                                      context,
+                                                                    ).showSnackBar(
+                                                                      const SnackBar(
+                                                                        content:
+                                                                            Text(
+                                                                              'Berhasil menghapus data siswa',
+                                                                            ),
+                                                                      ),
+                                                                    );
+                                                                    await _loadPkl();
+                                                                  } catch (e) {
+                                                                    ScaffoldMessenger.of(
+                                                                      context,
+                                                                    ).showSnackBar(
+                                                                      SnackBar(
+                                                                        content:
+                                                                            Text(
+                                                                              'Gagal menghapus data siswa: $e',
+                                                                            ),
+                                                                      ),
+                                                                    );
+                                                                  }
+                                                                }
+                                                              },
+                                                            ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                );
+                                              }).toList(),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(height: 16),

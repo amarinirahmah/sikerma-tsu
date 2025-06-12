@@ -15,6 +15,7 @@ class PKSPage extends StatefulWidget {
 }
 
 class _PKSPageState extends State<PKSPage> {
+  final TextEditingController _searchController = TextEditingController();
   List<Pks> allPks = [];
   List<Pks> filteredPks = [];
   bool isLoading = true;
@@ -113,18 +114,31 @@ class _PKSPageState extends State<PKSPage> {
                                     children: [
                                       Expanded(
                                         child: TextField(
-                                          // decoration:
-                                          //     CustomStyle.inputDecoration(
-                                          //       prefixIcon: const Icon(
-                                          //         Icons.search,
-                                          //       ),
-                                          //       hintText: 'Cari...',
-                                          //     ),
-                                          decoration: const InputDecoration(
-                                            labelText: 'Cari Judul Kerja Sama',
-                                            border: OutlineInputBorder(),
-                                            isDense: true,
-                                          ),
+                                          decoration:
+                                              CustomStyle.searchInputDecoration(
+                                                labelText: 'Cari Judul PKS',
+                                                prefixIcon: Icon(
+                                                  Icons.search,
+                                                  color: Colors.grey,
+                                                ),
+                                                suffixIcon:
+                                                    searchQuery.isNotEmpty
+                                                        ? IconButton(
+                                                          icon: const Icon(
+                                                            Icons.clear,
+                                                            color: Colors.grey,
+                                                          ),
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              searchQuery = '';
+                                                              _searchController
+                                                                  .clear();
+                                                              _applyFilter();
+                                                            });
+                                                          },
+                                                        )
+                                                        : null,
+                                              ),
                                           onChanged: (value) {
                                             searchQuery = value;
                                             _applyFilter();
@@ -132,56 +146,116 @@ class _PKSPageState extends State<PKSPage> {
                                         ),
                                       ),
                                       const SizedBox(width: 16),
-                                      DropdownButton<String>(
-                                        // decoration:
-                                        //     CustomStyle.dropdownDecoration(),
-                                        value: selectedStatus,
-                                        onChanged: (value) {
-                                          if (value != null) {
-                                            selectedStatus = value;
-                                            _applyFilter();
-                                          }
-                                        },
-                                        items:
-                                            ['Semua', 'Aktif', 'Nonaktif']
-                                                .map(
-                                                  (status) => DropdownMenuItem(
-                                                    value: status,
-                                                    child: Text(status),
-                                                  ),
-                                                )
-                                                .toList(),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                        ),
+                                        decoration:
+                                            CustomStyle.dropdownBoxDecoration(),
+                                        child: DropdownButton<String>(
+                                          value: selectedStatus,
+                                          underline: const SizedBox(),
+                                          onChanged: (value) {
+                                            if (value != null) {
+                                              selectedStatus = value;
+                                              _applyFilter();
+                                            }
+                                          },
+                                          items:
+                                              ['Semua', 'Aktif', 'Tidak Aktif']
+                                                  .map(
+                                                    (role) => DropdownMenuItem(
+                                                      value: role,
+                                                      child: Text(role),
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                        ),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 16),
                                   SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
+
                                     child: DataTable(
-                                      // headingRowColor:
-                                      //     MaterialStateProperty.all<Color>(
-                                      //       Colors.grey[300]!,
-                                      //     ),
-                                      // headingTextStyle: const TextStyle(
-                                      //   fontWeight: FontWeight.bold,
-                                      // ),
+                                      headingRowColor:
+                                          MaterialStateProperty.all<Color>(
+                                            Colors.grey[300]!,
+                                          ),
+                                      headingTextStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                       border: TableBorder.all(
                                         color: Colors.grey,
                                       ),
                                       columns: [
-                                        DataColumn(label: Text('Nomor MoU')),
-                                        DataColumn(label: Text('Nomor PKS')),
-                                        DataColumn(label: Text('Judul')),
                                         DataColumn(
-                                          label: Text('Tanggal Mulai'),
+                                          label: Text(
+                                            'Nomor MoU',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
                                         ),
                                         DataColumn(
-                                          label: Text('Tanggal Berakhir'),
+                                          label: Text(
+                                            'Nomor PKS',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
                                         ),
-                                        DataColumn(label: Text('Nama Unit')),
-                                        DataColumn(label: Text('Status')),
-                                        DataColumn(label: Text('Keterangan')),
-                                        DataColumn(label: Text('Aksi')),
+                                        DataColumn(
+                                          label: Text(
+                                            'Judul',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Nama Unit',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Tanggal Mulai',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Tanggal Berakhir',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+
+                                        DataColumn(
+                                          label: Text(
+                                            'Status',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Keterangan',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        if (isLoggedIn &&
+                                            (role == 'admin' || role == 'user'))
+                                          DataColumn(
+                                            label: Text(
+                                              'Aksi',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
                                       ],
                                       rows:
                                           displayedRows.map((pks) {
@@ -233,114 +307,107 @@ class _PKSPageState extends State<PKSPage> {
                                                           );
                                                         },
                                                       ),
-                                                      if (isLoggedIn &&
-                                                          (role == 'admin' ||
-                                                              role == 'user'))
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.edit,
-                                                            color:
-                                                                Colors.orange,
-                                                          ),
-                                                          tooltip: 'Edit',
-                                                          onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder:
-                                                                    (
-                                                                      context,
-                                                                    ) => UploadPKSPage(
-                                                                      pks: pks,
-                                                                    ),
-                                                              ),
-                                                            ).then((value) {
-                                                              if (value ==
-                                                                  true) {
-                                                                _loadPks();
-                                                              }
-                                                            });
-                                                          },
+
+                                                      IconButton(
+                                                        icon: const Icon(
+                                                          Icons.edit,
+                                                          color: Colors.orange,
                                                         ),
-                                                      if (isLoggedIn &&
-                                                          (role == 'admin' ||
-                                                              role == 'user'))
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.delete,
-                                                            color: Colors.red,
-                                                          ),
-                                                          tooltip: 'Hapus',
-                                                          onPressed: () async {
-                                                            final confirm = await showDialog<
-                                                              bool
-                                                            >(
-                                                              context: context,
+                                                        tooltip: 'Edit',
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
                                                               builder:
-                                                                  (
-                                                                    context,
-                                                                  ) => AlertDialog(
-                                                                    title: const Text(
-                                                                      'Konfirmasi',
-                                                                    ),
-                                                                    content: Text(
-                                                                      'Hapus PKS dengan judul ${pks.judul}?',
-                                                                    ),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () => Navigator.pop(
-                                                                              context,
-                                                                              false,
-                                                                            ),
-                                                                        child: const Text(
-                                                                          'Batal',
-                                                                        ),
+                                                                  (context) =>
+                                                                      UploadPKSPage(
+                                                                        pks:
+                                                                            pks,
                                                                       ),
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () => Navigator.pop(
-                                                                              context,
-                                                                              true,
-                                                                            ),
-                                                                        child: const Text(
-                                                                          'Hapus',
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                            );
-                                                            if (confirm ==
-                                                                true) {
-                                                              try {
-                                                                await PksService.deletePks(
-                                                                  pks.id
-                                                                      .toString(),
-                                                                );
-                                                                ScaffoldMessenger.of(
-                                                                  context,
-                                                                ).showSnackBar(
-                                                                  const SnackBar(
-                                                                    content: Text(
-                                                                      'Berhasil menghapus PKS',
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                                await _loadPks();
-                                                              } catch (e) {
-                                                                ScaffoldMessenger.of(
-                                                                  context,
-                                                                ).showSnackBar(
-                                                                  SnackBar(
-                                                                    content: Text(
-                                                                      'Gagal menghapus PKS: $e',
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                              }
+                                                            ),
+                                                          ).then((value) {
+                                                            if (value == true) {
+                                                              _loadPks();
                                                             }
-                                                          },
+                                                          });
+                                                        },
+                                                      ),
+
+                                                      IconButton(
+                                                        icon: const Icon(
+                                                          Icons.delete,
+                                                          color: Colors.red,
                                                         ),
+                                                        tooltip: 'Hapus',
+                                                        onPressed: () async {
+                                                          final confirm = await showDialog<
+                                                            bool
+                                                          >(
+                                                            context: context,
+                                                            builder:
+                                                                (
+                                                                  context,
+                                                                ) => AlertDialog(
+                                                                  title: const Text(
+                                                                    'Konfirmasi',
+                                                                  ),
+                                                                  content: Text(
+                                                                    'Hapus PKS dengan judul ${pks.judul}?',
+                                                                  ),
+                                                                  actions: [
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () => Navigator.pop(
+                                                                            context,
+                                                                            false,
+                                                                          ),
+                                                                      child: const Text(
+                                                                        'Batal',
+                                                                      ),
+                                                                    ),
+                                                                    TextButton(
+                                                                      onPressed:
+                                                                          () => Navigator.pop(
+                                                                            context,
+                                                                            true,
+                                                                          ),
+                                                                      child: const Text(
+                                                                        'Hapus',
+                                                                      ),
+                                                                    ),
+                                                                  ],
+                                                                ),
+                                                          );
+                                                          if (confirm == true) {
+                                                            try {
+                                                              await PksService.deletePks(
+                                                                pks.id
+                                                                    .toString(),
+                                                              );
+                                                              ScaffoldMessenger.of(
+                                                                context,
+                                                              ).showSnackBar(
+                                                                const SnackBar(
+                                                                  content: Text(
+                                                                    'Berhasil menghapus PKS',
+                                                                  ),
+                                                                ),
+                                                              );
+                                                              await _loadPks();
+                                                            } catch (e) {
+                                                              ScaffoldMessenger.of(
+                                                                context,
+                                                              ).showSnackBar(
+                                                                SnackBar(
+                                                                  content: Text(
+                                                                    'Gagal menghapus PKS: $e',
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            }
+                                                          }
+                                                        },
+                                                      ),
                                                     ],
                                                   ),
                                                 ),
@@ -349,6 +416,7 @@ class _PKSPageState extends State<PKSPage> {
                                           }).toList(),
                                     ),
                                   ),
+
                                   const SizedBox(height: 16),
                                   Row(
                                     mainAxisAlignment:

@@ -57,22 +57,10 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
     setState(() => isLoading = true);
 
     try {
-      final token = await AuthService.getToken();
-      final response = await http.get(
-        Uri.parse('${DetailProgressService.baseUrl}/progress/${widget.mouId}'),
-        headers: {'Authorization': 'Bearer $token'},
-      );
-
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body)['data'] as List;
-        setState(() {
-          progresList = data.map((e) => DetailProgress.fromJson(e)).toList();
-        });
-      } else {
-        setState(() {
-          progresList = [];
-        });
-      }
+      final data = await DetailProgressService.getProgress(widget.mouId);
+      setState(() {
+        progresList = data;
+      });
     } catch (e) {
       setState(() {
         progresList = [];

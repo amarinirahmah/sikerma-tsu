@@ -4,60 +4,62 @@ import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/helpers/responsive.dart';
 import 'package:sikermatsu/styles/style.dart';
 
-class AdminDashboardPage extends StatefulWidget {
-  const AdminDashboardPage({super.key});
+class PKLDashboardPage extends StatefulWidget {
+  const PKLDashboardPage({super.key});
 
   @override
-  State<AdminDashboardPage> createState() => _AdminDashboardPageState();
+  State<PKLDashboardPage> createState() => _PKLDashboardPageState();
 }
 
-class _AdminDashboardPageState extends State<AdminDashboardPage> {
+class _PKLDashboardPageState extends State<PKLDashboardPage> {
   bool isLoading = true;
 
   final List<_StepData> steps = [
     _StepData(
-      'Login ke Sistem',
-      'User login untuk mengakses fitur dan data dalam sistem.',
+      'Login / Register Akun',
+      'Siswa login atau melakukan registrasi ke dalam sistem.',
       Icons.person,
       Colors.green,
     ),
     _StepData(
       'Registrasi oleh Admin',
-      'Admin mendaftarkan user agar dapat mengakses dokumen.',
+      'Admin dapat membantu melakukan registrasi akun siswa.',
       Icons.admin_panel_settings,
       Colors.orange,
     ),
     _StepData(
-      'Input Data Dokumen',
-      'User atau admin menginput data yang dibutuhkan untuk dokumen.',
-      Icons.edit_document,
+      'Pengajuan PKL',
+      'Siswa mengajukan permohonan PKL melalui sistem.',
+      Icons.upload_file,
       Colors.teal,
     ),
     _StepData(
-      'Review Draft Dokumen',
-      'User atau admin melakukan pengecekan dan koreksi terhadap draft dokumen.',
-      Icons.rate_review,
+      'Proses Dokumen',
+      'Dokumen kerjasama PKL diproses oleh admin atau user.',
+      Icons.description,
       Colors.deepPurple,
     ),
     _StepData(
-      'Finalisasi Draft',
-      'Dokumen telah final dan siap untuk ditandatangani.',
-      Icons.check_circle_outline,
+      'Pemantauan Status',
+      'Siswa memantau status pengajuan PKL secara berkala.',
+      Icons.school,
       Colors.indigo,
     ),
     _StepData(
-      'Penandatanganan dokumen',
-      'Dokumen ditandatangani oleh pihak-pihak yang terkait.',
-      Icons.edit_note,
-      Colors.redAccent,
+      'Verifikasi Pengajuan',
+      'Admin memverifikasi pengajuan PKL apakah disetujui atau ditolak',
+      Icons.verified_user,
+      Colors.blue,
     ),
+
     _StepData(
-      'Dokumen Selesai',
-      'Dokumen selesai diproses dan dapat diunduh oleh admin atau user.',
-      Icons.archive,
+      'Penerimaan Siswa PKL',
+      'Informasi penerimaan siswa PKL ditampilkan melalui sistem.',
+      Icons.assignment_turned_in,
       Colors.grey,
     ),
   ];
+
   final ScrollController _scrollController = ScrollController();
   bool showScrollHint = true;
 
@@ -96,7 +98,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
       valueListenable: AppState.isLoggedIn,
       builder: (context, isLoggedIn, _) {
         return MainLayout(
-          title: 'Dashboard Admin',
+          title: 'Dashboard PKL',
           isLoggedIn: isLoggedIn,
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -125,7 +127,7 @@ class _AdminDashboardPageState extends State<AdminDashboardPage> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   const Text(
-                                    'Alur Kerja Sama',
+                                    'Alur Pengajuan PKL',
                                     style: CustomStyle.headline1,
                                   ),
                                   const SizedBox(height: 48),

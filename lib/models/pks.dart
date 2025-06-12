@@ -2,6 +2,19 @@ enum StatusPks { aktif, nonaktif }
 
 enum KeteranganPks { diajukan, disetujui, dibatalkan }
 
+extension KeteranganMouExt on KeteranganPks {
+  String get label {
+    switch (this) {
+      case KeteranganPks.diajukan:
+        return 'Diajukan';
+      case KeteranganPks.disetujui:
+        return 'Disetujui';
+      case KeteranganPks.dibatalkan:
+        return 'Dibatalkan';
+    }
+  }
+}
+
 class Pks {
   final int? id;
   final String nomorMou;

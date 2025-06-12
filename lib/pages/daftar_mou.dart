@@ -1,244 +1,3 @@
-// import 'package:flutter/material.dart';
-// import 'package:sikermatsu/services/mou_service.dart';
-// import 'package:sikermatsu/widgets/main_layout.dart';
-// import 'package:sikermatsu/widgets/table.dart';
-// import 'package:sikermatsu/widgets/table2.dart';
-// import 'package:sikermatsu/pages/upload_mou.dart';
-// import 'package:sikermatsu/models/app_state.dart';
-// import 'package:sikermatsu/styles/style.dart';
-// import 'package:sikermatsu/models/mou.dart';
-// import 'package:sikermatsu/services/mou_service.dart';
-
-// class MoUPage extends StatefulWidget {
-//   const MoUPage({super.key});
-
-//   @override
-//   State<MoUPage> createState() => _MoUPage();
-// }
-
-// class _MoUPage extends State<MoUPage> {
-//   List<Map<String, dynamic>> allMou = [];
-//   bool _isLoading = true;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadData();
-//   }
-
-//   Future<void> _loadData() async {
-//      await Future.delayed(const Duration(seconds: 1));
-//     setState(() => _isLoading = true);
-//     try {
-//       List<Mou> listMou = await MouService.getAllMou();
-//       setState(() {
-//         allMou =
-//             listMou
-//                 .map(
-//                   (mou) => {
-//                     'id': mou.id.toString(),
-//                     'Nomor MoU': mou.nomorMou,
-//                     'Nama Mitra': mou.nama,
-//                     'Judul': mou.judul,
-//                     'Tanggal Mulai': mou.tanggalMulai,
-//                     'Tanggal Berakhir': mou.tanggalBerakhir,
-//                     'Status': mou.status,
-//                     'Keterangan': mou.keterangan.name,
-//                   },
-//                 )
-//                 .toList();
-//       });
-//     } catch (e) {
-//       ScaffoldMessenger.of(
-//         context,
-//       ).showSnackBar(SnackBar(content: Text('Gagal memuat data MoU: $e')));
-//     } finally {
-//       setState(() => _isLoading = false);
-//     }
-//   }
-
-//   // Future<void> _loadData() async {
-//   //   await Future.delayed(const Duration(seconds: 1));
-//   //   setState(() {
-//   //     allMou = [
-//   //       {
-//   //         'Nama Mitra': 'PT Maju Jaya',
-//   //         'Tanggal Mulai': '2024-01-01',
-//   //         'Tanggal Berakhir': '2025-01-01',
-//   //         'Status': 'Aktif',
-//   //       },
-//   //       {
-//   //         'Nama Mitra': 'CV Sukses Makmur',
-//   //         'Tanggal Mulai': '2023-06-15',
-//   //         'Tanggal Berakhir': '2024-06-14',
-//   //         'Status': 'Nonaktif',
-//   //       },
-//   //       {
-//   //         'Nama Mitra': 'CV Maju Wijaya',
-//   //         'Tanggal Mulai': '2023-09-15',
-//   //         'Tanggal Berakhir': '2024-09-15',
-//   //         'Status': 'Nonaktif',
-//   //       },
-//   //     ];
-//   //     _isLoading = false;
-//   //   });
-//   // }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final List<String> statusOptions =
-//         allMou
-//             .map((e) => e['Status']?.toString() ?? '')
-//             .toSet()
-//             .where((e) => e.isNotEmpty)
-//             .toList();
-//     return ValueListenableBuilder<bool>(
-//       valueListenable: AppState.isLoggedIn,
-//       builder: (context, isLoggedIn, _) {
-//         return MainLayout(
-//           title: '',
-//           isLoggedIn: isLoggedIn,
-//           child:
-//               _isLoading
-//                   ? const Center(child: CircularProgressIndicator())
-//                   : Stack(
-//                     children: [
-//                       Column(
-//                         children: [
-//                           // TABLE
-//                           Expanded(
-//                             child: Center(
-//                               child: ConstrainedBox(
-//                                 constraints: const BoxConstraints(
-//                                   maxWidth: 1000,
-//                                 ),
-//                                 child: CustomPaginatedTable(
-//                                   title: 'Daftar MoU',
-//                                   columns: const [
-//                                     'Nomor MoU',
-//                                     'Nama Mitra',
-//                                     'Judul',
-//                                     'Tanggal Mulai',
-//                                     'Tanggal Berakhir',
-//                                     'Status',
-//                                     'Keterangan',
-//                                   ],
-//                                   statusOptions: statusOptions,
-//                                   initialStatus: null,
-
-//                                   data: allMou,
-
-//                                   onDetailPressed: (
-//                                     BuildContext context,
-//                                     Map<String, dynamic> rowData,
-//                                   ) {
-//                                     Navigator.pushNamed(
-//                                       context,
-//                                       '/detailmou',
-//                                       arguments: rowData['id'].toString(),
-//                                     );
-//                                   },
-// onEditPressed: (isLoggedIn && (AppState.role.value == 'admin' || AppState.role.value == 'user'))
-//     ? (BuildContext context, Map<String, dynamic> rowData) {
-
-//         final mou = Mou.fromJson(rowData);
-//         Navigator.push(
-//           context,
-//           MaterialPageRoute(
-//             builder: (context) => UploadMoUPage(mou: mou),
-//           ),
-//         ).then((value) {
-//           if (value == true) {
-//             _loadData();
-//           }
-//         });
-//       }
-//     : null,
-
-//                                   // onEditPressed: (BuildContext context, Map<String, dynamic> rowData) {
-
-//                                   //      Navigator.push(
-//                                   //           context,
-//                                   //           MaterialPageRoute(
-//                                   //             builder: (context) => UploadMoUPage(mou: mou),
-//                                   //           ),
-//                                   //         ).then((value) {
-//                                   //           if (value == true) {
-//                                   //             _loadData();
-//                                   //           }
-//                                   //         });
-
-//                                   // },
-
-//                                    onDeletePressed: (isLoggedIn && (AppState.role.value == 'admin' || AppState.role.value == 'user'))
-//     ? (BuildContext context, Map<String, dynamic> rowData) async {
-//         final id = rowData['id'].toString();
-
-//         final confirm = await showDialog<bool>(
-//           context: context,
-//           builder: (context) => AlertDialog(
-//             title: const Text('Konfirmasi'),
-//             content: Text('Hapus PKS dengan ID $id?'),
-//             actions: [
-//               TextButton(
-//                 onPressed: () => Navigator.pop(context, false),
-//                 child: const Text('Batal'),
-//               ),
-//               TextButton(
-//                 onPressed: () => Navigator.pop(context, true),
-//                 child: const Text('Hapus'),
-//               ),
-//             ],
-//           ),
-//         );
-//         if (confirm == true) {
-//           try {
-//             await MouService.deleteMou(id);
-//             ScaffoldMessenger.of(context).showSnackBar(
-//               const SnackBar(content: Text('Berhasil menghapus MoU')),
-//             );
-//             await _loadData();
-//           } catch (e) {
-//             ScaffoldMessenger.of(context).showSnackBar(
-//               SnackBar(content: Text('Gagal menghapus MoU: $e')),
-//             );
-//           }
-//         }
-//       }
-//     : null,
-//                                 ),
-//                               ),
-//                             ),
-//                           ),
-//                         ],
-//                       ),
-
-//                       // FAB
-//                       if (isLoggedIn && AppState.role.value != 'userpkl')
-//                         Positioned(
-//                           bottom: 16,
-//                           right: 16,
-//                           child: FloatingActionButton(
-//                             onPressed: () {
-//                               Navigator.pushNamed(
-//                                 context,
-//                                 '/uploadmou',
-//                               ).then((_) => _loadData());
-//                             },
-//                             backgroundColor: Colors.teal,
-//                             foregroundColor: Colors.white,
-//                             child: const Icon(Icons.add),
-//                           ),
-//                         ),
-//                     ],
-//                   ),
-//         );
-//       },
-//     );
-//   }
-// }
-
-// MoUPage.dart
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/services/mou_service.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
@@ -255,6 +14,7 @@ class MoUPage extends StatefulWidget {
 }
 
 class _MoUPageState extends State<MoUPage> {
+  final TextEditingController _searchController = TextEditingController();
   List<Mou> allMou = [];
   List<Mou> filteredMou = [];
   bool isLoading = true;
@@ -301,14 +61,6 @@ class _MoUPageState extends State<MoUPage> {
     });
   }
 
-  // Widget buildHeaderField(String text) {
-  //   return Container(
-  //     color: Colors.grey[300],
-  //     padding: const EdgeInsets.all(8),
-  //     child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = AppState.isLoggedIn.value;
@@ -353,18 +105,31 @@ class _MoUPageState extends State<MoUPage> {
                                     children: [
                                       Expanded(
                                         child: TextField(
-                                          // decoration:
-                                          //     CustomStyle.inputDecoration(
-                                          //       prefixIcon: const Icon(
-                                          //         Icons.search,
-                                          //       ),
-                                          //       hintText: 'Cari...',
-                                          //     ),
-                                          decoration: const InputDecoration(
-                                            labelText: 'Cari Nama Mitra',
-                                            border: OutlineInputBorder(),
-                                            isDense: true,
-                                          ),
+                                          decoration:
+                                              CustomStyle.searchInputDecoration(
+                                                labelText: 'Cari Nama Mitra',
+                                                prefixIcon: Icon(
+                                                  Icons.search,
+                                                  color: Colors.grey,
+                                                ),
+                                                suffixIcon:
+                                                    searchQuery.isNotEmpty
+                                                        ? IconButton(
+                                                          icon: const Icon(
+                                                            Icons.clear,
+                                                            color: Colors.grey,
+                                                          ),
+                                                          onPressed: () {
+                                                            setState(() {
+                                                              searchQuery = '';
+                                                              _searchController
+                                                                  .clear();
+                                                              _applyFilter();
+                                                            });
+                                                          },
+                                                        )
+                                                        : null,
+                                              ),
                                           onChanged: (value) {
                                             searchQuery = value;
                                             _applyFilter();
@@ -372,55 +137,113 @@ class _MoUPageState extends State<MoUPage> {
                                         ),
                                       ),
                                       const SizedBox(width: 16),
-                                      DropdownButton<String>(
-                                        // decoration:
-                                        //     CustomStyle.dropdownDecoration(),
-                                        value: selectedStatus,
-                                        onChanged: (value) {
-                                          if (value != null) {
-                                            selectedStatus = value;
-                                            _applyFilter();
-                                          }
-                                        },
-                                        items:
-                                            ['Semua', 'Aktif', 'Nonaktif']
-                                                .map(
-                                                  (status) => DropdownMenuItem(
-                                                    value: status,
-                                                    child: Text(status),
-                                                  ),
-                                                )
-                                                .toList(),
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 12,
+                                        ),
+                                        decoration:
+                                            CustomStyle.dropdownBoxDecoration(),
+                                        child: DropdownButton<String>(
+                                          value: selectedStatus,
+                                          underline: const SizedBox(),
+                                          onChanged: (value) {
+                                            if (value != null) {
+                                              selectedStatus = value;
+                                              _applyFilter();
+                                            }
+                                          },
+                                          items:
+                                              ['Semua', 'Aktif', 'Tidak Aktif']
+                                                  .map(
+                                                    (role) => DropdownMenuItem(
+                                                      value: role,
+                                                      child: Text(role),
+                                                    ),
+                                                  )
+                                                  .toList(),
+                                        ),
                                       ),
                                     ],
                                   ),
                                   const SizedBox(height: 16),
                                   SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
+                                    // child: ConstrainedBox(
+                                    //   constraints: BoxConstraints(
+                                    //     minWidth: 1000,
+                                    //   ),
+                                    //   child: SizedBox(
+                                    //     width: double.infinity,
                                     child: DataTable(
-                                      // headingRowColor:
-                                      //     MaterialStateProperty.all<Color>(
-                                      //       Colors.grey[300]!,
-                                      //     ),
-                                      // headingTextStyle: const TextStyle(
-                                      //   fontWeight: FontWeight.bold,
-                                      // ),
+                                      headingRowColor:
+                                          MaterialStateProperty.all<Color>(
+                                            Colors.grey[300]!,
+                                          ),
+                                      headingTextStyle: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                       border: TableBorder.all(
                                         color: Colors.grey,
                                       ),
                                       columns: [
-                                        DataColumn(label: Text('Nomor MoU')),
-                                        DataColumn(label: Text('Nama Mitra')),
-                                        DataColumn(label: Text('Judul')),
                                         DataColumn(
-                                          label: Text('Tanggal Mulai'),
+                                          label: Text(
+                                            'Nomor MoU',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
                                         ),
                                         DataColumn(
-                                          label: Text('Tanggal Berakhir'),
+                                          label: Text(
+                                            'Nama Mitra',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
                                         ),
-                                        DataColumn(label: Text('Status')),
-                                        DataColumn(label: Text('Keterangan')),
-                                        DataColumn(label: Text('Aksi')),
+                                        DataColumn(
+                                          label: Text(
+                                            'Judul',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Tanggal Mulai',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Tanggal Berakhir',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Status',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Keterangan',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        if (isLoggedIn &&
+                                            (role == 'admin' || role == 'user'))
+                                          DataColumn(
+                                            label: Text(
+                                              'Aksi',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
                                       ],
                                       rows:
                                           displayedRows.map((mou) {
@@ -449,31 +272,30 @@ class _MoUPageState extends State<MoUPage> {
                                                 DataCell(
                                                   Text(mou.keteranganText),
                                                 ),
-
-                                                DataCell(
-                                                  Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      IconButton(
-                                                        icon: const Icon(
-                                                          Icons.info,
-                                                          color: Colors.teal,
+                                                if (isLoggedIn &&
+                                                    (role == 'admin' ||
+                                                        role == 'user'))
+                                                  DataCell(
+                                                    Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                            Icons.info,
+                                                            color: Colors.teal,
+                                                          ),
+                                                          tooltip: 'Detail',
+                                                          onPressed: () {
+                                                            Navigator.pushNamed(
+                                                              context,
+                                                              '/detailmou',
+                                                              arguments:
+                                                                  mou.id
+                                                                      .toString(),
+                                                            );
+                                                          },
                                                         ),
-                                                        tooltip: 'Detail',
-                                                        onPressed: () {
-                                                          Navigator.pushNamed(
-                                                            context,
-                                                            '/detailmou',
-                                                            arguments:
-                                                                mou.id
-                                                                    .toString(),
-                                                          );
-                                                        },
-                                                      ),
-                                                      if (isLoggedIn &&
-                                                          (role == 'admin' ||
-                                                              role == 'user'))
                                                         IconButton(
                                                           icon: const Icon(
                                                             Icons.edit,
@@ -500,9 +322,7 @@ class _MoUPageState extends State<MoUPage> {
                                                             });
                                                           },
                                                         ),
-                                                      if (isLoggedIn &&
-                                                          (role == 'admin' ||
-                                                              role == 'user'))
+
                                                         IconButton(
                                                           icon: const Icon(
                                                             Icons.delete,
@@ -579,14 +399,16 @@ class _MoUPageState extends State<MoUPage> {
                                                             }
                                                           },
                                                         ),
-                                                    ],
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
                                               ],
                                             );
                                           }).toList(),
                                     ),
                                   ),
+                                  //   ),
+                                  // ),
                                   const SizedBox(height: 16),
                                   Row(
                                     mainAxisAlignment:

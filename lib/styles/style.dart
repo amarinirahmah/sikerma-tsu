@@ -29,6 +29,25 @@ class CustomStyle {
     color: Colors.black,
   );
 
+  static const TextStyle title = TextStyle(
+    fontSize: 42,
+    fontWeight: FontWeight.bold,
+    color: Colors.white,
+    shadows: [
+      Shadow(blurRadius: 8.0, color: Colors.black54, offset: Offset(2, 2)),
+    ],
+  );
+
+  static const TextStyle subtitle = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.w400,
+    color: Colors.white,
+    fontStyle: FontStyle.italic,
+    shadows: [
+      Shadow(blurRadius: 6.0, color: Colors.black45, offset: Offset(1, 1)),
+    ],
+  );
+
   static final TextStyle bodyText = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w500,

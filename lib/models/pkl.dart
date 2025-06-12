@@ -64,8 +64,6 @@ class Pkl {
   final String telpEmail;
   final StatusPkl? status;
   final String alamat;
-  final String? createdAt;
-  final String? updatedAt;
 
   Pkl({
     this.id,
@@ -79,8 +77,6 @@ class Pkl {
     required this.telpEmail,
     required this.alamat,
     this.status,
-    this.createdAt,
-    this.updatedAt,
   });
 
   factory Pkl.fromJson(Map<String, dynamic> json) {
@@ -99,8 +95,6 @@ class Pkl {
       alamat: json['alamat'],
       status: StatusPklExtension.fromString(json['status']),
       // status: _statusFromString(json['status']),
-      createdAt: json['created_at'],
-      updatedAt: json['updated_at'],
     );
   }
 
@@ -116,11 +110,12 @@ class Pkl {
       'file_pkl': filePkl,
       'telpemail': telpEmail,
       'alamat': alamat,
+      'status': status?.toBackend(),
     };
   }
 
   // Helpers
-  static StatusPkl? _statusFromString(String? status) {
+  static StatusPkl? fromString(String? status) {
     if (status == null) return null;
     switch (status.toLowerCase()) {
       case 'diproses':
@@ -134,37 +129,33 @@ class Pkl {
     }
   }
 
-  Pkl copyWith({
-    int? id,
-    String? nisn,
-    String? sekolah,
-    String? nama,
-    JenisKelamin? gender,
-    DateTime? tanggalMulai,
-    DateTime? tanggalBerakhir,
-    String? filePkl,
-    String? telpEmail,
-    StatusPkl? status,
-    String? alamat,
-    String? createdAt,
-    String? updatedAt,
-  }) {
-    return Pkl(
-      id: id ?? this.id,
-      nisn: nisn ?? this.nisn,
-      sekolah: sekolah ?? this.sekolah,
-      nama: nama ?? this.nama,
-      gender: gender ?? this.gender,
-      tanggalMulai: tanggalMulai ?? this.tanggalMulai,
-      tanggalBerakhir: tanggalBerakhir ?? this.tanggalBerakhir,
-      filePkl: filePkl ?? this.filePkl,
-      telpEmail: telpEmail ?? this.telpEmail,
-      status: status ?? this.status,
-      alamat: alamat ?? this.alamat,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
+  // Pkl copyWith({
+  //   int? id,
+  //   String? nisn,
+  //   String? sekolah,
+  //   String? nama,
+  //   JenisKelamin? gender,
+  //   DateTime? tanggalMulai,
+  //   DateTime? tanggalBerakhir,
+  //   String? filePkl,
+  //   String? telpEmail,
+  //   StatusPkl? status,
+  //   String? alamat,
+  // }) {
+  //   return Pkl(
+  //     id: id ?? this.id,
+  //     nisn: nisn ?? this.nisn,
+  //     sekolah: sekolah ?? this.sekolah,
+  //     nama: nama ?? this.nama,
+  //     gender: gender ?? this.gender,
+  //     tanggalMulai: tanggalMulai ?? this.tanggalMulai,
+  //     tanggalBerakhir: tanggalBerakhir ?? this.tanggalBerakhir,
+  //     filePkl: filePkl ?? this.filePkl,
+  //     telpEmail: telpEmail ?? this.telpEmail,
+  //     status: status ?? this.status,
+  //     alamat: alamat ?? this.alamat,
+  //   );
+  // }
 
   String get statusText {
     switch (status) {

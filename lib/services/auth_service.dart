@@ -5,7 +5,9 @@ import '../models/user.dart';
 import '../models/app_state.dart';
 
 class AuthService {
-  static const baseUrl = "http://192.168.100.6:8000/api";
+  static const baseUrl = "http://192.168.100.111:8000/api";
+  // static const baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
+
   static String? token;
   static String? role;
 
@@ -30,7 +32,7 @@ class AuthService {
       await prefs.setString('token', token);
       await prefs.setString('role', role);
 
-      AppState.loginAs(user.role);
+      AppState.loginAs(role, token);
       // await AppState.loginAs(token, role);
 
       return user;
@@ -92,6 +94,9 @@ class AuthService {
     await prefs.remove('token');
     await prefs.remove('role');
 
+    token = null;
+    role = null;
+
     AppState.logout();
   }
 
@@ -117,7 +122,7 @@ class AuthService {
       }),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       // print("User berhasil ditambahkan");
       return;
     } else {
@@ -144,7 +149,7 @@ class AuthService {
       }),
     );
 
-    if (response.statusCode == 201 || response.statusCode == 200) {
+    if (response.statusCode == 200) {
       // print("User berhasil ditambahkan");
       return;
     } else {

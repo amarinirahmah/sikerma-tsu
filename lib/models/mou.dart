@@ -4,6 +4,19 @@ enum StatusMou { aktif, nonaktif }
 
 enum KeteranganMou { diajukan, disetujui, dibatalkan }
 
+extension KeteranganMouExt on KeteranganMou {
+  String get label {
+    switch (this) {
+      case KeteranganMou.diajukan:
+        return 'Diajukan';
+      case KeteranganMou.disetujui:
+        return 'Disetujui';
+      case KeteranganMou.dibatalkan:
+        return 'Dibatalkan';
+    }
+  }
+}
+
 class Pihak {
   final String nama;
   final String jabatan;

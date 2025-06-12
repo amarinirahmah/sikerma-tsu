@@ -45,119 +45,18 @@ class _DetailPKSPageState extends State<DetailPKSPage> {
     try {
       final result = await PksService().getPksById(id);
       setState(() {
+        if (!mounted) return;
         pks = result;
         selectedKeterangan = result.keterangan;
         isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         error = 'Terjadi kesalahan: $e';
         isLoading = false;
       });
     }
-  }
-
-  Future<void> updateKeterangan() async {
-    if (pks == null) return;
-
-    setState(() {
-      isSaving = true;
-    });
-
-    try {
-      final token = await AuthService.getToken();
-      final url = Uri.parse(
-        'http://192.168.18.248:8000/api/getpksid/${pks!.id}',
-      );
-
-      final response = await http.patch(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({'keterangan': selectedKeterangan.name}),
-      );
-
-      if (response.statusCode == 200) {
-        setState(() {
-          pks = Pks.fromJson(jsonDecode(response.body));
-          selectedKeterangan = pks!.keterangan;
-          isSaving = false;
-        });
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Keterangan berhasil diperbarui')),
-        );
-      } else {
-        setState(() {
-          isSaving = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal update: ${response.reasonPhrase}')),
-        );
-      }
-    } catch (e) {
-      setState(() {
-        isSaving = false;
-      });
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error saat update: $e')));
-    }
-  }
-
-  Widget buildKeteranganRow() {
-    final canEdit = isLoggedIn && (userRole == 'admin' || userRole == 'user');
-
-    if (!canEdit) {
-      return buildRow('Keterangan', pks!.keteranganText);
-    }
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Keterangan',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 6),
-          DropdownButton<KeteranganPks>(
-            value: selectedKeterangan,
-            items:
-                KeteranganPks.values.map((k) {
-                  final label = k.name[0].toUpperCase() + k.name.substring(1);
-                  return DropdownMenuItem(value: k, child: Text(label));
-                }).toList(),
-            onChanged:
-                isSaving
-                    ? null
-                    : (newVal) {
-                      setState(() {
-                        selectedKeterangan = newVal!;
-                      });
-                    },
-          ),
-          const SizedBox(height: 10),
-          ElevatedButton.icon(
-            icon:
-                isSaving
-                    ? const SizedBox(
-                      width: 16,
-                      height: 16,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: Colors.white,
-                      ),
-                    )
-                    : const Icon(Icons.save),
-            label: const Text('Simpan'),
-            onPressed: isSaving ? null : updateKeterangan,
-          ),
-        ],
-      ),
-    );
   }
 
   Widget buildRow(String label, String value) {
@@ -177,6 +76,14 @@ class _DetailPKSPageState extends State<DetailPKSPage> {
         ],
       ),
     );
+  }
+
+  String _getExtension(String path) {
+    final dotIndex = path.lastIndexOf('.');
+    if (dotIndex != -1 && dotIndex + 1 < path.length) {
+      return path.substring(dotIndex + 1).toLowerCase();
+    }
+    return 'pdf';
   }
 
   @override
@@ -229,8 +136,8 @@ class _DetailPKSPageState extends State<DetailPKSPage> {
                           ),
                           buildRow('Nama Unit', pks!.namaUnit),
                           buildRow('Ruang Lingkup', pks!.ruangLingkup),
-                          // buildRow('Keterangan', pks!.keteranganText),
-                          buildKeteranganRow(),
+                          buildRow('Keterangan', pks!.keteranganText),
+                          // buildKeteranganRow(),
                           buildRow('Status', pks!.statusText),
 
                           // buildRow(
@@ -239,24 +146,42 @@ class _DetailPKSPageState extends State<DetailPKSPage> {
                           // ),
                           // buildRow('Status', pks!.status.toString() ?? '-'),
                           buildRow('File', pks!.filePks ?? 'Tidak ada file'),
-                          if (pks!.filePks != null &&
-                              isLoggedIn &&
-                              (userRole == 'admin' || userRole == 'user'))
+                          // if ((pks!.filePks?.isNotEmpty ?? false) &&
+                          //     isLoggedIn &&
+                          //     (userRole == 'admin' || userRole == 'user'))
+                          if (pks!.filePks != null)
                             ElevatedButton.icon(
                               icon: const Icon(Icons.download),
                               style: CustomStyle.baseButtonStyle,
                               label: const Text('Download File'),
                               onPressed: () async {
-                                final token = await AuthService.getToken();
-                                final url =
-                                    'http://192.168.18.248:8000/storage/${pks!.filePks}';
                                 await downloadFile(
-                                  url,
-                                  'pks-${pks!.nomorPks}',
-                                  token.toString(),
+                                  'pks_files',
+                                  '${pks!.filePks}',
                                 );
                               },
                             ),
+
+                          // ElevatedButton.icon(
+                          //   icon: const Icon(Icons.download),
+                          //   style: CustomStyle.baseButtonStyle,
+                          //   label: const Text('Download File'),
+                          //   onPressed: () async {
+                          //     try {
+                          //       await downloadFile(
+                          //         pks!.filePks!,
+                          //         'pks-${pks!.nomorPks}',
+                          //       );
+                          //     } catch (e) {
+                          //       debugPrint('Download error: $e');
+                          //       ScaffoldMessenger.of(context).showSnackBar(
+                          //         SnackBar(
+                          //           content: Text('Gagal mengunduh file'),
+                          //         ),
+                          //       );
+                          //     }
+                          //   },
+                          // ),
                         ],
                       ),
                     ),

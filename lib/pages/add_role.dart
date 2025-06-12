@@ -57,8 +57,8 @@ class _AddRolePageState extends State<AddRolePage> {
         name.clear();
         email.clear();
         password.clear();
-        if (!mounted) return;
-        Navigator.pop(context, true);
+        // if (!mounted) return;
+        // Navigator.pop(context, true);
       } else {
         final token = await AuthService.getToken();
         await AuthService.updateUser(
@@ -73,14 +73,14 @@ class _AddRolePageState extends State<AddRolePage> {
         email.clear();
         password.clear();
       }
-      if (!mounted) return;
-      Navigator.pop(context, true);
+      // if (!mounted) return;
+      // Navigator.pop(context, true);
     } catch (e) {
       showDialog(
         context: context,
         builder:
             (_) => AlertDialog(
-              title: const Text('Berhasil!'),
+              title: const Text('Gagal!'),
               content: Text(e.toString().replaceAll('Exception: ', '')),
               actions: [
                 TextButton(
@@ -108,7 +108,7 @@ class _AddRolePageState extends State<AddRolePage> {
               child: const Text('OK'),
               onPressed: () {
                 Navigator.of(context).pop();
-                // Navigator.of(context).pop(true);
+                Navigator.of(context).pop(true);
               },
             ),
           ],

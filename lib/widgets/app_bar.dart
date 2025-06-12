@@ -63,16 +63,36 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             TextButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/mou');
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/mou',
+                  (route) => false,
+                );
               },
               child: const Text('Daftar MoU'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushReplacementNamed(context, '/pks');
+                Navigator.pushNamedAndRemoveUntil(
+                  context,
+                  '/pks',
+                  (route) => false,
+                );
               },
               child: const Text('Daftar PKS'),
             ),
+            // TextButton(
+            //   onPressed: () {
+            //     Navigator.pushReplacementNamed(context, '/mou');
+            //   },
+            //   child: const Text('Daftar MoU'),
+            // ),
+            // TextButton(
+            //   onPressed: () {
+            //     Navigator.pushReplacementNamed(context, '/pks');
+            //   },
+            //   child: const Text('Daftar PKS'),
+            // ),
           ],
         ],
       ),
@@ -90,7 +110,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                     tooltip: 'Notifikasi',
                     style: CustomStyle.iconButtonStyle,
                     onPressed: () {
-                      Navigator.pushReplacementNamed(context, '/notifikasi');
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/notifikasi',
+                        (route) => false,
+                      );
+                      // Navigator.pushReplacementNamed(context, '/notifikasi');
                     },
                   );
                 }
@@ -139,6 +164,18 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                   onPressed: () async {
                                     Navigator.pop(context);
                                     await AuthService.logout();
+                                    final token = await AuthService.getToken();
+                                    final role = await AuthService.getRole();
+
+                                    if (token == null && role == null) {
+                                      print(
+                                        'Logout berhasil, token dan role sudah terhapus',
+                                      );
+                                    } else {
+                                      print(
+                                        'Logout gagal, token atau role masih ada',
+                                      );
+                                    }
                                     AppState.logout();
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
@@ -195,8 +232,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                 child: const Text('Batal'),
                               ),
                               TextButton(
-                                onPressed: () {
-                                  AppState.logout();
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  await AuthService.logout();
+
+                                  final token = await AuthService.getToken();
+                                  final role = await AuthService.getRole();
+
+                                  if (token == null && role == null) {
+                                    print(
+                                      'Logout berhasil, token dan role sudah terhapus',
+                                    );
+                                  } else {
+                                    print(
+                                      'Logout gagal, token atau role masih ada',
+                                    );
+                                  }
                                   Navigator.pushNamedAndRemoveUntil(
                                     context,
                                     '/home',
@@ -213,6 +264,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   }
                 },
               ),
+            const SizedBox(width: 8),
           ],
     );
   }
