@@ -21,12 +21,8 @@ Route::get('/getpks', [DataController::class, 'getpks']);
 // Route::get('/getmouid/{id}', [DataController::class, 'getmouid']);
 // Route::get('/getpksid/{id}', [DataController::class, 'getpksid']);
 Route::get('/download/{folder}/{filename}', [FileController::class, 'download']);
-// Route::middleware('auth:sanctum')->get('/download/{filename}', [FileController::class, 'download']);
-// Route::get('/download/{filename}', [FileController::class, 'download']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
-    // Route::get('/getmou', [DataController::class, 'getmou']);
-    // Route::get('/getpks', [DataController::class, 'getpks']);
     Route::get('/getpkl', [DataController::class, 'getpkl']);
     Route::get('/getmouid/{id}', [DataController::class, 'getmouid']);
     Route::get('/getpksid/{id}', [DataController::class, 'getpksid']);
@@ -60,37 +56,3 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
     Route::get('/users/{id}', [AuthController::class, 'getuserid']);
     Route::get('/notifikasi', [NotifController::class, 'index']);
 });
-// Route::middleware(['auth:sanctum'])->group(function () {
-//     Route::get('/user', function (Request $request) {
-//         return $request->user();
-//     });
-//     //admin
-//     Route::middleware('role:admin')->get('/admin/dashboard', function () {
-//         return response()->json([
-//             'message' => 'Selamat datang Admin!'
-//         ], 200, ['Content-Type' => 'application/json']);
-//     });
-//     //user
-//     Route::middleware('role:user')->get('/user/dashboard', function() {
-//         return response()->json([
-//             'message' => 'Selamat datang User!'
-//         ]);
-//     });
-//     //pimpinan
-//     Route::middleware('role:pimpinan')->get('/pimpinan/dashboard', function() {
-//         return response()->json([
-//             'message' => 'Selamat datang Pimpinan!'
-//         ]);
-//     });
-//     //logout
-//     Route::post('/logout', function (Request $request) {
-//         $request->user()->currentAccessToken()->delete();
-//         return response()->json([
-//             'message' => 'Logout berhasil'
-//         ]);
-//     });
-// });
-
-// Route::options('{any}', function () {
-//     return response()->json([], 200);
-// })->where('any', '.*');
