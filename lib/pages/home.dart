@@ -92,24 +92,24 @@ class HomePage extends StatelessWidget {
             alignment: WrapAlignment.center,
             children: [
               _featureCard(
-                Icons.school,
-                'Kerja Sama Sekolah',
-                'Mudah dan cepat menjalin kerja sama',
+                Icons.file_open,
+                'Manajemen Data Mitra Kerja Sama',
+                'Pendataan mitra institusi secara terpusat, termasuk status MoU/PKS dan masa berlaku.',
               ),
               _featureCard(
-                Icons.work_outline,
-                'Pengajuan PKL',
-                'Sistem pengajuan praktikum yang terintegrasi',
+                Icons.timeline,
+                'Pemantauan Kerja Sama',
+                'Pencatatan dan pemantauan progres kerja sama berdasarkan aktivitas atau tahapan yang dilakukan.',
               ),
               _featureCard(
-                Icons.people,
-                'Mitra Terpercaya',
-                'Bermitra dengan berbagai instansi terpercaya',
+                Icons.work,
+                'Pengajuan PKL Terintegrasi',
+                'Sistem pengajuan PKL secara online oleh siswa, dilengkapi dengan pelacakan status penerimaan.',
               ),
               _featureCard(
-                Icons.people,
-                'Mitra Terpercaya',
-                'Bermitra dengan berbagai instansi terpercaya',
+                Icons.notifications,
+                'Notifikasi Masa Berlaku Dokumen',
+                'Peringatan otomatis tentang masa berlaku dokumen kerja sama agar proses tetap berjalan lancar.',
               ),
             ],
           ),
@@ -119,32 +119,71 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _featureCard(IconData icon, String title, String subtitle) {
-    return Card(
-      elevation: 3,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Container(
-        width: 220,
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 48, color: Colors.teal),
-            const SizedBox(height: 12),
-            Text(
-              title,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.black54),
-            ),
-          ],
+    return SizedBox(
+      width: 220,
+      height: 280,
+      child: Card(
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Icon(icon, size: 48, color: Colors.teal),
+              const SizedBox(height: 12),
+              Text(
+                title,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: Text(
+                  subtitle,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.black54),
+                  // maxLines: 4,
+                  // overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+
+  // Widget _featureCard(IconData icon, String title, String subtitle) {
+  //   return Card(
+  //     elevation: 3,
+  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  //     child: Container(
+  //       width: 220,
+  //       padding: const EdgeInsets.all(16),
+  //       child: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: [
+  //           Icon(icon, size: 48, color: Colors.teal),
+  //           const SizedBox(height: 12),
+  //           Text(
+  //             title,
+  //             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+  //           ),
+  //           const SizedBox(height: 8),
+  //           Text(
+  //             subtitle,
+  //             textAlign: TextAlign.center,
+  //             style: const TextStyle(color: Colors.black54),
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
 
   Widget _buildFooter(BuildContext context) {
     final isMobile = Responsive.isMobile(context);

@@ -27,10 +27,10 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
   String? selectedProses;
   bool isLoading = false;
 
-  static const List<String> prosesOptions = [
-    'PembuatanDraft',
-    'PengajuanDraft',
-    'PenyerahanMOU',
+  static const List<Map<String, String>> prosesOptions = [
+    {'value': 'PembuatanDraft', 'label': 'Pembuatan Draft'},
+    {'value': 'PengajuanDraft', 'label': 'Pengajuan Draft'},
+    {'value': 'PenyerahanMOU', 'label': 'Penyerahan MOU'},
   ];
 
   @override
@@ -132,6 +132,7 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
                         const SizedBox(height: 16),
                         OutlinedButton.icon(
                           icon: const Icon(Icons.date_range),
+                          style: CustomStyle.outlinedButtonStyle,
                           label: Text(
                             tanggal == null
                                 ? "Pilih Tanggal"
@@ -146,14 +147,12 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
                           ),
                           value: selectedProses,
                           items:
-                              prosesOptions
-                                  .map(
-                                    (p) => DropdownMenuItem(
-                                      value: p,
-                                      child: Text(p),
-                                    ),
-                                  )
-                                  .toList(),
+                              prosesOptions.map((option) {
+                                return DropdownMenuItem<String>(
+                                  value: option['value'],
+                                  child: Text(option['label']!),
+                                );
+                              }).toList(),
                           validator:
                               (value) => value == null ? 'Wajib diisi' : null,
                           onChanged:
@@ -187,52 +186,58 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                Text('Riwayat Progres', style: CustomStyle.headline1),
-                const SizedBox(height: 10),
+
                 isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : progresList.isEmpty
                     ? const Text('Belum ada data progres.')
-                    : DataTable(
-                      headingRowColor: MaterialStateProperty.all<Color>(
-                        Colors.grey[300]!,
+                    : Card(
+                      elevation: 1,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(4),
                       ),
-                      headingTextStyle: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
-                      border: TableBorder.all(color: Colors.grey),
-                      columns: const [
-                        DataColumn(label: Text('Tanggal')),
-                        DataColumn(label: Text('Proses')),
-                        DataColumn(label: Text('Aktivitas')),
-                      ],
-
-                      rows:
-                          progresList.map((e) {
-                            final formattedDate = DateFormat(
-                              'dd MMM yyyy',
-                            ).format(DateTime.parse(e.tanggal));
-                            return DataRow(
-                              cells: [
-                                DataCell(Text(formattedDate)),
-                                DataCell(Text(e.proses)),
-                                DataCell(Text(e.aktivitas)),
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Riwayat Progres',
+                              style: CustomStyle.headline1,
+                            ),
+                            const SizedBox(height: 10),
+                            DataTable(
+                              headingRowColor: MaterialStateProperty.all<Color>(
+                                Colors.grey[300]!,
+                              ),
+                              headingTextStyle: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                              border: TableBorder.all(color: Colors.grey),
+                              columns: const [
+                                DataColumn(label: Text('Tanggal')),
+                                DataColumn(label: Text('Proses')),
+                                DataColumn(label: Text('Aktivitas')),
                               ],
-                            );
-                          }).toList(),
+                              rows:
+                                  progresList.map((e) {
+                                    final formattedDate = DateFormat(
+                                      'dd MMMM yyyy',
+                                      'id',
+                                    ).format(DateTime.parse(e.tanggal));
+                                    return DataRow(
+                                      cells: [
+                                        DataCell(Text(formattedDate)),
+                                        DataCell(Text(e.prosesText)),
+                                        DataCell(Text(e.aktivitas)),
+                                      ],
+                                    );
+                                  }).toList(),
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                //   rows:
-                //       progresList
-                //           .map(
-                //             (e) => DataRow(
-                //               cells: [
-                //                 DataCell(Text(e.tanggal)),
-                //                 DataCell(Text(e.aktivitas)),
-                //               ],
-                //             ),
-                //           )
-                //           .toList(),
-                // ),
               ],
             ),
           ),

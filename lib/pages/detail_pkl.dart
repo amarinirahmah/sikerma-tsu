@@ -42,8 +42,16 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
   }
 
   Future<void> getDetailPkl() async {
+    setState(() => isLoading = true);
+
     try {
-      final result = await PklService().getPklById(id);
+      final role = await AuthService.getRole();
+
+      final result =
+          role == 'userpkl'
+              ? await PklService().getPklSayaById(id)
+              : await PklService().getPklById(id);
+
       setState(() {
         pkl = result;
         selectedStatus = result.status;
@@ -56,6 +64,22 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
       });
     }
   }
+
+  // Future<void> getDetailPkl() async {
+  //   try {
+  //     final result = await PklService().getPklById(id);
+  //     setState(() {
+  //       pkl = result;
+  //       selectedStatus = result.status;
+  //       isLoading = false;
+  //     });
+  //   } catch (e) {
+  //     setState(() {
+  //       error = 'Terjadi kesalahan: $e';
+  //       isLoading = false;
+  //     });
+  //   }
+  // }
 
   Widget buildRow(String label, String value) {
     return Padding(

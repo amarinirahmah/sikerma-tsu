@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/models/app_state.dart';
+import 'package:sikermatsu/services/auth_service.dart';
 import '../styles/style.dart';
 import 'package:path/path.dart' as p;
 import 'dart:io' show File;
@@ -44,6 +45,7 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
       nisn.text = pkl.nisn;
       nama.text = pkl.nama;
       sekolah.text = pkl.sekolah;
+      gender = pkl.gender;
       telpEmail.text = pkl.telpEmail;
       alamat.text = pkl.alamat;
 
@@ -123,11 +125,6 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
         _pickedPlatformFile = file;
       });
     }
-    // } else {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     const SnackBar(content: Text("Tidak ada file yang dipilih.")),
-    //   );
-    // }
   }
 
   Future<void> _submitData() async {
@@ -143,43 +140,32 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
     }
 
     try {
-      if (widget.pkl == null) {
-        // Upload
-        final pkl = Pkl(
-          nisn: nisn.text,
-          nama: nama.text,
-          sekolah: sekolah.text,
-          gender: gender,
-          tanggalMulai: tanggalMulai!, // Ganti sesuai form
-          tanggalBerakhir: tanggalBerakhir!, // Ganti sesuai form
-          telpEmail: telpEmail.text,
-          alamat: alamat.text,
-          // status: StatusPkl.diproses,
-          // status: widget.pkl?.status ?? StatusPkl.diproses,
-          status: StatusPkl.diproses,
-        );
+      final pkl = Pkl(
+        nisn: nisn.text,
+        nama: nama.text,
+        sekolah: sekolah.text,
+        gender: gender,
+        tanggalMulai: tanggalMulai!,
+        tanggalBerakhir: tanggalBerakhir!,
+        telpEmail: telpEmail.text,
+        alamat: alamat.text,
+        status: widget.pkl == null ? StatusPkl.diproses : _selectedStatus,
+      );
 
-        await PklService.uploadPkl(pkl, file: _pickedPlatformFile);
+      if (widget.pkl == null) {
+        // Upload baru
+        final role = await AuthService.getRole();
+
+        if (role == 'userpkl') {
+          await PklService.uploadPklUser(pkl, file: _pickedPlatformFile);
+        } else {
+          await PklService.uploadPkl(pkl, file: _pickedPlatformFile);
+        }
+
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Berhasil mengunggah data siswa!')),
+          const SnackBar(content: Text('Berhasil mengunggah data siswa!')),
         );
       } else {
-        // Update
-        final pkl = Pkl(
-          nisn: nisn.text,
-          nama: nama.text,
-          sekolah: sekolah.text,
-          gender: gender,
-          tanggalMulai: tanggalMulai!,
-          tanggalBerakhir: tanggalBerakhir!,
-          telpEmail: telpEmail.text,
-          alamat: alamat.text,
-          // status: widget.pkl!.status,
-          status: _selectedStatus,
-        );
-
-        print('Data yang dikirim:');
-        print(pkl.toJson());
         await PklService.updatePkl(
           widget.pkl!.id.toString(),
           pkl,
@@ -196,6 +182,73 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
       );
     }
   }
+
+  // Future<void> _submitData() async {
+  //   if (!_formKey.currentState!.validate()) return;
+
+  //   if (tanggalMulai == null || tanggalBerakhir == null) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text('Tanggal mulai dan berakhir wajib dipilih.'),
+  //       ),
+  //     );
+  //     return;
+  //   }
+
+  //   try {
+  //     if (widget.pkl == null) {
+  //       // Upload
+  //       final pkl = Pkl(
+  //         nisn: nisn.text,
+  //         nama: nama.text,
+  //         sekolah: sekolah.text,
+  //         gender: gender,
+  //         tanggalMulai: tanggalMulai!, // Ganti sesuai form
+  //         tanggalBerakhir: tanggalBerakhir!, // Ganti sesuai form
+  //         telpEmail: telpEmail.text,
+  //         alamat: alamat.text,
+  //         // status: StatusPkl.diproses,
+  //         // status: widget.pkl?.status ?? StatusPkl.diproses,
+  //         status: StatusPkl.diproses,
+  //       );
+
+  //       await PklService.uploadPkl(pkl, file: _pickedPlatformFile);
+  //       ScaffoldMessenger.of(context).showSnackBar(
+  //         SnackBar(content: Text('Berhasil mengunggah data siswa!')),
+  //       );
+  //     } else {
+  //       // Update
+  //       final pkl = Pkl(
+  //         nisn: nisn.text,
+  //         nama: nama.text,
+  //         sekolah: sekolah.text,
+  //         gender: gender,
+  //         tanggalMulai: tanggalMulai!,
+  //         tanggalBerakhir: tanggalBerakhir!,
+  //         telpEmail: telpEmail.text,
+  //         alamat: alamat.text,
+  //         // status: widget.pkl!.status,
+  //         status: _selectedStatus,
+  //       );
+
+  //       print('Data yang dikirim:');
+  //       print(pkl.toJson());
+  //       await PklService.updatePkl(
+  //         widget.pkl!.id.toString(),
+  //         pkl,
+  //         file: _pickedPlatformFile,
+  //       );
+  //     }
+
+  //     if (!mounted) return;
+  //     Navigator.pop(context, true);
+  //   } catch (e) {
+  //     if (!mounted) return;
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text('Gagal mengunggah data siswa: $e')),
+  //     );
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -228,7 +281,7 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Form Upload PKS', style: CustomStyle.headline1),
+                        Text('Form Upload PKL', style: CustomStyle.headline1),
                         const SizedBox(height: 20),
                         TextFormField(
                           controller: nisn,
@@ -279,7 +332,7 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
                               JenisKelamin.values.map((jk) {
                                 return DropdownMenuItem<JenisKelamin>(
                                   value: jk,
-                                  child: Text(jk.toBackend()),
+                                  child: Text(jk.toDisplay()),
                                 );
                               }).toList(),
                           onChanged: (val) {

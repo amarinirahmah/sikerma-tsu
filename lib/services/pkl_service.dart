@@ -9,29 +9,17 @@ import 'package:file_picker/file_picker.dart';
 
 class PklService {
   // static const String baseUrl = 'http://192.168.18.248:8000/api';
-  static const String baseUrl = "http://192.168.100.111:8000/api";
+  static const String baseUrl = "http://192.168.100.238:8000/api";
   // static const String baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
   static String? token;
   static String? role;
-
-  // // Ambil token dari SharedPreferences untuk otorisasi
-  // Future<String> _getToken() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   return prefs.getString('token') ?? '';
-  // }
-
-  // // Header JSON standar dengan token
-  // Future<Map<String, String>> _jsonHeaders() async => {
-  //   'Content-Type': 'application/json',
-  //   'Authorization': 'Bearer ${await _getToken()}',
-  // };
 
   // Ambil semua data PKL
   static Future<List<Pkl>> getAllPkl() async {
     final token = await AuthService.getToken();
     final response = await http.get(
       Uri.parse('$baseUrl/getpkl'),
-      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
+      headers: {'Accept': 'application/json'},
     );
 
     if (response.statusCode == 200) {
@@ -65,8 +53,6 @@ class PklService {
     final token = await AuthService.getToken();
     final role = await AuthService.getRole();
 
-    print('Token: $token');
-    print('Role: $role');
     final uri = Uri.parse('$baseUrl/uploadpkl');
 
     final fields = {
@@ -124,48 +110,6 @@ class PklService {
     }
   }
 
-  // Future<void> uploadPkl(Pkl pkl, {File? file}) async {
-  //   final token = await AuthService.getToken();
-  //   final uri = Uri.parse('$baseUrl/uploadpkl');
-
-  //   if (file == null) {
-  //     // Mode JSON (tanpa file)
-  //     final response = await http.post(
-  //       uri,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': 'Bearer $token',
-  //       },
-  //       body: jsonEncode(pkl.toJson()),
-  //     );
-
-  //     if (response.statusCode >= 400) {
-  //       throw Exception('Upload gagal: ${response.body}');
-  //     }
-  //   } else {
-  //     // Mode Multipart (dengan file)
-  //     final request =
-  //         http.MultipartRequest('POST', uri)
-  //           ..headers['Authorization'] = 'Bearer $token'
-  //           ..fields.addAll(
-  //             pkl.toJson().map((key, value) => MapEntry(key, value.toString())),
-  //           )
-  //           ..files.add(
-  //             await http.MultipartFile.fromPath(
-  //               'file_pkl',
-  //               file.path,
-  //               filename: basename(file.path),
-  //             ),
-  //           );
-
-  //     final response = await http.Response.fromStream(await request.send());
-
-  //     if (response.statusCode >= 400) {
-  //       throw Exception('Upload PKL gagal (dengan file): ${response.body}');
-  //     }
-  //   }
-  // }
-
   // Update data PKL
   static Future<void> updatePkl(
     String id,
@@ -218,107 +162,6 @@ class PklService {
     }
   }
 
-  // static Future<void> updatePkl(
-  //   String id,
-  //   Pkl pkl, {
-  //   PlatformFile? file,
-  // }) async {
-  //   final token = await AuthService.getToken();
-  //   final uri = Uri.parse('$baseUrl/updatepkl/$id');
-
-  //   final fields = {
-  //     'nisn': pkl.nisn,
-  //     'nama': pkl.nama,
-  //     'sekolah': pkl.sekolah,
-  //     'gender': pkl.gender.toBackend(),
-  //     'tanggal_mulai': pkl.tanggalMulai.toIso8601String(),
-  //     'tanggal_berakhir': pkl.tanggalBerakhir.toIso8601String(),
-  //     'telpemail': pkl.telpEmail,
-  //     'alamat': pkl.alamat,
-  //     'status': statusToBackend(pkl.status),
-  //     '_method': 'PUT',
-  //     // if (pkl.status != null) 'status': pkl.status!.toBackend(),
-  //     // if (pkl.status != null) 'status': statusToBackend(pkl.status),
-  //   };
-
-  //   final request =
-  //       http.MultipartRequest('POST', uri)
-  //         ..headers['Authorization'] = 'Bearer $token'
-  //         ..headers['Accept'] = 'application/json';
-  //   fields['nisn'] = pkl.nisn;
-  //   fields['nama'] = pkl.nama;
-  //   fields['sekolah'] = pkl.sekolah;
-  //   fields['gender'] = pkl.gender.toBackend();
-  //   fields['tanggal_mulai'] = pkl.tanggalMulai.toIso8601String();
-  //   fields['tanggal_berakhir'] = pkl.tanggalBerakhir.toIso8601String();
-  //   fields['telpemail'] = pkl.telpEmail;
-  //   fields['alamat'] = pkl.alamat;
-
-  //   fields['status'] = pkl.status!.toBackend();
-  //   request.fields.addAll(fields);
-
-  //   // ..fields.addAll(fields);
-
-  //   if (file != null && file.bytes != null) {
-  //     request.files.add(
-  //       http.MultipartFile.fromBytes(
-  //         'file_pkl',
-  //         file.bytes!,
-  //         filename: file.name,
-  //       ),
-  //     );
-  //   }
-
-  //   final streamedResponse = await request.send();
-  //   final responseBody = await streamedResponse.stream.bytesToString();
-
-  //   if (streamedResponse.statusCode >= 400) {
-  //     throw Exception('Gagal memperbarui PKL: $responseBody');
-  //   }
-  // }
-
-  // Future<void> updatePkl(String id, Pkl pkl, {File? file}) async {
-  //   final token = await AuthService.getToken();
-  //   final uri = Uri.parse('$baseUrl/updatepkl/$id');
-
-  //   if (file != null) {
-  //     // Mode multipart update dengan file
-  //     final request = http.MultipartRequest('POST', uri);
-  //     request.headers['Authorization'] = 'Bearer $token';
-
-  //     request.fields.addAll(
-  //       pkl.toJson().map((key, value) => MapEntry(key, value.toString())),
-  //     );
-  //     request.files.add(
-  //       await http.MultipartFile.fromPath(
-  //         'file_pkl',
-  //         file.path,
-  //         filename: basename(file.path),
-  //       ),
-  //     );
-
-  //     final response = await http.Response.fromStream(await request.send());
-
-  //     if (response.statusCode != 200 && response.statusCode != 201) {
-  //       throw Exception('Gagal memperbarui PKL: ${response.body}');
-  //     }
-  //   } else {
-  //     // Mode JSON (tanpa file)
-  //     final response = await http.put(
-  //       uri,
-  //       headers: {
-  //         'Content-Type': 'application/json',
-  //         'Authorization': 'Bearer $token',
-  //       },
-  //       body: jsonEncode(pkl.toJson()),
-  //     );
-
-  //     if (response.statusCode != 200) {
-  //       throw Exception('Gagal memperbarui PKL: ${response.body}');
-  //     }
-  //   }
-  // }
-
   // Mapping enum ke string backend
   static String statusToBackend(StatusPkl? status) {
     switch (status) {
@@ -366,6 +209,79 @@ class PklService {
       return Pkl.fromJson(jsonDecode(response.body));
     } else {
       throw Exception('Gagal update status: ${response.reasonPhrase}');
+    }
+  }
+
+  static Future<List<Pkl>> getPklSaya() async {
+    final token = await AuthService.getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/pklSaya'),
+      headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
+    );
+
+    if (response.statusCode == 200) {
+      final body = jsonDecode(response.body);
+      final List data = body['data'];
+      return data.map((json) => Pkl.fromJson(json)).toList();
+    } else {
+      throw Exception('Gagal mengambil data PKL Anda');
+    }
+  }
+
+  static Future<void> uploadPklUser(Pkl pkl, {PlatformFile? file}) async {
+    final token = await AuthService.getToken();
+
+    final uri = Uri.parse('$baseUrl/useruploadpkl');
+
+    final fields = {
+      'nisn': pkl.nisn,
+      'nama': pkl.nama,
+      'sekolah': pkl.sekolah,
+      'gender': pkl.gender.toBackend(),
+      'tanggal_mulai': pkl.tanggalMulai.toIso8601String(),
+      'tanggal_berakhir': pkl.tanggalBerakhir.toIso8601String(),
+      'telpemail': pkl.telpEmail,
+      'alamat': pkl.alamat,
+    }.map((key, value) => MapEntry(key, value.toString()));
+
+    final request =
+        http.MultipartRequest('POST', uri)
+          ..headers['Authorization'] = 'Bearer $token'
+          ..fields.addAll(fields);
+
+    if (file != null && file.bytes != null) {
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          'file_pkl',
+          file.bytes!,
+          filename: file.name,
+        ),
+      );
+    }
+
+    final streamedResponse = await request.send();
+    final responseBody = await streamedResponse.stream.bytesToString();
+
+    if (streamedResponse.statusCode == 403 ||
+        streamedResponse.statusCode == 409) {
+      final decoded = jsonDecode(responseBody);
+      throw Exception(decoded['message'] ?? 'Pengajuan gagal');
+    } else if (streamedResponse.statusCode >= 400) {
+      throw Exception('Upload gagal: $responseBody');
+    }
+  }
+
+  Future<Pkl> getPklSayaById(String id) async {
+    final token = await AuthService.getToken();
+    final response = await http.get(
+      Uri.parse('$baseUrl/pklSaya/$id'),
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
+    );
+
+    if (response.statusCode == 200) {
+      return Pkl.fromJson(jsonDecode(response.body));
+    } else {
+      throw Exception('Gagal mengambil detail PKL Anda');
     }
   }
 }

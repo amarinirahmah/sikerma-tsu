@@ -22,11 +22,13 @@ import 'models/app_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/dashboard2.dart';
 import 'pages/access_denied_page.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   // Future<void> loadLoginStatus() async {
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
+  await initializeDateFormatting('id', null);
   final token = prefs.getString('token');
   final role = prefs.getString('role') ?? 'guest';
 

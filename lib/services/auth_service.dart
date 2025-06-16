@@ -5,7 +5,7 @@ import '../models/user.dart';
 import '../models/app_state.dart';
 
 class AuthService {
-  static const baseUrl = "http://192.168.100.111:8000/api";
+  static const baseUrl = "http://192.168.100.238:8000/api";
   // static const baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
 
   static String? token;

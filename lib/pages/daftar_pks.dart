@@ -55,7 +55,7 @@ class _PKSPageState extends State<PKSPage> {
               searchQuery.toLowerCase(),
             );
             final matchesStatus =
-                selectedStatus == 'Semua' || pks.status == selectedStatus;
+                selectedStatus == 'Semua' || pks.statusText == selectedStatus;
             return matchesSearch && matchesStatus;
           }).toList();
       currentPage = 0;
@@ -285,132 +285,137 @@ class _PKSPageState extends State<PKSPage> {
                                                 DataCell(
                                                   Text(pks.keteranganText),
                                                 ),
-
-                                                DataCell(
-                                                  Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      IconButton(
-                                                        icon: const Icon(
-                                                          Icons.info,
-                                                          color: Colors.teal,
+                                                if (isLoggedIn &&
+                                                    (role == 'admin' ||
+                                                        role == 'user'))
+                                                  DataCell(
+                                                    Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                            Icons.info,
+                                                            color: Colors.teal,
+                                                          ),
+                                                          tooltip: 'Detail',
+                                                          onPressed: () {
+                                                            Navigator.pushNamed(
+                                                              context,
+                                                              '/detailpks',
+                                                              arguments:
+                                                                  pks.id
+                                                                      .toString(),
+                                                            );
+                                                          },
                                                         ),
-                                                        tooltip: 'Detail',
-                                                        onPressed: () {
-                                                          Navigator.pushNamed(
-                                                            context,
-                                                            '/detailpks',
-                                                            arguments:
-                                                                pks.id
-                                                                    .toString(),
-                                                          );
-                                                        },
-                                                      ),
 
-                                                      IconButton(
-                                                        icon: const Icon(
-                                                          Icons.edit,
-                                                          color: Colors.orange,
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                            Icons.edit,
+                                                            color:
+                                                                Colors.orange,
+                                                          ),
+                                                          tooltip: 'Edit',
+                                                          onPressed: () {
+                                                            Navigator.push(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder:
+                                                                    (
+                                                                      context,
+                                                                    ) => UploadPKSPage(
+                                                                      pks: pks,
+                                                                    ),
+                                                              ),
+                                                            ).then((value) {
+                                                              if (value ==
+                                                                  true) {
+                                                                _loadPks();
+                                                              }
+                                                            });
+                                                          },
                                                         ),
-                                                        tooltip: 'Edit',
-                                                        onPressed: () {
-                                                          Navigator.push(
-                                                            context,
-                                                            MaterialPageRoute(
+
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                          ),
+                                                          tooltip: 'Hapus',
+                                                          onPressed: () async {
+                                                            final confirm = await showDialog<
+                                                              bool
+                                                            >(
+                                                              context: context,
                                                               builder:
-                                                                  (context) =>
-                                                                      UploadPKSPage(
-                                                                        pks:
-                                                                            pks,
+                                                                  (
+                                                                    context,
+                                                                  ) => AlertDialog(
+                                                                    title: const Text(
+                                                                      'Konfirmasi',
+                                                                    ),
+                                                                    content: Text(
+                                                                      'Hapus PKS dengan judul ${pks.judul}?',
+                                                                    ),
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () => Navigator.pop(
+                                                                              context,
+                                                                              false,
+                                                                            ),
+                                                                        child: const Text(
+                                                                          'Batal',
+                                                                        ),
                                                                       ),
-                                                            ),
-                                                          ).then((value) {
-                                                            if (value == true) {
-                                                              _loadPks();
-                                                            }
-                                                          });
-                                                        },
-                                                      ),
-
-                                                      IconButton(
-                                                        icon: const Icon(
-                                                          Icons.delete,
-                                                          color: Colors.red,
-                                                        ),
-                                                        tooltip: 'Hapus',
-                                                        onPressed: () async {
-                                                          final confirm = await showDialog<
-                                                            bool
-                                                          >(
-                                                            context: context,
-                                                            builder:
-                                                                (
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () => Navigator.pop(
+                                                                              context,
+                                                                              true,
+                                                                            ),
+                                                                        child: const Text(
+                                                                          'Hapus',
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                            );
+                                                            if (confirm ==
+                                                                true) {
+                                                              try {
+                                                                await PksService.deletePks(
+                                                                  pks.id
+                                                                      .toString(),
+                                                                );
+                                                                ScaffoldMessenger.of(
                                                                   context,
-                                                                ) => AlertDialog(
-                                                                  title: const Text(
-                                                                    'Konfirmasi',
-                                                                  ),
-                                                                  content: Text(
-                                                                    'Hapus PKS dengan judul ${pks.judul}?',
-                                                                  ),
-                                                                  actions: [
-                                                                    TextButton(
-                                                                      onPressed:
-                                                                          () => Navigator.pop(
-                                                                            context,
-                                                                            false,
-                                                                          ),
-                                                                      child: const Text(
-                                                                        'Batal',
-                                                                      ),
+                                                                ).showSnackBar(
+                                                                  const SnackBar(
+                                                                    content: Text(
+                                                                      'Berhasil menghapus PKS',
                                                                     ),
-                                                                    TextButton(
-                                                                      onPressed:
-                                                                          () => Navigator.pop(
-                                                                            context,
-                                                                            true,
-                                                                          ),
-                                                                      child: const Text(
-                                                                        'Hapus',
-                                                                      ),
+                                                                  ),
+                                                                );
+                                                                await _loadPks();
+                                                              } catch (e) {
+                                                                ScaffoldMessenger.of(
+                                                                  context,
+                                                                ).showSnackBar(
+                                                                  SnackBar(
+                                                                    content: Text(
+                                                                      'Gagal menghapus PKS: $e',
                                                                     ),
-                                                                  ],
-                                                                ),
-                                                          );
-                                                          if (confirm == true) {
-                                                            try {
-                                                              await PksService.deletePks(
-                                                                pks.id
-                                                                    .toString(),
-                                                              );
-                                                              ScaffoldMessenger.of(
-                                                                context,
-                                                              ).showSnackBar(
-                                                                const SnackBar(
-                                                                  content: Text(
-                                                                    'Berhasil menghapus PKS',
                                                                   ),
-                                                                ),
-                                                              );
-                                                              await _loadPks();
-                                                            } catch (e) {
-                                                              ScaffoldMessenger.of(
-                                                                context,
-                                                              ).showSnackBar(
-                                                                SnackBar(
-                                                                  content: Text(
-                                                                    'Gagal menghapus PKS: $e',
-                                                                  ),
-                                                                ),
-                                                              );
+                                                                );
+                                                              }
                                                             }
-                                                          }
-                                                        },
-                                                      ),
-                                                    ],
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
                                               ],
                                             );
                                           }).toList(),

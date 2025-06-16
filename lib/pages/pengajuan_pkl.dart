@@ -4,6 +4,7 @@ import 'package:sikermatsu/widgets/main_layout.dart';
 import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/models/pkl.dart';
 import 'package:sikermatsu/pages/upload_pkl.dart';
+import 'package:sikermatsu/services/auth_service.dart';
 import '../styles/style.dart';
 
 class PKLPage extends StatefulWidget {
@@ -39,7 +40,15 @@ class _PKLPageState extends State<PKLPage> {
   Future<void> _loadPkl() async {
     setState(() => isLoading = true);
     try {
-      final data = await PklService.getAllPkl();
+      final role = await AuthService.getRole();
+
+      List<Pkl> data;
+      if (role == 'userpkl') {
+        data = await PklService.getPklSaya();
+      } else {
+        data = await PklService.getAllPkl();
+      }
+
       setState(() {
         allPkl = data;
         _applyFilter();
@@ -53,6 +62,23 @@ class _PKLPageState extends State<PKLPage> {
     }
   }
 
+  // Future<void> _loadPkl() async {
+  //   setState(() => isLoading = true);
+  //   try {
+  //     final data = await PklService.getAllPkl();
+  //     setState(() {
+  //       allPkl = data;
+  //       _applyFilter();
+  //     });
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text('Gagal memuat data siswa: $e')));
+  //   } finally {
+  //     setState(() => isLoading = false);
+  //   }
+  // }
+
   void _applyFilter() {
     setState(() {
       filteredPkl =
@@ -61,7 +87,7 @@ class _PKLPageState extends State<PKLPage> {
               searchQuery.toLowerCase(),
             );
             final matchesStatus =
-                selectedStatus == 'Semua' || pkl.status == selectedStatus;
+                selectedStatus == 'Semua' || pkl.statusText == selectedStatus;
             return matchesSearch && matchesStatus;
           }).toList();
       currentPage = 0;
@@ -513,12 +539,37 @@ class _PKLPageState extends State<PKLPage> {
                       ),
                     ),
                   ),
-                  if (isLoggedIn && role != 'userpkl')
+                  if (isLoggedIn)
                     Positioned(
                       bottom: 16,
                       right: 16,
                       child: FloatingActionButton(
-                        onPressed: () {
+                        onPressed: () async {
+                          if (role == 'userpkl') {
+                            try {
+                              final dataSaya = await PklService.getPklSaya();
+                              if (dataSaya.length >= 3) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Anda hanya bisa mengajukan PKL maksimal 3 akun.',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Gagal memeriksa data PKL Anda: $e',
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+                          }
+
                           Navigator.pushNamed(
                             context,
                             '/uploadpkl',
@@ -529,6 +580,23 @@ class _PKLPageState extends State<PKLPage> {
                         child: const Icon(Icons.add),
                       ),
                     ),
+
+                  // if (isLoggedIn && role != 'userpkl')
+                  //   Positioned(
+                  //     bottom: 16,
+                  //     right: 16,
+                  //     child: FloatingActionButton(
+                  //       onPressed: () {
+                  //         Navigator.pushNamed(
+                  //           context,
+                  //           '/uploadpkl',
+                  //         ).then((_) => _loadPkl());
+                  //       },
+                  //       backgroundColor: Colors.teal,
+                  //       foregroundColor: Colors.white,
+                  //       child: const Icon(Icons.add),
+                  //     ),
+                  //   ),
                 ],
               ),
     );

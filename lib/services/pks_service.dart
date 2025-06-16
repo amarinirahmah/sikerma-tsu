@@ -9,7 +9,7 @@ import 'package:file_picker/file_picker.dart';
 
 class PksService {
   // static const String baseUrl = 'http://192.168.18.248:8000/api';
-  static const String baseUrl = "http://192.168.100.111:8000/api";
+  static const String baseUrl = "http://192.168.100.238:8000/api";
   // static const String baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
   static String? token;
   static String? role;

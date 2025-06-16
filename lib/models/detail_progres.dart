@@ -32,4 +32,17 @@ class DetailProgress {
       'data_mou_id': dataMouId,
     };
   }
+
+  String get prosesText {
+    switch (proses) {
+      case 'PembuatanDraft':
+        return 'Pembuatan Draft';
+      case 'PengajuanDraft':
+        return 'Pengajuan Draft';
+      case 'PenyerahanMOU':
+        return 'Penyerahan MoU';
+      default:
+        return proses;
+    }
+  }
 }

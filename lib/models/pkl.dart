@@ -2,6 +2,17 @@ enum JenisKelamin { lakilaki, perempuan }
 
 enum StatusPkl { diproses, disetujui, ditolak }
 
+extension JenisKelaminText on JenisKelamin {
+  String toDisplay() {
+    switch (this) {
+      case JenisKelamin.lakilaki:
+        return 'Laki-laki';
+      case JenisKelamin.perempuan:
+        return 'Perempuan';
+    }
+  }
+}
+
 extension JenisKelaminExtension on JenisKelamin {
   String toBackend() {
     switch (this) {
@@ -128,34 +139,6 @@ class Pkl {
         return null;
     }
   }
-
-  // Pkl copyWith({
-  //   int? id,
-  //   String? nisn,
-  //   String? sekolah,
-  //   String? nama,
-  //   JenisKelamin? gender,
-  //   DateTime? tanggalMulai,
-  //   DateTime? tanggalBerakhir,
-  //   String? filePkl,
-  //   String? telpEmail,
-  //   StatusPkl? status,
-  //   String? alamat,
-  // }) {
-  //   return Pkl(
-  //     id: id ?? this.id,
-  //     nisn: nisn ?? this.nisn,
-  //     sekolah: sekolah ?? this.sekolah,
-  //     nama: nama ?? this.nama,
-  //     gender: gender ?? this.gender,
-  //     tanggalMulai: tanggalMulai ?? this.tanggalMulai,
-  //     tanggalBerakhir: tanggalBerakhir ?? this.tanggalBerakhir,
-  //     filePkl: filePkl ?? this.filePkl,
-  //     telpEmail: telpEmail ?? this.telpEmail,
-  //     status: status ?? this.status,
-  //     alamat: alamat ?? this.alamat,
-  //   );
-  // }
 
   String get statusText {
     switch (status) {

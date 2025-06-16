@@ -54,7 +54,7 @@ class _MoUPageState extends State<MoUPage> {
               searchQuery.toLowerCase(),
             );
             final matchesStatus =
-                selectedStatus == 'Semua' || mou.status == selectedStatus;
+                selectedStatus == 'Semua' || mou.statusText == selectedStatus;
             return matchesSearch && matchesStatus;
           }).toList();
       currentPage = 0;
