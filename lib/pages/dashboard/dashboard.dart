@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/widgets/main_layout.dart';
-import 'package:sikermatsu/models/app_state.dart';
+import 'package:sikermatsu/main_layout.dart';
+import 'package:sikermatsu/states/app_state.dart';
 import 'package:sikermatsu/helpers/responsive.dart';
 import 'package:sikermatsu/styles/style.dart';
 

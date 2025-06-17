@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:sikermatsu/models/detail_progres.dart';
 import 'auth_service.dart';
+import '../constants/api_constants.dart';
 
 class DetailProgressService {
-  static const String baseUrl = "http://192.168.100.238:8000/api";
-  // static const String baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
+  // static const String baseUrl = "http://192.168.100.238:8000/api";
   static String? token;
   static String? role;
   static Future<DetailProgress> addProgress({
@@ -18,7 +18,7 @@ class DetailProgressService {
 
     try {
       final response = await http.post(
-        Uri.parse('$baseUrl/addprogress/$id'),
+        Uri.parse('${ApiConstants.baseUrl}/addprogress/$id'),
         headers: {
           'Authorization': 'Bearer $token',
           'Accept': 'application/json',
@@ -52,7 +52,7 @@ class DetailProgressService {
     final token = await AuthService.getToken();
 
     final response = await http.get(
-      Uri.parse('$baseUrl/mou/$mouId/progress'),
+      Uri.parse('${ApiConstants.baseUrl}/mou/$mouId/progress'),
       headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
     );
 

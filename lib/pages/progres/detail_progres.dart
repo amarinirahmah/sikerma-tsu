@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/widgets/main_layout.dart';
-import 'package:sikermatsu/models/app_state.dart';
-import '../styles/style.dart';
+import 'package:sikermatsu/main_layout.dart';
+import 'package:sikermatsu/states/app_state.dart';
+import '../../styles/style.dart';
 import 'package:sikermatsu/services/detail_progres_service.dart';
 import 'package:sikermatsu/models/detail_progres.dart';
 import 'package:sikermatsu/services/auth_service.dart';

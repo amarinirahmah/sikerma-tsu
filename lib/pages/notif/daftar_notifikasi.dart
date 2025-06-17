@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/widgets/main_layout.dart';
+import 'package:sikermatsu/main_layout.dart';
 import 'package:sikermatsu/widgets/table.dart';
-import 'package:sikermatsu/models/app_state.dart';
+import 'package:sikermatsu/states/app_state.dart';
 import 'package:sikermatsu/widgets/notif_card.dart';
-import '../models/notifikasi.dart';
-import '../services/notif_service.dart';
+import '../../models/notifikasi.dart';
+import '../../services/notif_service.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});

@@ -1,12 +1,14 @@
 import 'dart:io' as io;
-import 'dart:html' as html; // hanya untuk web
-import 'package:flutter/foundation.dart'; // untuk kIsWeb
+import 'dart:html' as html;
+import 'package:flutter/foundation.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:dio/dio.dart';
 import '../services/auth_service.dart';
+import '../constants/api_constants.dart';
 
 Future<void> downloadFile(String folder, String filename) async {
-  final url = 'http://192.168.100.238:8000/api/download/$filename';
+  // final url = 'http://192.168.100.238:8000/api/download/$filename';
+  final url = '${ApiConstants.baseUrl}/download/$filename';
   final token = await AuthService.getToken();
 
   if (kIsWeb) {

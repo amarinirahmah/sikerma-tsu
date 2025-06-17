@@ -2,19 +2,18 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
-import '../models/app_state.dart';
+import '../states/app_state.dart';
+import '../constants/api_constants.dart';
 
 class AuthService {
-  static const baseUrl = "http://192.168.100.238:8000/api";
-  // static const baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
-
+  // static const baseUrl = "http://192.168.100.238:8000/api";
   static String? token;
   static String? role;
 
-  // Login: return role jika berhasil, throw Exception jika gagal
+  // Login
   static Future<User> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/login'),
+      Uri.parse('${ApiConstants.baseUrl}/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email, 'password': password}),
     );
@@ -60,32 +59,6 @@ class AuthService {
     return role;
   }
 
-  // Fetch data user dari API, throw exception jika error
-  // static Future<Map<String, dynamic>> fetchUserFromAPI() async {
-  //   final token = await getToken();
-  //   if (token == null) throw Exception("Token tidak ditemukan. Silakan login.");
-
-  //   final response = await http.get(
-  //     Uri.parse('$baseUrl/users'),
-  //     headers: {
-  //       'Authorization': 'Bearer $token',
-  //       'Content-Type': 'application/json',
-  //     },
-  //   );
-  //   if (response.statusCode == 200) {
-  //     final data = jsonDecode(response.body);
-  //     if (data is List && data.isNotEmpty) {
-  //       return data.first;
-  //     } else if (data is Map<String, dynamic>) {
-  //       return data;
-  //     } else {
-  //       throw Exception("Data user tidak valid.");
-  //     }
-  //   } else {
-  //     throw Exception("Gagal mengambil data user: ${response.statusCode}");
-  //   }
-  // }
-
   // Logout: hapus token & role di memori dan SharedPreferences
   static Future<void> logout() async {
     // token = null;
@@ -109,7 +82,7 @@ class AuthService {
   ) async {
     final token = await AuthService.getToken();
     final response = await http.post(
-      Uri.parse('${AuthService.baseUrl}/registerbyadmin'),
+      Uri.parse('${ApiConstants.baseUrl}/registerbyadmin'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -139,7 +112,7 @@ class AuthService {
     required String password,
   }) async {
     final response = await http.post(
-      Uri.parse('${AuthService.baseUrl}/registeruser'),
+      Uri.parse('${ApiConstants.baseUrl}/registeruser'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         "name": name,
@@ -163,7 +136,7 @@ class AuthService {
   static Future<List<User>> getAllUser() async {
     final token = await getToken();
     final response = await http.get(
-      Uri.parse('$baseUrl/users'),
+      Uri.parse('${ApiConstants.baseUrl}/users'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -179,7 +152,7 @@ class AuthService {
     }
   }
 
-  // UPDATE USER
+  // update user
   static Future<void> updateUser({
     required int id,
     required String name,
@@ -194,7 +167,7 @@ class AuthService {
     };
 
     final response = await http.put(
-      Uri.parse('$baseUrl/updateuser/$id'),
+      Uri.parse('${ApiConstants.baseUrl}/updateuser/$id'),
       headers: {
         'Authorization': 'Bearer $token',
         'Content-Type': 'application/json',
@@ -208,29 +181,11 @@ class AuthService {
     }
   }
 
-  // static Future<void> updateUser({
-  //   required int id,
-  //   required String name,
-  //   required String email,
-  //   required String role,
-  // }) async {
-  //   final response = await http.put(
-  //     Uri.parse('$baseUrl/users/$id'),
-  //     headers: {'Content-Type': 'application/json'},
-  //     body: jsonEncode({'name': name, 'email': email, 'role': role}),
-  //   );
-
-  //   if (response.statusCode != 200) {
-  //     final data = jsonDecode(response.body);
-  //     throw Exception(data['message'] ?? 'Gagal mengedit user');
-  //   }
-  // }
-
-  // DELETE USER
+  // delete user
   static Future<void> deleteUser(id) async {
     final token = await AuthService.getToken();
     final response = await http.delete(
-      Uri.parse('$baseUrl/deleteuser/$id'),
+      Uri.parse('${ApiConstants.baseUrl}/deleteuser/$id'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',

@@ -1,33 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/services/pkl_service.dart';
+import 'package:sikermatsu/main_layout.dart';
+import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/models/pkl.dart';
+import 'package:sikermatsu/pages/pkl/upload_pkl.dart';
 import 'package:sikermatsu/services/auth_service.dart';
-import 'package:sikermatsu/widgets/main_layout.dart';
-import 'package:sikermatsu/models/app_state.dart';
-import 'package:sikermatsu/models/user.dart';
-import 'package:sikermatsu/pages/add_role.dart';
-import '../styles/style.dart';
+import '../../styles/style.dart';
 
-class SuperAdminPage extends StatefulWidget {
-  const SuperAdminPage({super.key});
+class PKLPage extends StatefulWidget {
+  const PKLPage({super.key});
 
   @override
-  State<SuperAdminPage> createState() => _SuperAdminPageState();
+  State<PKLPage> createState() => _PKLPageState();
 }
 
-class _SuperAdminPageState extends State<SuperAdminPage> {
+class _PKLPageState extends State<PKLPage> {
   final TextEditingController _searchController = TextEditingController();
 
-  List<User> allUser = [];
-  List<User> filteredUser = [];
+  List<Pkl> allPkl = [];
+  List<Pkl> filteredPkl = [];
   bool isLoading = true;
   int rowsPerPage = 10;
   int currentPage = 0;
   String searchQuery = '';
-  String selectedRole = 'Semua';
+  String selectedStatus = 'Semua';
 
   @override
   void initState() {
     super.initState();
-    _loadUser();
+    _loadPkl();
   }
 
   @override
@@ -36,46 +37,79 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
     super.dispose();
   }
 
-  Future<void> _loadUser() async {
+  Future<void> _loadPkl() async {
     setState(() => isLoading = true);
     try {
-      final data = await AuthService.getAllUser();
+      final role = await AuthService.getRole();
+
+      List<Pkl> data;
+      if (role == 'userpkl') {
+        data = await PklService.getPklSaya();
+      } else {
+        data = await PklService.getAllPkl();
+      }
+
       setState(() {
-        allUser = data;
+        allPkl = data;
         _applyFilter();
       });
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Gagal memuat user: $e')));
+      ).showSnackBar(SnackBar(content: Text('Gagal memuat data siswa: $e')));
     } finally {
       setState(() => isLoading = false);
     }
   }
 
+  // Future<void> _loadPkl() async {
+  //   setState(() => isLoading = true);
+  //   try {
+  //     final data = await PklService.getAllPkl();
+  //     setState(() {
+  //       allPkl = data;
+  //       _applyFilter();
+  //     });
+  //   } catch (e) {
+  //     ScaffoldMessenger.of(
+  //       context,
+  //     ).showSnackBar(SnackBar(content: Text('Gagal memuat data siswa: $e')));
+  //   } finally {
+  //     setState(() => isLoading = false);
+  //   }
+  // }
+
   void _applyFilter() {
     setState(() {
-      filteredUser =
-          allUser.where((user) {
-            final matchesSearch = user.name.toLowerCase().contains(
+      filteredPkl =
+          allPkl.where((pkl) {
+            final matchesSearch = pkl.nama.toLowerCase().contains(
               searchQuery.toLowerCase(),
             );
-            final matchesRole =
-                selectedRole == 'Semua' || user.role == selectedRole;
-            return matchesSearch && matchesRole;
+            final matchesStatus =
+                selectedStatus == 'Semua' || pkl.statusText == selectedStatus;
+            return matchesSearch && matchesStatus;
           }).toList();
       currentPage = 0;
     });
   }
 
+  // Widget buildHeaderField(String text) {
+  //   return Container(
+  //     color: Colors.grey[300],
+  //     padding: const EdgeInsets.all(8),
+  //     child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = AppState.isLoggedIn.value;
     final role = AppState.role.value;
-    final totalPages = (filteredUser.length / rowsPerPage).ceil();
+    final totalPages = (filteredPkl.length / rowsPerPage).ceil();
 
     final displayedRows =
-        filteredUser.skip(currentPage * rowsPerPage).take(rowsPerPage).toList();
+        filteredPkl.skip(currentPage * rowsPerPage).take(rowsPerPage).toList();
 
     return MainLayout(
       title: '',
@@ -104,7 +138,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    'Daftar User',
+                                    'Daftar Pengajuan Siswa PKL',
                                     style: CustomStyle.headline1,
                                   ),
                                   const SizedBox(height: 16),
@@ -113,9 +147,14 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                       Expanded(
                                         child: TextField(
                                           controller: _searchController,
+                                          // decoration: const InputDecoration(
+                                          //   labelText: 'Cari Nama Siswa',
+                                          //   border: OutlineInputBorder(),
+                                          //   isDense: true,
+                                          // ),
                                           decoration:
                                               CustomStyle.searchInputDecoration(
-                                                labelText: 'Cari Nama User',
+                                                labelText: 'Cari Nama Siswa',
                                                 prefixIcon: Icon(
                                                   Icons.search,
                                                   color: Colors.grey,
@@ -139,10 +178,8 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                                         : null,
                                               ),
                                           onChanged: (value) {
-                                            setState(() {
-                                              searchQuery = value;
-                                              _applyFilter();
-                                            });
+                                            searchQuery = value;
+                                            _applyFilter();
                                           },
                                         ),
                                       ),
@@ -156,21 +193,21 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                         child: DropdownButton<String>(
                                           // decoration:
                                           //     CustomStyle.dropdownDecoration(),
-                                          value: selectedRole,
+                                          value: selectedStatus,
                                           // isDense: true,
                                           underline: const SizedBox(),
                                           onChanged: (value) {
                                             if (value != null) {
-                                              selectedRole = value;
+                                              selectedStatus = value;
                                               _applyFilter();
                                             }
                                           },
                                           items:
                                               [
                                                     'Semua',
-                                                    'admin',
-                                                    'user',
-                                                    'userpkl',
+                                                    'Diproses',
+                                                    'Disetujui',
+                                                    'Ditolak',
                                                   ]
                                                   .map(
                                                     (role) => DropdownMenuItem(
@@ -188,9 +225,6 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                     scrollDirection: Axis.horizontal,
                                     child: ConstrainedBox(
                                       constraints: BoxConstraints(
-                                        // minWidth:
-                                        //     MediaQuery.of(context).size.width *
-                                        //     0.8, // minimal 80% layar
                                         maxWidth: 1000,
                                       ),
                                       child: SizedBox(
@@ -207,24 +241,105 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                             color: Colors.grey,
                                           ),
                                           columns: [
-                                            DataColumn(label: Text('Nama')),
-                                            DataColumn(label: Text('Email')),
-                                            DataColumn(label: Text('Role')),
-                                            DataColumn(label: Text('Aksi')),
+                                            DataColumn(
+                                              label: Text(
+                                                'NISN',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Nama Siswa',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Sekolah',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Tanggal Mulai',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Tanggal Berakhir',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Status',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                            DataColumn(
+                                              label: Text(
+                                                'Aksi',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
                                           ],
                                           rows:
-                                              displayedRows.map((user) {
+                                              displayedRows.map((pkl) {
                                                 return DataRow(
                                                   cells: [
-                                                    DataCell(Text(user.name)),
-                                                    DataCell(Text(user.email)),
-                                                    DataCell(Text(user.role)),
+                                                    DataCell(Text(pkl.nisn)),
+                                                    DataCell(Text(pkl.nama)),
+                                                    DataCell(Text(pkl.sekolah)),
+                                                    DataCell(
+                                                      Text(
+                                                        pkl.tanggalMulai!
+                                                            .toIso8601String()
+                                                            .split('T')
+                                                            .first,
+                                                      ),
+                                                    ),
+                                                    DataCell(
+                                                      Text(
+                                                        pkl.tanggalBerakhir
+                                                            .toIso8601String()
+                                                            .split('T')
+                                                            .first,
+                                                      ),
+                                                    ),
+                                                    DataCell(
+                                                      Text(pkl.statusText),
+                                                    ),
 
                                                     DataCell(
                                                       Row(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
                                                         children: [
+                                                          IconButton(
+                                                            icon: const Icon(
+                                                              Icons.info,
+                                                              color:
+                                                                  Colors.teal,
+                                                            ),
+                                                            tooltip: 'Detail',
+                                                            onPressed: () {
+                                                              Navigator.pushNamed(
+                                                                context,
+                                                                '/detailpkl',
+                                                                arguments:
+                                                                    pkl.id
+                                                                        .toString(),
+                                                              );
+                                                            },
+                                                          ),
                                                           if (isLoggedIn &&
                                                               (role ==
                                                                       'admin' ||
@@ -245,15 +360,15 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                                                     builder:
                                                                         (
                                                                           context,
-                                                                        ) => AddRolePage(
-                                                                          user:
-                                                                              user,
+                                                                        ) => UploadPKLPage(
+                                                                          pkl:
+                                                                              pkl,
                                                                         ),
                                                                   ),
                                                                 ).then((value) {
                                                                   if (value ==
                                                                       true) {
-                                                                    _loadUser();
+                                                                    _loadPkl();
                                                                   }
                                                                 });
                                                               },
@@ -285,7 +400,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                                                         ),
                                                                         content:
                                                                             Text(
-                                                                              'Hapus user dengan nama ${user.name}?',
+                                                                              'Hapus data siswa dengan nama ${pkl.nama}?',
                                                                             ),
                                                                         actions: [
                                                                           TextButton(
@@ -314,8 +429,8 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                                                 if (confirm ==
                                                                     true) {
                                                                   try {
-                                                                    await AuthService.deleteUser(
-                                                                      user.id
+                                                                    await PklService.deletePkl(
+                                                                      pkl.id
                                                                           .toString(),
                                                                     );
                                                                     ScaffoldMessenger.of(
@@ -324,11 +439,11 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                                                       const SnackBar(
                                                                         content:
                                                                             Text(
-                                                                              'Berhasil menghapus user',
+                                                                              'Berhasil menghapus data siswa',
                                                                             ),
                                                                       ),
                                                                     );
-                                                                    await _loadUser();
+                                                                    await _loadPkl();
                                                                   } catch (e) {
                                                                     ScaffoldMessenger.of(
                                                                       context,
@@ -336,7 +451,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                                                       SnackBar(
                                                                         content:
                                                                             Text(
-                                                                              'Gagal menghapus user: $e',
+                                                                              'Gagal menghapus data siswa: $e',
                                                                             ),
                                                                       ),
                                                                     );
@@ -424,27 +539,64 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                       ),
                     ),
                   ),
-                  if (isLoggedIn && role != 'userpkl')
+                  if (isLoggedIn)
                     Positioned(
                       bottom: 16,
                       right: 16,
                       child: FloatingActionButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, '/addrole').then((
-                            result,
-                          ) {
-                            // _loadUser();
-                            if (result == true) {
-                              _loadUser();
+                        onPressed: () async {
+                          if (role == 'userpkl') {
+                            try {
+                              final dataSaya = await PklService.getPklSaya();
+                              if (dataSaya.length >= 3) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Anda hanya bisa mengajukan PKL maksimal 3 akun.',
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    'Gagal memeriksa data PKL Anda: $e',
+                                  ),
+                                ),
+                              );
+                              return;
                             }
-                          });
-                        },
+                          }
 
+                          Navigator.pushNamed(
+                            context,
+                            '/uploadpkl',
+                          ).then((_) => _loadPkl());
+                        },
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,
                         child: const Icon(Icons.add),
                       ),
                     ),
+
+                  // if (isLoggedIn && role != 'userpkl')
+                  //   Positioned(
+                  //     bottom: 16,
+                  //     right: 16,
+                  //     child: FloatingActionButton(
+                  //       onPressed: () {
+                  //         Navigator.pushNamed(
+                  //           context,
+                  //           '/uploadpkl',
+                  //         ).then((_) => _loadPkl());
+                  //       },
+                  //       backgroundColor: Colors.teal,
+                  //       foregroundColor: Colors.white,
+                  //       child: const Icon(Icons.add),
+                  //     ),
+                  //   ),
                 ],
               ),
     );

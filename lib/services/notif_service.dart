@@ -1,18 +1,16 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/notifikasi.dart';
-import '../services/auth_service.dart'; // untuk token auth
+import '../services/auth_service.dart';
+import '../constants/api_constants.dart';
 
 class NotifService {
-  // static const String baseUrl = 'http://192.168.18.248:8000/api';
-  static const String baseUrl = "http://192.168.100.238:8000/api";
-  // static const String baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
+  // static const String baseUrl = "http://192.168.100.238:8000/api";
 
   Future<List<Notifikasi>> getAllNotif({String? type, String? tanggal}) async {
     final token = await AuthService.getToken();
 
-    // Bangun URL dengan query jika tersedia
-    final uri = Uri.parse('$baseUrl/notifikasi').replace(
+    final uri = Uri.parse('${ApiConstants.baseUrl}/notifikasi').replace(
       queryParameters: {
         if (type != null) 'type': type,
         if (tanggal != null) 'tanggal': tanggal,
@@ -31,17 +29,4 @@ class NotifService {
       throw Exception('Gagal mengambil notifikasi: ${response.body}');
     }
   }
-
-  // Future<void> deleteNotif(int id) async {
-  //   final token = await AuthService.getToken();
-
-  //   final response = await http.delete(
-  //     Uri.parse('$baseUrl/notifikasi/$id'),
-  //     headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
-  //   );
-
-  //   if (response.statusCode != 200) {
-  //     throw Exception('Gagal menghapus notifikasi: ${response.body}');
-  //   }
-  // }
 }

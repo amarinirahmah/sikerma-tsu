@@ -1,112 +1,61 @@
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/pages/detail_progres.dart';
-import 'package:sikermatsu/widgets/main_layout.dart';
-import 'package:sikermatsu/models/app_state.dart';
 import 'package:sikermatsu/services/mou_service.dart';
-import 'package:sikermatsu/services/pks_service.dart';
-import '../styles/style.dart';
+import 'package:sikermatsu/main_layout.dart';
+import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/models/mou.dart';
+import 'package:sikermatsu/pages/mou/upload_mou.dart';
+import '../../styles/style.dart';
 
-class ProgressPage extends StatefulWidget {
-  const ProgressPage({super.key});
+class MoUPage extends StatefulWidget {
+  const MoUPage({super.key});
 
   @override
-  State<ProgressPage> createState() => _ProgressPageState();
+  State<MoUPage> createState() => _MoUPageState();
 }
 
-class _ProgressPageState extends State<ProgressPage> {
-  List<Map<String, dynamic>> allData = [];
-  List<Map<String, dynamic>> filteredData = [];
-  bool isLoading = true;
-
-  // Pagination
-  int currentPage = 0;
-  int rowsPerPage = 10;
-
-  // Filter/search
-  String searchQuery = '';
+class _MoUPageState extends State<MoUPage> {
   final TextEditingController _searchController = TextEditingController();
+  List<Mou> allMou = [];
+  List<Mou> filteredMou = [];
+  bool isLoading = true;
+  int rowsPerPage = 10;
+  int currentPage = 0;
+  String searchQuery = '';
   String selectedStatus = 'Semua';
-  // String selectedJenis = 'Semua';
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _loadMou();
   }
 
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadData() async {
+  Future<void> _loadMou() async {
     setState(() => isLoading = true);
     try {
-      final mouList = await MouService.getAllMou();
-      final pksList = await PksService.getAllPks();
-
-      final List<Map<String, dynamic>> combinedData = [];
-
-      for (final mou in mouList) {
-        final relatedPks = pksList.where((pks) => pks.nomorMou == mou.nomorMou);
-
-        if (relatedPks.isEmpty) {
-          combinedData.add({
-            'Nama Mitra': mou.nama,
-            'Nomor MoU': mou.nomorMou,
-            'Tanggal Mulai MoU':
-                mou.tanggalMulai.toIso8601String().split('T').first,
-            'Status MoU': mou.statusText,
-            'Nomor PKS': '-',
-            'Tanggal Mulai PKS': '-',
-            'Status PKS': '-',
-            'mouId': mou.id,
-            'pksId': null,
-          });
-        } else {
-          for (final pks in relatedPks) {
-            combinedData.add({
-              'Nama Mitra': mou.nama,
-              'Nomor MoU': mou.nomorMou,
-              'Tanggal Mulai MoU':
-                  mou.tanggalMulai.toIso8601String().split('T').first,
-              'Status MoU': mou.statusText,
-              'Nomor PKS': pks.nomorPks,
-              'Tanggal Mulai PKS':
-                  pks.tanggalMulai.toIso8601String().split('T').first,
-              'Status PKS': pks.statusText,
-              'mouId': mou.id,
-              'pksId': pks.id,
-            });
-          }
-        }
-      }
+      final data = await MouService.getAllMou();
       setState(() {
-        allData = combinedData;
-        filteredData = combinedData;
-        isLoading = false;
+        allMou = data;
+        _applyFilter();
       });
     } catch (e) {
-      setState(() => isLoading = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Gagal memuat data: $e')));
+      ).showSnackBar(SnackBar(content: Text('Gagal memuat MoU: $e')));
+    } finally {
+      setState(() => isLoading = false);
     }
   }
 
   void _applyFilter() {
     setState(() {
-      filteredData =
-          allData.where((data) {
-            final statusMatch =
-                selectedStatus == 'Semua' ||
-                data['Status MoU'] == selectedStatus;
-            final nameMatch = data['Nama Mitra']
-                .toString()
-                .toLowerCase()
-                .contains(searchQuery.toLowerCase());
-            return statusMatch && nameMatch;
+      filteredMou =
+          allMou.where((mou) {
+            final matchesSearch = mou.nama.toLowerCase().contains(
+              searchQuery.toLowerCase(),
+            );
+            final matchesStatus =
+                selectedStatus == 'Semua' || mou.statusText == selectedStatus;
+            return matchesSearch && matchesStatus;
           }).toList();
       currentPage = 0;
     });
@@ -116,10 +65,10 @@ class _ProgressPageState extends State<ProgressPage> {
   Widget build(BuildContext context) {
     final isLoggedIn = AppState.isLoggedIn.value;
     final role = AppState.role.value;
-    final totalPages = (filteredData.length / rowsPerPage).ceil();
+    final totalPages = (filteredMou.length / rowsPerPage).ceil();
 
     final displayedRows =
-        filteredData.skip(currentPage * rowsPerPage).take(rowsPerPage).toList();
+        filteredMou.skip(currentPage * rowsPerPage).take(rowsPerPage).toList();
 
     return MainLayout(
       title: '',
@@ -148,7 +97,7 @@ class _ProgressPageState extends State<ProgressPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    'Daftar Progres',
+                                    'Daftar MoU',
                                     style: CustomStyle.headline1,
                                   ),
                                   const SizedBox(height: 16),
@@ -156,7 +105,6 @@ class _ProgressPageState extends State<ProgressPage> {
                                     children: [
                                       Expanded(
                                         child: TextField(
-                                          controller: _searchController,
                                           decoration:
                                               CustomStyle.searchInputDecoration(
                                                 labelText: 'Cari Nama Mitra',
@@ -183,15 +131,12 @@ class _ProgressPageState extends State<ProgressPage> {
                                                         : null,
                                               ),
                                           onChanged: (value) {
-                                            setState(() {
-                                              searchQuery = value;
-                                              _applyFilter();
-                                            });
+                                            searchQuery = value;
+                                            _applyFilter();
                                           },
                                         ),
                                       ),
                                       const SizedBox(width: 16),
-
                                       Container(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 12,
@@ -199,10 +144,7 @@ class _ProgressPageState extends State<ProgressPage> {
                                         decoration:
                                             CustomStyle.dropdownBoxDecoration(),
                                         child: DropdownButton<String>(
-                                          // decoration:
-                                          //     CustomStyle.dropdownDecoration(),
                                           value: selectedStatus,
-                                          // isDense: true,
                                           underline: const SizedBox(),
                                           onChanged: (value) {
                                             if (value != null) {
@@ -213,11 +155,10 @@ class _ProgressPageState extends State<ProgressPage> {
                                           items:
                                               ['Semua', 'Aktif', 'Tidak Aktif']
                                                   .map(
-                                                    (status) =>
-                                                        DropdownMenuItem(
-                                                          value: status,
-                                                          child: Text(status),
-                                                        ),
+                                                    (role) => DropdownMenuItem(
+                                                      value: role,
+                                                      child: Text(role),
+                                                    ),
                                                   )
                                                   .toList(),
                                         ),
@@ -227,7 +168,12 @@ class _ProgressPageState extends State<ProgressPage> {
                                   const SizedBox(height: 16),
                                   SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
-
+                                    // child: ConstrainedBox(
+                                    //   constraints: BoxConstraints(
+                                    //     minWidth: 1000,
+                                    //   ),
+                                    //   child: SizedBox(
+                                    //     width: double.infinity,
                                     child: DataTable(
                                       headingRowColor:
                                           MaterialStateProperty.all<Color>(
@@ -249,13 +195,6 @@ class _ProgressPageState extends State<ProgressPage> {
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Nomor PKS',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
                                             'Nama Mitra',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
@@ -263,121 +202,213 @@ class _ProgressPageState extends State<ProgressPage> {
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Tanggal Mulai MoU',
+                                            'Judul',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Status MoU',
+                                            'Tanggal Mulai',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Tanggal Mulai PKS',
+                                            'Tanggal Berakhir',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Status PKS',
+                                            'Status',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Aksi',
+                                            'Keterangan',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
                                         ),
+                                        if (isLoggedIn &&
+                                            (role == 'admin' || role == 'user'))
+                                          DataColumn(
+                                            label: Text(
+                                              'Aksi',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
                                       ],
                                       rows:
-                                          displayedRows.map((data) {
+                                          displayedRows.map((mou) {
                                             return DataRow(
                                               cells: [
-                                                DataCell(
-                                                  Text(data['Nomor MoU'] ?? ''),
-                                                ),
-                                                DataCell(
-                                                  Text(data['Nomor PKS'] ?? ''),
-                                                ),
+                                                DataCell(Text(mou.nomorMou)),
+                                                DataCell(Text(mou.nama)),
+                                                DataCell(Text(mou.judul)),
                                                 DataCell(
                                                   Text(
-                                                    data['Nama Mitra'] ?? '',
+                                                    mou.tanggalMulai!
+                                                        .toIso8601String()
+                                                        .split('T')
+                                                        .first,
                                                   ),
                                                 ),
                                                 DataCell(
                                                   Text(
-                                                    data['Tanggal Mulai MoU'] ??
-                                                        '',
+                                                    mou.tanggalBerakhir
+                                                        .toIso8601String()
+                                                        .split('T')
+                                                        .first,
                                                   ),
                                                 ),
+                                                DataCell(Text(mou.statusText)),
                                                 DataCell(
-                                                  Text(
-                                                    data['Status MoU'] ?? '',
-                                                  ),
+                                                  Text(mou.keteranganText),
                                                 ),
-                                                DataCell(
-                                                  Text(
-                                                    data['Tanggal Mulai PKS'] ??
-                                                        '',
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Text(
-                                                    data['Status PKS'] ?? '',
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      IconButton(
-                                                        icon: const Icon(
-                                                          Icons.info,
-                                                          color: Colors.teal,
+                                                if (isLoggedIn &&
+                                                    (role == 'admin' ||
+                                                        role == 'user'))
+                                                  DataCell(
+                                                    Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                            Icons.info,
+                                                            color: Colors.teal,
+                                                          ),
+                                                          tooltip: 'Detail',
+                                                          onPressed: () {
+                                                            Navigator.pushNamed(
+                                                              context,
+                                                              '/detailmou',
+                                                              arguments:
+                                                                  mou.id
+                                                                      .toString(),
+                                                            );
+                                                          },
                                                         ),
-                                                        tooltip: 'Detail',
-                                                        onPressed: () {
-                                                          final int? mouId =
-                                                              data['mouId'];
-
-                                                          if (mouId != null) {
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                            Icons.edit,
+                                                            color:
+                                                                Colors.orange,
+                                                          ),
+                                                          tooltip: 'Edit',
+                                                          onPressed: () {
                                                             Navigator.push(
                                                               context,
                                                               MaterialPageRoute(
                                                                 builder:
                                                                     (
                                                                       context,
-                                                                    ) => DetailProgressPage(
-                                                                      mouId:
-                                                                          mouId,
+                                                                    ) => UploadMoUPage(
+                                                                      mou: mou,
                                                                     ),
                                                               ),
                                                             ).then((value) {
                                                               if (value ==
                                                                   true) {
-                                                                _loadData();
+                                                                _loadMou();
                                                               }
                                                             });
-                                                          }
-                                                        },
-                                                      ),
-                                                    ],
+                                                          },
+                                                        ),
+
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                            Icons.delete,
+                                                            color: Colors.red,
+                                                          ),
+                                                          tooltip: 'Hapus',
+                                                          onPressed: () async {
+                                                            final confirm = await showDialog<
+                                                              bool
+                                                            >(
+                                                              context: context,
+                                                              builder:
+                                                                  (
+                                                                    context,
+                                                                  ) => AlertDialog(
+                                                                    title: const Text(
+                                                                      'Konfirmasi',
+                                                                    ),
+                                                                    content: Text(
+                                                                      'Hapus MoU dengan judul ${mou.judul}?',
+                                                                    ),
+                                                                    actions: [
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () => Navigator.pop(
+                                                                              context,
+                                                                              false,
+                                                                            ),
+                                                                        child: const Text(
+                                                                          'Batal',
+                                                                        ),
+                                                                      ),
+                                                                      TextButton(
+                                                                        onPressed:
+                                                                            () => Navigator.pop(
+                                                                              context,
+                                                                              true,
+                                                                            ),
+                                                                        child: const Text(
+                                                                          'Hapus',
+                                                                        ),
+                                                                      ),
+                                                                    ],
+                                                                  ),
+                                                            );
+                                                            if (confirm ==
+                                                                true) {
+                                                              try {
+                                                                await MouService.deleteMou(
+                                                                  mou.id
+                                                                      .toString(),
+                                                                );
+                                                                ScaffoldMessenger.of(
+                                                                  context,
+                                                                ).showSnackBar(
+                                                                  const SnackBar(
+                                                                    content: Text(
+                                                                      'Berhasil menghapus MoU',
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                                await _loadMou();
+                                                              } catch (e) {
+                                                                ScaffoldMessenger.of(
+                                                                  context,
+                                                                ).showSnackBar(
+                                                                  SnackBar(
+                                                                    content: Text(
+                                                                      'Gagal menghapus MoU: $e',
+                                                                    ),
+                                                                  ),
+                                                                );
+                                                              }
+                                                            }
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
-                                                ),
                                               ],
                                             );
                                           }).toList(),
                                     ),
                                   ),
+                                  //   ),
+                                  // ),
                                   const SizedBox(height: 16),
                                   Row(
                                     mainAxisAlignment:
@@ -448,6 +479,22 @@ class _ProgressPageState extends State<ProgressPage> {
                       ),
                     ),
                   ),
+                  if (isLoggedIn && role != 'userpkl')
+                    Positioned(
+                      bottom: 16,
+                      right: 16,
+                      child: FloatingActionButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                            context,
+                            '/uploadmou',
+                          ).then((_) => _loadMou());
+                        },
+                        backgroundColor: Colors.teal,
+                        foregroundColor: Colors.white,
+                        child: const Icon(Icons.add),
+                      ),
+                    ),
                 ],
               ),
     );

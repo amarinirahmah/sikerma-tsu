@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/models/app_state.dart';
-import 'package:sikermatsu/pages/access_denied_page.dart';
+import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/pages/guard/access_denied_page.dart';
 
 Route<dynamic> guardedRoute({
   required WidgetBuilder builder,

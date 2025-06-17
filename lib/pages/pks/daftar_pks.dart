@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/services/mou_service.dart';
-import 'package:sikermatsu/widgets/main_layout.dart';
-import 'package:sikermatsu/models/app_state.dart';
-import 'package:sikermatsu/models/mou.dart';
-import 'package:sikermatsu/pages/upload_mou.dart';
-import '../styles/style.dart';
+import 'package:sikermatsu/services/pks_service.dart';
+import 'package:sikermatsu/main_layout.dart';
+import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/models/pks.dart';
+import 'package:sikermatsu/pages/pks/upload_pks.dart';
+import '../../styles/style.dart';
 
-class MoUPage extends StatefulWidget {
-  const MoUPage({super.key});
+class PKSPage extends StatefulWidget {
+  const PKSPage({super.key});
 
   @override
-  State<MoUPage> createState() => _MoUPageState();
+  State<PKSPage> createState() => _PKSPageState();
 }
 
-class _MoUPageState extends State<MoUPage> {
+class _PKSPageState extends State<PKSPage> {
   final TextEditingController _searchController = TextEditingController();
-  List<Mou> allMou = [];
-  List<Mou> filteredMou = [];
+  List<Pks> allPks = [];
+  List<Pks> filteredPks = [];
   bool isLoading = true;
   int rowsPerPage = 10;
   int currentPage = 0;
@@ -26,21 +27,21 @@ class _MoUPageState extends State<MoUPage> {
   @override
   void initState() {
     super.initState();
-    _loadMou();
+    _loadPks();
   }
 
-  Future<void> _loadMou() async {
+  Future<void> _loadPks() async {
     setState(() => isLoading = true);
     try {
-      final data = await MouService.getAllMou();
+      final data = await PksService.getAllPks();
       setState(() {
-        allMou = data;
+        allPks = data;
         _applyFilter();
       });
     } catch (e) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Gagal memuat MoU: $e')));
+      ).showSnackBar(SnackBar(content: Text('Gagal memuat PKS: $e')));
     } finally {
       setState(() => isLoading = false);
     }
@@ -48,27 +49,35 @@ class _MoUPageState extends State<MoUPage> {
 
   void _applyFilter() {
     setState(() {
-      filteredMou =
-          allMou.where((mou) {
-            final matchesSearch = mou.nama.toLowerCase().contains(
+      filteredPks =
+          allPks.where((pks) {
+            final matchesSearch = pks.judul.toLowerCase().contains(
               searchQuery.toLowerCase(),
             );
             final matchesStatus =
-                selectedStatus == 'Semua' || mou.statusText == selectedStatus;
+                selectedStatus == 'Semua' || pks.statusText == selectedStatus;
             return matchesSearch && matchesStatus;
           }).toList();
       currentPage = 0;
     });
   }
 
+  // Widget buildHeaderField(String text) {
+  //   return Container(
+  //     color: Colors.grey[300],
+  //     padding: const EdgeInsets.all(8),
+  //     child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
+  //   );
+  // }
+
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = AppState.isLoggedIn.value;
     final role = AppState.role.value;
-    final totalPages = (filteredMou.length / rowsPerPage).ceil();
+    final totalPages = (filteredPks.length / rowsPerPage).ceil();
 
     final displayedRows =
-        filteredMou.skip(currentPage * rowsPerPage).take(rowsPerPage).toList();
+        filteredPks.skip(currentPage * rowsPerPage).take(rowsPerPage).toList();
 
     return MainLayout(
       title: '',
@@ -97,7 +106,7 @@ class _MoUPageState extends State<MoUPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    'Daftar MoU',
+                                    'Daftar PKS',
                                     style: CustomStyle.headline1,
                                   ),
                                   const SizedBox(height: 16),
@@ -107,7 +116,7 @@ class _MoUPageState extends State<MoUPage> {
                                         child: TextField(
                                           decoration:
                                               CustomStyle.searchInputDecoration(
-                                                labelText: 'Cari Nama Mitra',
+                                                labelText: 'Cari Judul PKS',
                                                 prefixIcon: Icon(
                                                   Icons.search,
                                                   color: Colors.grey,
@@ -168,12 +177,7 @@ class _MoUPageState extends State<MoUPage> {
                                   const SizedBox(height: 16),
                                   SingleChildScrollView(
                                     scrollDirection: Axis.horizontal,
-                                    // child: ConstrainedBox(
-                                    //   constraints: BoxConstraints(
-                                    //     minWidth: 1000,
-                                    //   ),
-                                    //   child: SizedBox(
-                                    //     width: double.infinity,
+
                                     child: DataTable(
                                       headingRowColor:
                                           MaterialStateProperty.all<Color>(
@@ -195,7 +199,7 @@ class _MoUPageState extends State<MoUPage> {
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Nama Mitra',
+                                            'Nomor PKS',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
@@ -203,6 +207,13 @@ class _MoUPageState extends State<MoUPage> {
                                         DataColumn(
                                           label: Text(
                                             'Judul',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
+                                          ),
+                                        ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Nama Unit',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
@@ -221,6 +232,7 @@ class _MoUPageState extends State<MoUPage> {
                                             softWrap: false,
                                           ),
                                         ),
+
                                         DataColumn(
                                           label: Text(
                                             'Status',
@@ -246,15 +258,16 @@ class _MoUPageState extends State<MoUPage> {
                                           ),
                                       ],
                                       rows:
-                                          displayedRows.map((mou) {
+                                          displayedRows.map((pks) {
                                             return DataRow(
                                               cells: [
-                                                DataCell(Text(mou.nomorMou)),
-                                                DataCell(Text(mou.nama)),
-                                                DataCell(Text(mou.judul)),
+                                                DataCell(Text(pks.nomorMou)),
+                                                DataCell(Text(pks.nomorPks)),
+                                                DataCell(Text(pks.judul)),
+                                                DataCell(Text(pks.namaUnit)),
                                                 DataCell(
                                                   Text(
-                                                    mou.tanggalMulai!
+                                                    pks.tanggalMulai!
                                                         .toIso8601String()
                                                         .split('T')
                                                         .first,
@@ -262,15 +275,15 @@ class _MoUPageState extends State<MoUPage> {
                                                 ),
                                                 DataCell(
                                                   Text(
-                                                    mou.tanggalBerakhir
+                                                    pks.tanggalBerakhir
                                                         .toIso8601String()
                                                         .split('T')
                                                         .first,
                                                   ),
                                                 ),
-                                                DataCell(Text(mou.statusText)),
+                                                DataCell(Text(pks.statusText)),
                                                 DataCell(
-                                                  Text(mou.keteranganText),
+                                                  Text(pks.keteranganText),
                                                 ),
                                                 if (isLoggedIn &&
                                                     (role == 'admin' ||
@@ -289,13 +302,14 @@ class _MoUPageState extends State<MoUPage> {
                                                           onPressed: () {
                                                             Navigator.pushNamed(
                                                               context,
-                                                              '/detailmou',
+                                                              '/detailpks',
                                                               arguments:
-                                                                  mou.id
+                                                                  pks.id
                                                                       .toString(),
                                                             );
                                                           },
                                                         ),
+
                                                         IconButton(
                                                           icon: const Icon(
                                                             Icons.edit,
@@ -310,14 +324,14 @@ class _MoUPageState extends State<MoUPage> {
                                                                 builder:
                                                                     (
                                                                       context,
-                                                                    ) => UploadMoUPage(
-                                                                      mou: mou,
+                                                                    ) => UploadPKSPage(
+                                                                      pks: pks,
                                                                     ),
                                                               ),
                                                             ).then((value) {
                                                               if (value ==
                                                                   true) {
-                                                                _loadMou();
+                                                                _loadPks();
                                                               }
                                                             });
                                                           },
@@ -342,7 +356,7 @@ class _MoUPageState extends State<MoUPage> {
                                                                       'Konfirmasi',
                                                                     ),
                                                                     content: Text(
-                                                                      'Hapus MoU dengan judul ${mou.judul}?',
+                                                                      'Hapus PKS dengan judul ${pks.judul}?',
                                                                     ),
                                                                     actions: [
                                                                       TextButton(
@@ -371,8 +385,8 @@ class _MoUPageState extends State<MoUPage> {
                                                             if (confirm ==
                                                                 true) {
                                                               try {
-                                                                await MouService.deleteMou(
-                                                                  mou.id
+                                                                await PksService.deletePks(
+                                                                  pks.id
                                                                       .toString(),
                                                                 );
                                                                 ScaffoldMessenger.of(
@@ -380,18 +394,18 @@ class _MoUPageState extends State<MoUPage> {
                                                                 ).showSnackBar(
                                                                   const SnackBar(
                                                                     content: Text(
-                                                                      'Berhasil menghapus MoU',
+                                                                      'Berhasil menghapus PKS',
                                                                     ),
                                                                   ),
                                                                 );
-                                                                await _loadMou();
+                                                                await _loadPks();
                                                               } catch (e) {
                                                                 ScaffoldMessenger.of(
                                                                   context,
                                                                 ).showSnackBar(
                                                                   SnackBar(
                                                                     content: Text(
-                                                                      'Gagal menghapus MoU: $e',
+                                                                      'Gagal menghapus PKS: $e',
                                                                     ),
                                                                   ),
                                                                 );
@@ -407,8 +421,7 @@ class _MoUPageState extends State<MoUPage> {
                                           }).toList(),
                                     ),
                                   ),
-                                  //   ),
-                                  // ),
+
                                   const SizedBox(height: 16),
                                   Row(
                                     mainAxisAlignment:
@@ -487,8 +500,8 @@ class _MoUPageState extends State<MoUPage> {
                         onPressed: () {
                           Navigator.pushNamed(
                             context,
-                            '/uploadmou',
-                          ).then((_) => _loadMou());
+                            '/uploadpks',
+                          ).then((_) => _loadPks());
                         },
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,

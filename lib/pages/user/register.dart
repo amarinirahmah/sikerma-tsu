@@ -2,7 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/models/user.dart';
-import 'package:sikermatsu/pages/login.dart';
+import 'package:sikermatsu/pages/user/login.dart';
 import 'package:http/http.dart' as http;
 import 'package:sikermatsu/styles/style.dart';
 import 'package:sikermatsu/widgets/user_card.dart';

@@ -1,18 +1,87 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sikermatsu/styles/style.dart';
 import 'package:sikermatsu/widgets/app_bar.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:sikermatsu/helpers/responsive.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
-  void _launchURL(String url) async {
-    final uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      throw 'Could not launch $url';
-    }
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: CustomAppBar(isDesktop: false),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            _buildHeaderWithBackground(context),
+            const SizedBox(height: 20),
+            _buildIntroSection(context),
+            const SizedBox(height: 20),
+            _buildVisiMisiSection(),
+            const SizedBox(height: 20),
+            // _buildMottoSection(),
+            // const SizedBox(height: 20),
+            _buildFeatureCards(),
+            const SizedBox(height: 20),
+            _buildFAQSection(),
+            _buildFooter(context),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // Widget _buildHeaderWithBackground(BuildContext context) {
+  //   return Container(
+  //     width: double.infinity,
+  //     height: 550,
+  //     decoration: const BoxDecoration(
+  //       image: DecorationImage(
+  //         image: AssetImage('assets/images/background.jpg'),
+  //         fit: BoxFit.cover,
+  //       ),
+  //     ),
+  //     child: Container(
+  //       // color: Colors.black.withOpacity(0.65),
+  //       color: Colors.teal.withOpacity(0.45),
+  //       child: Center(child: _buildWelcomeSection(context)),
+  //     ),
+  //   );
+  // }
+
+  Widget _buildHeaderWithBackground(BuildContext context) {
+    return SizedBox(
+      width: double.infinity,
+      height: 550,
+      child: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Background Image
+          Image.asset('assets/images/background.jpg', fit: BoxFit.cover),
+
+          // Gradient Overlay
+          Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.teal.withOpacity(0.45),
+                  Colors.teal.withOpacity(0.25),
+                  Colors.teal.withOpacity(0.15),
+                  Colors.transparent,
+                ],
+              ),
+            ),
+          ),
+
+          // Welcome Section
+          Center(child: _buildWelcomeSection(context)),
+        ],
+      ),
+    );
   }
 
   Widget _buildWelcomeSection(BuildContext context) {
@@ -21,6 +90,7 @@ class HomePage extends StatelessWidget {
 
     double titleFontSize = isMobile ? 24 : (isTablet ? 32 : 42);
     double subtitleFontSize = isMobile ? 14 : (isTablet ? 18 : 22);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -33,7 +103,8 @@ class HomePage extends StatelessWidget {
           ),
           const SizedBox(height: 28),
           Text(
-            '"Jembatan Kolaborasi untuk Mewujudkan Inovasi, Keunggulan, dan Pertumbuhan Bersama\nSecara Berkelanjutan dalam Dunia Pendidikan dan Kemitraan"',
+            '"Kolaborasi Nyata, Masa Depan Cerah!"',
+            // '"Jembatan Kolaborasi untuk Mewujudkan Inovasi, Keunggulan, dan Pertumbuhan Bersama\nSecara Berkelanjutan dalam Dunia Pendidikan dan Kemitraan"',
             style: CustomStyle.subtitle.copyWith(fontSize: subtitleFontSize),
             textAlign: TextAlign.center,
           ),
@@ -41,6 +112,112 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+
+  Widget _buildVisiMisiSection() {
+    return Container(
+      // color: Colors.teal[50],
+      color: Colors.grey[100],
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 40),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 800),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Center(
+                  child: Text('Visi dan Misi', style: CustomStyle.headline1),
+                ),
+                SizedBox(height: 24),
+                Text('Visi', style: CustomStyle.headline4),
+                SizedBox(height: 8),
+                Text(
+                  'Menjadi pusat informasi kerja sama pendidikan yang profesional, modern, dan terpercaya.',
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(height: 24),
+                Text('Misi', style: CustomStyle.headline4),
+                SizedBox(height: 8),
+                Text(
+                  '1. Memfasilitasi kerja sama institusional dengan sistem efisien.\n'
+                  '2. Meningkatkan transparansi dan akuntabilitas.\n'
+                  '3. Mendukung program PKL dan pengembangan SDM.',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFAQSection() {
+    return Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        children: [
+          const Text('Pertanyaan Umum (FAQ)', style: CustomStyle.headline1),
+          const SizedBox(height: 20),
+          _faqItem(
+            'Apa itu SiKERMA TSU?',
+            'SiKERMA TSU adalah sistem informasi kerja sama institusi di Tiga Serangkai University, termasuk pengajuan PKL dan pencatatan MoU/PKS.',
+          ),
+          _faqItem(
+            'Siapa saja yang bisa mengakses platform ini?',
+            'Admin institusi, mitra kerja sama, serta siswa yang mengajukan PKL dapat menggunakan platform ini sesuai hak akses masing-masing.',
+          ),
+          _faqItem(
+            'Bagaimana cara mengajukan PKL?',
+            'Siswa dapat mengisi formulir pengajuan PKL secara online melalui menu yang telah disediakan setelah login.',
+          ),
+          _faqItem(
+            'Apakah dokumen kerja sama dapat diunduh?',
+            'Ya. Pengguna yang memiliki hak akses dapat mengunggah dan mengunduh dokumen MoU atau PKS.',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _faqItem(String question, String answer) {
+    return ExpansionTile(
+      title: Text(
+        question,
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(
+            left: 16,
+            right: 16,
+            bottom: 16,
+            top: 16,
+          ),
+          child: Text(answer),
+        ),
+      ],
+    );
+  }
+
+  // Widget _buildMottoSection() {
+  //   return Container(
+  //     color: Colors.teal.shade600,
+  //     width: double.infinity,
+  //     padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
+  //     child: const Text(
+  //       '"Kolaborasi Cerdas, Masa Depan Berkualitas"',
+  //       style: TextStyle(
+  //         fontSize: 20,
+  //         fontStyle: FontStyle.italic,
+  //         color: Colors.white,
+  //       ),
+  //       textAlign: TextAlign.center,
+  //     ),
+  //   );
+  // }
 
   Widget _buildIntroSection(BuildContext context) {
     return Container(
@@ -74,11 +251,9 @@ class HomePage extends StatelessWidget {
   }
 
   Widget _buildFeatureCards() {
-    // Fitur / informasi singkat tanpa background gelap
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             'Fitur Unggulan',
@@ -146,8 +321,6 @@ class HomePage extends StatelessWidget {
                   subtitle,
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.black54),
-                  // maxLines: 4,
-                  // overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
@@ -156,34 +329,6 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
-
-  // Widget _featureCard(IconData icon, String title, String subtitle) {
-  //   return Card(
-  //     elevation: 3,
-  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-  //     child: Container(
-  //       width: 220,
-  //       padding: const EdgeInsets.all(16),
-  //       child: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: [
-  //           Icon(icon, size: 48, color: Colors.teal),
-  //           const SizedBox(height: 12),
-  //           Text(
-  //             title,
-  //             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-  //           ),
-  //           const SizedBox(height: 8),
-  //           Text(
-  //             subtitle,
-  //             textAlign: TextAlign.center,
-  //             style: const TextStyle(color: Colors.black54),
-  //           ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
 
   Widget _buildFooter(BuildContext context) {
     final isMobile = Responsive.isMobile(context);
@@ -208,29 +353,11 @@ class HomePage extends StatelessWidget {
                   : Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                        flex: 2,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: _footerSectionAbout(),
-                        ),
-                      ),
+                      Expanded(child: _footerSectionAbout()),
                       const SizedBox(width: 16),
-                      Expanded(
-                        flex: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: _footerSectionHours(),
-                        ),
-                      ),
+                      Expanded(child: _footerSectionHours()),
                       const SizedBox(width: 16),
-                      Expanded(
-                        flex: 1,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: _footerSectionContact(),
-                        ),
-                      ),
+                      Expanded(child: _footerSectionContact()),
                     ],
                   ),
         ),
@@ -252,10 +379,9 @@ class HomePage extends StatelessWidget {
   Widget _footerSectionAbout() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Image.asset('assets/images/logo-white.png', height: 48),
-        const SizedBox(height: 12),
-        const Text(
+      children: const [
+        SizedBox(height: 8),
+        Text(
           'Tentang Kami',
           style: TextStyle(
             color: Colors.white,
@@ -263,22 +389,12 @@ class HomePage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        const SizedBox(height: 12),
-        const Text(
-          'SiKERMA TSU adalah sistem informasi yang mempermudah proses kerja sama dan pengajuan PKL antara sekolah dan instansi. Dengan tampilan yang modern dan fitur yang terintegrasi, SiKERMA membantu proses administrasi menjadi lebih cepat, praktis, dan transparan.',
+        SizedBox(height: 12),
+        Text(
+          'SiKERMA TSU adalah sistem informasi yang mempermudah proses kerja sama dan pengajuan PKL antara sekolah dan instansi. '
+          'Dengan tampilan yang modern dan fitur yang terintegrasi, SiKERMA membantu proses administrasi menjadi lebih cepat, praktis, dan transparan.',
           style: TextStyle(color: Colors.white70),
         ),
-        const SizedBox(height: 20),
-
-        // const Text(
-        //   'Ikuti Kami',
-        //   style: TextStyle(
-        //     color: Colors.white,
-        //     fontSize: 16,
-        //     fontWeight: FontWeight.bold,
-        //   ),
-        // ),
-        // const SizedBox(height: 8),
       ],
     );
   }
@@ -317,25 +433,6 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget _footerContactRow({
-    required IconData icon,
-    required String label,
-    required String url,
-  }) {
-    return InkWell(
-      onTap: () => _launchURL(url),
-      child: Row(
-        children: [
-          Icon(icon, color: Colors.white70, size: 18),
-          const SizedBox(width: 8),
-          Flexible(
-            child: Text(label, style: const TextStyle(color: Colors.white70)),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _footerSectionHours() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -351,7 +448,6 @@ class HomePage extends StatelessWidget {
         const SizedBox(height: 12),
         const Text(
           'Senin - Jumat: 08.00-19.00\nSabtu: 08.00-13.00',
-
           style: TextStyle(color: Colors.white70),
         ),
         const SizedBox(height: 20),
@@ -384,47 +480,29 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(isDesktop: false),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Bagian atas dengan background image dan overlay gelap
-            Container(
-              width: double.infinity,
-              height: 500,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/background.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: Container(
-                color: Colors.black.withOpacity(0.65),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [_buildWelcomeSection(context)],
-                ),
-                // padding: const EdgeInsets.symmetric(
-                //   vertical: 60,
-                //   horizontal: 24,
-                // ),
-                // child: Column(children: [_buildWelcomeSection(context)]),
-              ),
-            ),
-            const SizedBox(height: 20),
-
-            _buildIntroSection(context),
-            // Bagian feature cards dan footer tanpa background image
-            const SizedBox(height: 20),
-            _buildFeatureCards(),
-            const SizedBox(height: 20),
-            _buildFooter(context),
-          ],
-        ),
+  Widget _footerContactRow({
+    required IconData icon,
+    required String label,
+    required String url,
+  }) {
+    return InkWell(
+      onTap: () => _launchURL(url),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.white70, size: 18),
+          const SizedBox(width: 8),
+          Flexible(
+            child: Text(label, style: const TextStyle(color: Colors.white70)),
+          ),
+        ],
       ),
     );
+  }
+
+  void _launchURL(String url) async {
+    final uri = Uri.parse(url);
+    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch $url';
+    }
   }
 }

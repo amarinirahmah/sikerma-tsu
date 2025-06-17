@@ -29,6 +29,12 @@ class CustomStyle {
     color: Colors.black,
   );
 
+  static const TextStyle headline4 = TextStyle(
+    fontSize: 18,
+    fontWeight: FontWeight.bold,
+    color: Colors.black,
+  );
+
   static const TextStyle title = TextStyle(
     fontSize: 42,
     fontWeight: FontWeight.bold,

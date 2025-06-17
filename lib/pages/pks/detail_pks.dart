@@ -1,31 +1,31 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/widgets/main_layout.dart';
-import 'package:sikermatsu/models/app_state.dart';
-import 'package:sikermatsu/models/pkl.dart';
-import 'package:sikermatsu/services/pkl_service.dart';
+import 'package:sikermatsu/main_layout.dart';
+import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/models/pks.dart';
+import 'package:sikermatsu/services/pks_service.dart';
 import 'package:sikermatsu/services/auth_service.dart';
 import 'package:sikermatsu/helpers/download_file.dart';
 import 'package:sikermatsu/styles/style.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-class DetailPKLPage extends StatefulWidget {
-  const DetailPKLPage({super.key});
+class DetailPKSPage extends StatefulWidget {
+  const DetailPKSPage({super.key});
 
   @override
-  State<DetailPKLPage> createState() => _DetailPKLPageState();
+  State<DetailPKSPage> createState() => _DetailPKSPageState();
 }
 
-class _DetailPKLPageState extends State<DetailPKLPage> {
+class _DetailPKSPageState extends State<DetailPKSPage> {
   late String id;
-  Pkl? pkl;
+  Pks? pks;
   bool isLoading = true;
   String? error;
-  StatusPkl? selectedStatus;
-  bool isSaving = false;
 
+  late KeteranganPks selectedKeterangan;
+  bool isSaving = false;
   final isLoggedIn = AppState.isLoggedIn.value;
-  final role = AppState.role.value;
+  final userRole = AppState.role.value;
 
   @override
   void didChangeDependencies() {
@@ -33,7 +33,7 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
     final args = ModalRoute.of(context)?.settings.arguments;
     if (args != null && args is String) {
       id = args;
-      getDetailPkl();
+      getDetailPks();
     } else {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Navigator.of(context).pop();
@@ -41,45 +41,23 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
     }
   }
 
-  Future<void> getDetailPkl() async {
-    setState(() => isLoading = true);
-
+  Future<void> getDetailPks() async {
     try {
-      final role = await AuthService.getRole();
-
-      final result =
-          role == 'userpkl'
-              ? await PklService().getPklSayaById(id)
-              : await PklService().getPklById(id);
-
+      final result = await PksService().getPksById(id);
       setState(() {
-        pkl = result;
-        selectedStatus = result.status;
+        if (!mounted) return;
+        pks = result;
+        selectedKeterangan = result.keterangan;
         isLoading = false;
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() {
         error = 'Terjadi kesalahan: $e';
         isLoading = false;
       });
     }
   }
-
-  // Future<void> getDetailPkl() async {
-  //   try {
-  //     final result = await PklService().getPklById(id);
-  //     setState(() {
-  //       pkl = result;
-  //       selectedStatus = result.status;
-  //       isLoading = false;
-  //     });
-  //   } catch (e) {
-  //     setState(() {
-  //       error = 'Terjadi kesalahan: $e';
-  //       isLoading = false;
-  //     });
-  //   }
-  // }
 
   Widget buildRow(String label, String value) {
     return Padding(
@@ -111,8 +89,8 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
   @override
   Widget build(BuildContext context) {
     return MainLayout(
-      title: 'Detail PKL',
-      isLoggedIn: isLoggedIn,
+      title: 'Detail PKS',
+      isLoggedIn: AppState.isLoggedIn.value,
       child:
           isLoading
               ? const Center(child: CircularProgressIndicator())
@@ -139,63 +117,71 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Detail PKL', style: CustomStyle.headline1),
+                          Text('Detail PKS', style: CustomStyle.headline1),
                           const SizedBox(height: 20),
-                          buildRow('NISN', pkl!.nisn),
-                          buildRow('Nama Siswa', pkl!.nama),
-                          buildRow('Asal Sekolah', pkl!.sekolah),
-                          buildRow('Jenis Kelamin', pkl!.gender.toBackend()),
+                          buildRow('Nomor MoU', pks!.nomorMou),
+                          buildRow('Nomor PKS', pks!.nomorPks),
+                          buildRow('Judul Kerja Sama', pks!.judul),
                           buildRow(
                             'Tanggal Mulai',
-                            pkl!.tanggalMulai.toLocal().toString().split(
+                            pks!.tanggalMulai.toLocal().toString().split(
                               ' ',
                             )[0],
                           ),
                           buildRow(
                             'Tanggal Berakhir',
-                            pkl!.tanggalBerakhir.toLocal().toString().split(
+                            pks!.tanggalBerakhir.toLocal().toString().split(
                               ' ',
                             )[0],
                           ),
-                          buildRow('Nomor Telepon / Email', pkl!.telpEmail),
-                          buildRow('Alamat', pkl!.alamat),
-                          buildRow('Status', pkl!.statusText),
+                          buildRow('Nama Unit', pks!.namaUnit),
+                          buildRow('Ruang Lingkup', pks!.ruangLingkup),
+                          buildRow('Keterangan', pks!.keteranganText),
+                          // buildKeteranganRow(),
+                          buildRow('Status', pks!.statusText),
 
                           // buildRow(
-                          //   'Status',
-                          //   pkl!.status?.toBackend() ?? 'Diproses',
+                          //   'Keterangan',
+                          //   pks!.keterangan.toString() ?? '-',
                           // ),
-                          buildRow(
-                            'File PKL',
-                            pkl!.filePkl ?? 'Tidak ada file',
-                          ),
-                          if (pkl!.filePkl != null)
+                          // buildRow('Status', pks!.status.toString() ?? '-'),
+                          buildRow('File', pks!.filePks ?? 'Tidak ada file'),
+                          // if ((pks!.filePks?.isNotEmpty ?? false) &&
+                          //     isLoggedIn &&
+                          //     (userRole == 'admin' || userRole == 'user'))
+                          if (pks!.filePks != null)
                             ElevatedButton.icon(
                               icon: const Icon(Icons.download),
                               style: CustomStyle.baseButtonStyle,
                               label: const Text('Download File'),
                               onPressed: () async {
                                 await downloadFile(
-                                  'pkl_files',
-                                  '${pkl!.filePkl}',
+                                  'pks_files',
+                                  '${pks!.filePks}',
                                 );
                               },
-                              // onPressed: () async {
-                              //   try {
-                              //     await downloadFile(
-                              //       pkl!.filePkl!,
-                              //       'pkl-${pkl!.nisn}',
-                              //     );
-                              //   } catch (e) {
-                              //     debugPrint('Download error: $e');
-                              //     ScaffoldMessenger.of(context).showSnackBar(
-                              //       SnackBar(
-                              //         content: Text('Gagal mengunduh file'),
-                              //       ),
-                              //     );
-                              //   }
-                              // },
                             ),
+
+                          // ElevatedButton.icon(
+                          //   icon: const Icon(Icons.download),
+                          //   style: CustomStyle.baseButtonStyle,
+                          //   label: const Text('Download File'),
+                          //   onPressed: () async {
+                          //     try {
+                          //       await downloadFile(
+                          //         pks!.filePks!,
+                          //         'pks-${pks!.nomorPks}',
+                          //       );
+                          //     } catch (e) {
+                          //       debugPrint('Download error: $e');
+                          //       ScaffoldMessenger.of(context).showSnackBar(
+                          //         SnackBar(
+                          //           content: Text('Gagal mengunduh file'),
+                          //         ),
+                          //       );
+                          //     }
+                          //   },
+                          // ),
                         ],
                       ),
                     ),

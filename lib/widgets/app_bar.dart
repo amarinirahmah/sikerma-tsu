@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../helpers/responsive.dart'; // import class Responsive
-import 'package:sikermatsu/models/app_state.dart';
+import 'package:sikermatsu/states/app_state.dart';
 import 'package:sikermatsu/styles/style.dart';
 import '../services/auth_service.dart';
 
@@ -25,7 +25,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final bool isMobile = Responsive.isMobile(context);
     final bool isDesktop = Responsive.isDesktop(context);
     final currentRoute = ModalRoute.of(context)?.settings.name ?? '';
-    final bool isHome = currentRoute == '/home';
+    final bool isHome = currentRoute == '/';
     final bool showMenuIcon = isLoggedIn && !isHome;
     final bool showNotificationIcon = isLoggedIn && !isHome;
 
@@ -55,7 +55,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 onPressed: () {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    '/home',
+                    '/',
                     (route) => false,
                   );
                 },
@@ -130,10 +130,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 icon: const Icon(Icons.more_vert),
                 onSelected: (value) {
                   switch (value) {
-                    case 'home':
+                    case '/':
                       Navigator.pushNamedAndRemoveUntil(
                         context,
-                        '/home',
+                        '/',
                         (route) => false,
                       );
                       break;
@@ -179,7 +179,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                     AppState.logout();
                                     Navigator.pushNamedAndRemoveUntil(
                                       context,
-                                      '/home',
+                                      '/',
                                       (route) => false,
                                     );
                                   },
@@ -250,7 +250,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                                   }
                                   Navigator.pushNamedAndRemoveUntil(
                                     context,
-                                    '/home',
+                                    '/',
                                     (route) => false,
                                   );
                                 },

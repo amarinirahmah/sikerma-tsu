@@ -1,31 +1,33 @@
 import 'package:flutter/material.dart';
-import 'pages/login.dart';
-import 'pages/super_admin.dart';
-import 'pages/dashboard.dart';
-import 'pages/upload_mou.dart';
-import 'pages/upload_pks.dart';
-import 'pages/daftar_progres.dart';
-import 'pages/daftar_notifikasi.dart';
-import 'pages/detail_progres.dart';
-import 'pages/daftar_mou.dart';
-import 'pages/detail_mou.dart';
-import 'pages/daftar_pks.dart';
-import 'pages/detail_pks.dart';
-import 'pages/register.dart';
-import 'pages/add_role.dart';
-import 'pages/pengajuan_pkl.dart';
-import 'pages/upload_pkl.dart';
-import 'pages/detail_pkl.dart';
-import 'pages/home.dart';
+import 'pages/user/login.dart';
+import 'pages/user/super_admin.dart';
+import 'pages/dashboard/dashboard.dart';
+import 'pages/mou/upload_mou.dart';
+import 'pages/pks/upload_pks.dart';
+import 'pages/progres/daftar_progres.dart';
+import 'pages/notif/daftar_notifikasi.dart';
+import 'pages/progres/detail_progres.dart';
+import 'pages/mou/daftar_mou.dart';
+import 'pages/mou/detail_mou.dart';
+import 'pages/pks/daftar_pks.dart';
+import 'pages/pks/detail_pks.dart';
+import 'pages/user/register.dart';
+import 'pages/user/add_role.dart';
+import 'pages/pkl/pengajuan_pkl.dart';
+import 'pages/pkl/upload_pkl.dart';
+import 'pages/pkl/detail_pkl.dart';
+import 'pages/home/home.dart';
 import 'styles/style.dart';
-import 'models/app_state.dart';
+import 'states/app_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'pages/dashboard2.dart';
-import 'pages/access_denied_page.dart';
+import 'pages/dashboard/dashboard2.dart';
+import 'pages/guard/access_denied_page.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() async {
   // Future<void> loadLoginStatus() async {
+  usePathUrlStrategy();
   WidgetsFlutterBinding.ensureInitialized();
   final prefs = await SharedPreferences.getInstance();
   await initializeDateFormatting('id', null);
@@ -38,7 +40,7 @@ void main() async {
     AppState.loginAs(role, token);
     print('Main: loginAs dipanggil dengan role=$role dan token=$token');
   } else {
-    AppState.logout(); // Pastikan state logout jika token null/empty
+    AppState.logout();
     print('Main: logout dipanggil, set role=guest dan token=null');
   }
 
@@ -73,7 +75,7 @@ class MyApp extends StatelessWidget {
           style: CustomStyle.baseButtonStyle,
         ),
       ),
-      initialRoute: '/home',
+      initialRoute: '/',
       onGenerateRoute: (settings) {
         final role = AppState.role.value;
 
@@ -99,7 +101,7 @@ class MyApp extends StatelessWidget {
 
         // Halaman publik
         switch (settings.name) {
-          case '/home':
+          case '/':
             return MaterialPageRoute(
               builder: (_) => const HomePage(),
               settings: settings,
@@ -147,7 +149,7 @@ class MyApp extends StatelessWidget {
         );
       },
       routes: {
-        '/home': (context) => const HomePage(),
+        '/': (context) => const HomePage(),
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         // '/superadmin': (context) => const SuperAdminPage(),

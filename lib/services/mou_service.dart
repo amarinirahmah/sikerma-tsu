@@ -6,11 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/mou.dart';
 import '../services/auth_service.dart';
 import 'package:file_picker/file_picker.dart';
+import '../constants/api_constants.dart';
 
 class MouService {
-  // static const String baseUrl = 'http://192.168.18.248:8000/api';
-  static const baseUrl = "http://192.168.100.238:8000/api";
-  // static const baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
+  // static const baseUrl = "http://192.168.100.238:8000/api";
   static String? token;
   static String? role;
   static File? selectedFile;
@@ -19,7 +18,7 @@ class MouService {
   static Future<List<Mou>> getAllMou() async {
     final token = await AuthService.getToken();
     final response = await http.get(
-      Uri.parse('$baseUrl/getmou'),
+      Uri.parse('${ApiConstants.baseUrl}/getmou'),
       headers: {'Accept': 'application/json'},
     );
 
@@ -31,37 +30,11 @@ class MouService {
     }
   }
 
-  // static Future<List<Mou>> getAllMou() async {
-  //   final token = await AuthService.getToken();
-
-  //   final headers = {
-  //     'Accept': 'application/json',
-  //     'Content-Type': 'application/json',
-  //   };
-
-  //   // Tambahkan Authorization hanya jika token ada
-  //   if (token != null && token.isNotEmpty) {
-  //     headers['Authorization'] = 'Bearer $token';
-  //   }
-
-  //   final response = await http.get(
-  //     Uri.parse('$baseUrl/getmou'),
-  //     headers: headers,
-  //   );
-
-  //   if (response.statusCode == 200) {
-  //     final List<dynamic> data = jsonDecode(response.body);
-  //     return data.map((json) => Mou.fromJson(json)).toList();
-  //   } else {
-  //     throw Exception('Gagal mengambil data MoU');
-  //   }
-  // }
-
   //detail pks
   Future<Mou> getMouById(String id) async {
     final token = await AuthService.getToken();
     final response = await http.get(
-      Uri.parse('$baseUrl/getmouid/$id'),
+      Uri.parse('${ApiConstants.baseUrl}/getmouid/$id'),
       headers: {
         // 'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -78,7 +51,7 @@ class MouService {
 
   static Future<void> uploadMou(Mou mou, {PlatformFile? file}) async {
     final token = await AuthService.getToken();
-    final uri = Uri.parse('$baseUrl/uploadmou');
+    final uri = Uri.parse('${ApiConstants.baseUrl}/uploadmou');
 
     final fields = {
       'nomormou': mou.nomorMou,
@@ -145,7 +118,7 @@ class MouService {
     PlatformFile? file,
   }) async {
     final token = await AuthService.getToken();
-    final uri = Uri.parse('$baseUrl/updatemou/$id');
+    final uri = Uri.parse('${ApiConstants.baseUrl}/updatemou/$id');
 
     final fields = {
       'nomormou': mou.nomorMou,
@@ -176,12 +149,6 @@ class MouService {
       if (mou.status != null) 'status': statusToBackend(mou.status),
       '_method': 'PUT',
     };
-
-    // // Debug print fields untuk cek data sebelum dikirim
-    // print('Fields yang akan dikirim ke backend:');
-    // fields.forEach((key, value) {
-    //   print('$key: $value (${value.runtimeType})');
-    // });
 
     final request =
         http.MultipartRequest('POST', uri)
@@ -234,7 +201,7 @@ class MouService {
   static Future<void> deleteMou(String id) async {
     final token = await AuthService.getToken();
     final response = await http.delete(
-      Uri.parse('$baseUrl/deletemou/$id'),
+      Uri.parse('${ApiConstants.baseUrl}/deletemou/$id'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -248,7 +215,7 @@ class MouService {
 
   Future<Mou> updateKeterangan(String id, KeteranganMou keterangan) async {
     final token = await AuthService.getToken();
-    final url = Uri.parse('$baseUrl/ketmouupdate/$id');
+    final url = Uri.parse('${ApiConstants.baseUrl}/ketmouupdate/$id');
 
     final response = await http.patch(
       url,

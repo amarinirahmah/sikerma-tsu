@@ -1,83 +1,125 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/pages/progres/detail_progres.dart';
+import 'package:sikermatsu/main_layout.dart';
+import 'package:sikermatsu/states/app_state.dart';
 import 'package:sikermatsu/services/mou_service.dart';
 import 'package:sikermatsu/services/pks_service.dart';
-import 'package:sikermatsu/widgets/main_layout.dart';
-import 'package:sikermatsu/models/app_state.dart';
-import 'package:sikermatsu/models/pks.dart';
-import 'package:sikermatsu/pages/upload_pks.dart';
-import '../styles/style.dart';
+import '../../styles/style.dart';
 
-class PKSPage extends StatefulWidget {
-  const PKSPage({super.key});
+class ProgressPage extends StatefulWidget {
+  const ProgressPage({super.key});
 
   @override
-  State<PKSPage> createState() => _PKSPageState();
+  State<ProgressPage> createState() => _ProgressPageState();
 }
 
-class _PKSPageState extends State<PKSPage> {
-  final TextEditingController _searchController = TextEditingController();
-  List<Pks> allPks = [];
-  List<Pks> filteredPks = [];
+class _ProgressPageState extends State<ProgressPage> {
+  List<Map<String, dynamic>> allData = [];
+  List<Map<String, dynamic>> filteredData = [];
   bool isLoading = true;
-  int rowsPerPage = 10;
+
+  // Pagination
   int currentPage = 0;
+  int rowsPerPage = 10;
+
+  // Filter/search
   String searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
   String selectedStatus = 'Semua';
+  // String selectedJenis = 'Semua';
 
   @override
   void initState() {
     super.initState();
-    _loadPks();
+    _loadData();
   }
 
-  Future<void> _loadPks() async {
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadData() async {
     setState(() => isLoading = true);
     try {
-      final data = await PksService.getAllPks();
+      final mouList = await MouService.getAllMou();
+      final pksList = await PksService.getAllPks();
+
+      final List<Map<String, dynamic>> combinedData = [];
+
+      for (final mou in mouList) {
+        final relatedPks = pksList.where((pks) => pks.nomorMou == mou.nomorMou);
+
+        if (relatedPks.isEmpty) {
+          combinedData.add({
+            'Nama Mitra': mou.nama,
+            'Nomor MoU': mou.nomorMou,
+            'Tanggal Mulai MoU':
+                mou.tanggalMulai.toIso8601String().split('T').first,
+            'Status MoU': mou.statusText,
+            'Nomor PKS': '-',
+            'Tanggal Mulai PKS': '-',
+            'Status PKS': '-',
+            'mouId': mou.id,
+            'pksId': null,
+          });
+        } else {
+          for (final pks in relatedPks) {
+            combinedData.add({
+              'Nama Mitra': mou.nama,
+              'Nomor MoU': mou.nomorMou,
+              'Tanggal Mulai MoU':
+                  mou.tanggalMulai.toIso8601String().split('T').first,
+              'Status MoU': mou.statusText,
+              'Nomor PKS': pks.nomorPks,
+              'Tanggal Mulai PKS':
+                  pks.tanggalMulai.toIso8601String().split('T').first,
+              'Status PKS': pks.statusText,
+              'mouId': mou.id,
+              'pksId': pks.id,
+            });
+          }
+        }
+      }
       setState(() {
-        allPks = data;
-        _applyFilter();
+        allData = combinedData;
+        filteredData = combinedData;
+        isLoading = false;
       });
     } catch (e) {
+      setState(() => isLoading = false);
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Gagal memuat PKS: $e')));
-    } finally {
-      setState(() => isLoading = false);
+      ).showSnackBar(SnackBar(content: Text('Gagal memuat data: $e')));
     }
   }
 
   void _applyFilter() {
     setState(() {
-      filteredPks =
-          allPks.where((pks) {
-            final matchesSearch = pks.judul.toLowerCase().contains(
-              searchQuery.toLowerCase(),
-            );
-            final matchesStatus =
-                selectedStatus == 'Semua' || pks.statusText == selectedStatus;
-            return matchesSearch && matchesStatus;
+      filteredData =
+          allData.where((data) {
+            final statusMatch =
+                selectedStatus == 'Semua' ||
+                data['Status MoU'] == selectedStatus;
+            final nameMatch = data['Nama Mitra']
+                .toString()
+                .toLowerCase()
+                .contains(searchQuery.toLowerCase());
+            return statusMatch && nameMatch;
           }).toList();
       currentPage = 0;
     });
   }
 
-  // Widget buildHeaderField(String text) {
-  //   return Container(
-  //     color: Colors.grey[300],
-  //     padding: const EdgeInsets.all(8),
-  //     child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = AppState.isLoggedIn.value;
     final role = AppState.role.value;
-    final totalPages = (filteredPks.length / rowsPerPage).ceil();
+    final totalPages = (filteredData.length / rowsPerPage).ceil();
 
     final displayedRows =
-        filteredPks.skip(currentPage * rowsPerPage).take(rowsPerPage).toList();
+        filteredData.skip(currentPage * rowsPerPage).take(rowsPerPage).toList();
 
     return MainLayout(
       title: '',
@@ -106,7 +148,7 @@ class _PKSPageState extends State<PKSPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const Text(
-                                    'Daftar PKS',
+                                    'Daftar Progres',
                                     style: CustomStyle.headline1,
                                   ),
                                   const SizedBox(height: 16),
@@ -114,9 +156,10 @@ class _PKSPageState extends State<PKSPage> {
                                     children: [
                                       Expanded(
                                         child: TextField(
+                                          controller: _searchController,
                                           decoration:
                                               CustomStyle.searchInputDecoration(
-                                                labelText: 'Cari Judul PKS',
+                                                labelText: 'Cari Nama Mitra',
                                                 prefixIcon: Icon(
                                                   Icons.search,
                                                   color: Colors.grey,
@@ -140,12 +183,15 @@ class _PKSPageState extends State<PKSPage> {
                                                         : null,
                                               ),
                                           onChanged: (value) {
-                                            searchQuery = value;
-                                            _applyFilter();
+                                            setState(() {
+                                              searchQuery = value;
+                                              _applyFilter();
+                                            });
                                           },
                                         ),
                                       ),
                                       const SizedBox(width: 16),
+
                                       Container(
                                         padding: const EdgeInsets.symmetric(
                                           horizontal: 12,
@@ -153,7 +199,10 @@ class _PKSPageState extends State<PKSPage> {
                                         decoration:
                                             CustomStyle.dropdownBoxDecoration(),
                                         child: DropdownButton<String>(
+                                          // decoration:
+                                          //     CustomStyle.dropdownDecoration(),
                                           value: selectedStatus,
+                                          // isDense: true,
                                           underline: const SizedBox(),
                                           onChanged: (value) {
                                             if (value != null) {
@@ -164,10 +213,11 @@ class _PKSPageState extends State<PKSPage> {
                                           items:
                                               ['Semua', 'Aktif', 'Tidak Aktif']
                                                   .map(
-                                                    (role) => DropdownMenuItem(
-                                                      value: role,
-                                                      child: Text(role),
-                                                    ),
+                                                    (status) =>
+                                                        DropdownMenuItem(
+                                                          value: status,
+                                                          child: Text(status),
+                                                        ),
                                                   )
                                                   .toList(),
                                         ),
@@ -206,222 +256,128 @@ class _PKSPageState extends State<PKSPage> {
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Judul',
+                                            'Nama Mitra',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Nama Unit',
+                                            'Tanggal Mulai MoU',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Tanggal Mulai',
+                                            'Status MoU',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Tanggal Berakhir',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-
-                                        DataColumn(
-                                          label: Text(
-                                            'Status',
+                                            'Tanggal Mulai PKS',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
                                         ),
                                         DataColumn(
                                           label: Text(
-                                            'Keterangan',
+                                            'Status PKS',
                                             overflow: TextOverflow.ellipsis,
                                             softWrap: false,
                                           ),
                                         ),
-                                        if (isLoggedIn &&
-                                            (role == 'admin' || role == 'user'))
-                                          DataColumn(
-                                            label: Text(
-                                              'Aksi',
-                                              overflow: TextOverflow.ellipsis,
-                                              softWrap: false,
-                                            ),
+                                        DataColumn(
+                                          label: Text(
+                                            'Aksi',
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: false,
                                           ),
+                                        ),
                                       ],
                                       rows:
-                                          displayedRows.map((pks) {
+                                          displayedRows.map((data) {
                                             return DataRow(
                                               cells: [
-                                                DataCell(Text(pks.nomorMou)),
-                                                DataCell(Text(pks.nomorPks)),
-                                                DataCell(Text(pks.judul)),
-                                                DataCell(Text(pks.namaUnit)),
+                                                DataCell(
+                                                  Text(data['Nomor MoU'] ?? ''),
+                                                ),
+                                                DataCell(
+                                                  Text(data['Nomor PKS'] ?? ''),
+                                                ),
                                                 DataCell(
                                                   Text(
-                                                    pks.tanggalMulai!
-                                                        .toIso8601String()
-                                                        .split('T')
-                                                        .first,
+                                                    data['Nama Mitra'] ?? '',
                                                   ),
                                                 ),
                                                 DataCell(
                                                   Text(
-                                                    pks.tanggalBerakhir
-                                                        .toIso8601String()
-                                                        .split('T')
-                                                        .first,
+                                                    data['Tanggal Mulai MoU'] ??
+                                                        '',
                                                   ),
                                                 ),
-                                                DataCell(Text(pks.statusText)),
                                                 DataCell(
-                                                  Text(pks.keteranganText),
+                                                  Text(
+                                                    data['Status MoU'] ?? '',
+                                                  ),
                                                 ),
-                                                if (isLoggedIn &&
-                                                    (role == 'admin' ||
-                                                        role == 'user'))
-                                                  DataCell(
-                                                    Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.info,
-                                                            color: Colors.teal,
-                                                          ),
-                                                          tooltip: 'Detail',
-                                                          onPressed: () {
-                                                            Navigator.pushNamed(
-                                                              context,
-                                                              '/detailpks',
-                                                              arguments:
-                                                                  pks.id
-                                                                      .toString(),
-                                                            );
-                                                          },
+                                                DataCell(
+                                                  Text(
+                                                    data['Tanggal Mulai PKS'] ??
+                                                        '',
+                                                  ),
+                                                ),
+                                                DataCell(
+                                                  Text(
+                                                    data['Status PKS'] ?? '',
+                                                  ),
+                                                ),
+                                                DataCell(
+                                                  Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: [
+                                                      IconButton(
+                                                        icon: const Icon(
+                                                          Icons.info,
+                                                          color: Colors.teal,
                                                         ),
+                                                        tooltip: 'Detail',
+                                                        onPressed: () {
+                                                          final int? mouId =
+                                                              data['mouId'];
 
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.edit,
-                                                            color:
-                                                                Colors.orange,
-                                                          ),
-                                                          tooltip: 'Edit',
-                                                          onPressed: () {
+                                                          if (mouId != null) {
                                                             Navigator.push(
                                                               context,
                                                               MaterialPageRoute(
                                                                 builder:
                                                                     (
                                                                       context,
-                                                                    ) => UploadPKSPage(
-                                                                      pks: pks,
+                                                                    ) => DetailProgressPage(
+                                                                      mouId:
+                                                                          mouId,
                                                                     ),
                                                               ),
                                                             ).then((value) {
                                                               if (value ==
                                                                   true) {
-                                                                _loadPks();
+                                                                _loadData();
                                                               }
                                                             });
-                                                          },
-                                                        ),
-
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.delete,
-                                                            color: Colors.red,
-                                                          ),
-                                                          tooltip: 'Hapus',
-                                                          onPressed: () async {
-                                                            final confirm = await showDialog<
-                                                              bool
-                                                            >(
-                                                              context: context,
-                                                              builder:
-                                                                  (
-                                                                    context,
-                                                                  ) => AlertDialog(
-                                                                    title: const Text(
-                                                                      'Konfirmasi',
-                                                                    ),
-                                                                    content: Text(
-                                                                      'Hapus PKS dengan judul ${pks.judul}?',
-                                                                    ),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () => Navigator.pop(
-                                                                              context,
-                                                                              false,
-                                                                            ),
-                                                                        child: const Text(
-                                                                          'Batal',
-                                                                        ),
-                                                                      ),
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () => Navigator.pop(
-                                                                              context,
-                                                                              true,
-                                                                            ),
-                                                                        child: const Text(
-                                                                          'Hapus',
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                            );
-                                                            if (confirm ==
-                                                                true) {
-                                                              try {
-                                                                await PksService.deletePks(
-                                                                  pks.id
-                                                                      .toString(),
-                                                                );
-                                                                ScaffoldMessenger.of(
-                                                                  context,
-                                                                ).showSnackBar(
-                                                                  const SnackBar(
-                                                                    content: Text(
-                                                                      'Berhasil menghapus PKS',
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                                await _loadPks();
-                                                              } catch (e) {
-                                                                ScaffoldMessenger.of(
-                                                                  context,
-                                                                ).showSnackBar(
-                                                                  SnackBar(
-                                                                    content: Text(
-                                                                      'Gagal menghapus PKS: $e',
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                              }
-                                                            }
-                                                          },
-                                                        ),
-                                                      ],
-                                                    ),
+                                                          }
+                                                        },
+                                                      ),
+                                                    ],
                                                   ),
+                                                ),
                                               ],
                                             );
                                           }).toList(),
                                     ),
                                   ),
-
                                   const SizedBox(height: 16),
                                   Row(
                                     mainAxisAlignment:
@@ -492,22 +448,6 @@ class _PKSPageState extends State<PKSPage> {
                       ),
                     ),
                   ),
-                  if (isLoggedIn && role != 'userpkl')
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: FloatingActionButton(
-                        onPressed: () {
-                          Navigator.pushNamed(
-                            context,
-                            '/uploadpks',
-                          ).then((_) => _loadPks());
-                        },
-                        backgroundColor: Colors.teal,
-                        foregroundColor: Colors.white,
-                        child: const Icon(Icons.add),
-                      ),
-                    ),
                 ],
               ),
     );

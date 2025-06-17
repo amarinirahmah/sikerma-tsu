@@ -6,11 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/pkl.dart';
 import '../services/auth_service.dart';
 import 'package:file_picker/file_picker.dart';
+import '../constants/api_constants.dart';
 
 class PklService {
-  // static const String baseUrl = 'http://192.168.18.248:8000/api';
-  static const String baseUrl = "http://192.168.100.238:8000/api";
-  // static const String baseUrl = "https://b7c1-158-140-170-0.ngrok-free.app/api";
+  // static const String baseUrl = "http://192.168.100.238:8000/api";
   static String? token;
   static String? role;
 
@@ -18,7 +17,7 @@ class PklService {
   static Future<List<Pkl>> getAllPkl() async {
     final token = await AuthService.getToken();
     final response = await http.get(
-      Uri.parse('$baseUrl/getpkl'),
+      Uri.parse('${ApiConstants.baseUrl}/getpkl'),
       headers: {'Accept': 'application/json'},
     );
 
@@ -34,7 +33,7 @@ class PklService {
   Future<Pkl> getPklById(String id) async {
     final token = await AuthService.getToken();
     final response = await http.get(
-      Uri.parse('$baseUrl/getpklid/$id'),
+      Uri.parse('${ApiConstants.baseUrl}/getpklid/$id'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -53,7 +52,7 @@ class PklService {
     final token = await AuthService.getToken();
     final role = await AuthService.getRole();
 
-    final uri = Uri.parse('$baseUrl/uploadpkl');
+    final uri = Uri.parse('${ApiConstants.baseUrl}/uploadpkl');
 
     final fields = {
       'nisn': pkl.nisn,
@@ -117,7 +116,7 @@ class PklService {
     PlatformFile? file,
   }) async {
     final token = await AuthService.getToken();
-    final uri = Uri.parse('$baseUrl/updatepkl/$id');
+    final uri = Uri.parse('${ApiConstants.baseUrl}/updatepkl/$id');
 
     final request =
         http.MultipartRequest('POST', uri)
@@ -180,7 +179,7 @@ class PklService {
   static Future<void> deletePkl(String id) async {
     final token = await AuthService.getToken();
     final response = await http.delete(
-      Uri.parse('$baseUrl/deletepkl/$id'),
+      Uri.parse('${ApiConstants.baseUrl}/deletepkl/$id'),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $token',
@@ -194,7 +193,7 @@ class PklService {
 
   Future<Pkl> updateStatus(String id, StatusPkl status) async {
     final token = await AuthService.getToken();
-    final url = Uri.parse('$baseUrl/statupdate/$id');
+    final url = Uri.parse('${ApiConstants.baseUrl}/statupdate/$id');
 
     final response = await http.patch(
       url,
@@ -215,7 +214,7 @@ class PklService {
   static Future<List<Pkl>> getPklSaya() async {
     final token = await AuthService.getToken();
     final response = await http.get(
-      Uri.parse('$baseUrl/pklSaya'),
+      Uri.parse('${ApiConstants.baseUrl}/pklSaya'),
       headers: {'Accept': 'application/json', 'Authorization': 'Bearer $token'},
     );
 
@@ -231,7 +230,7 @@ class PklService {
   static Future<void> uploadPklUser(Pkl pkl, {PlatformFile? file}) async {
     final token = await AuthService.getToken();
 
-    final uri = Uri.parse('$baseUrl/useruploadpkl');
+    final uri = Uri.parse('${ApiConstants.baseUrl}/useruploadpkl');
 
     final fields = {
       'nisn': pkl.nisn,
@@ -274,7 +273,7 @@ class PklService {
   Future<Pkl> getPklSayaById(String id) async {
     final token = await AuthService.getToken();
     final response = await http.get(
-      Uri.parse('$baseUrl/pklSaya/$id'),
+      Uri.parse('${ApiConstants.baseUrl}/pklSaya/$id'),
       headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
     );
 

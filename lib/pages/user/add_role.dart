@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../widgets/main_layout.dart';
-import 'package:sikermatsu/models/app_state.dart';
-import '../styles/style.dart';
-import '../services/auth_service.dart';
-import '../models/user.dart';
+import '../../main_layout.dart';
+import 'package:sikermatsu/states/app_state.dart';
+import '../../styles/style.dart';
+import '../../services/auth_service.dart';
+import '../../models/user.dart';
 
 class AddRolePage extends StatefulWidget {
   final User? user;

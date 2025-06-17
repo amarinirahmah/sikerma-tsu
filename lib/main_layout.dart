@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/app_drawer.dart';
 import 'package:sikermatsu/widgets/app_bar.dart';
-import 'package:sikermatsu/models/app_state.dart';
+import 'package:sikermatsu/states/app_state.dart';
 import 'package:sikermatsu/styles/style.dart';
 
 class MainLayout extends StatefulWidget {
@@ -27,13 +27,13 @@ class _MainLayoutState extends State<MainLayout> {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final bool isDesktop = constraints.maxWidth >= 800;
+        // final bool isDesktop = constraints.maxWidth >= 800;
 
         return Scaffold(
           key: scaffoldKey,
           backgroundColor: const Color.fromARGB(255, 236, 236, 236),
           appBar: CustomAppBar(
-            isDesktop: isDesktop,
+            isDesktop: false,
             scaffoldKey: scaffoldKey,
             title: widget.title,
             isLoggedIn: widget.isLoggedIn,
@@ -55,32 +55,44 @@ class _MainLayoutState extends State<MainLayout> {
                               children: [
                                 DrawerHeader(
                                   decoration: BoxDecoration(color: Colors.teal),
-                                  // child: Text(
-                                  //   'SIKERMA TSU',
-                                  //   style: TextStyle(
-                                  //     color: Colors.white,
-                                  //     fontSize: 24,
-                                  //   ),
-                                  // ),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                  child: Stack(
                                     children: [
-                                      SizedBox(
-                                        height: 60,
-                                        child: Image.asset(
-                                          'assets/images/logo-white.png',
-                                          fit: BoxFit.contain,
+                                      Positioned(
+                                        top: 0,
+                                        right: 0,
+                                        child: IconButton(
+                                          icon: Icon(
+                                            Icons.close,
+                                            color: Colors.white,
+                                          ),
+                                          onPressed:
+                                              () => Navigator.pop(context),
                                         ),
                                       ),
-                                      SizedBox(height: 12),
-                                      Text(
-                                        'SiKERMA TSU',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
+
+                                      Align(
+                                        alignment: Alignment.center,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            SizedBox(
+                                              height: 60,
+                                              child: Image.asset(
+                                                'assets/images/logo-white.png',
+                                                fit: BoxFit.contain,
+                                              ),
+                                            ),
+                                            SizedBox(height: 12),
+                                            Text(
+                                              'SiKERMA TSU',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 20,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -202,8 +214,11 @@ class _MainLayoutState extends State<MainLayout> {
         selected: isSelected,
         onTap: () {
           if (!isSelected) {
-            Navigator.pop(context);
-            Navigator.pushReplacementNamed(context, route);
+            Future.delayed(Duration.zero, () {
+              Navigator.pushReplacementNamed(context, route);
+            });
+            // Navigator.pop(context);
+            // Navigator.pushReplacementNamed(context, route);
           }
         },
       ),
