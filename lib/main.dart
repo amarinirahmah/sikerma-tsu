@@ -18,7 +18,7 @@ import 'pages/pkl/upload_pkl.dart';
 import 'pages/pkl/detail_pkl.dart';
 import 'pages/home/home.dart';
 import 'styles/style.dart';
-import 'states/app_state.dart';
+import 'core/app_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/dashboard/dashboard2.dart';
 import 'pages/guard/access_denied_page.dart';

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/widgets/app_drawer.dart';
 import 'package:sikermatsu/widgets/app_bar.dart';
-import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/styles/style.dart';
 
 class MainLayout extends StatefulWidget {

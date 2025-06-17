@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/models/mock_user.dart';
 import 'package:sikermatsu/styles/style.dart';
 import 'package:sikermatsu/widgets/user_card.dart';

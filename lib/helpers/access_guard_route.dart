@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/pages/guard/access_denied_page.dart';
 
 Route<dynamic> guardedRoute({

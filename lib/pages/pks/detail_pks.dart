@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/main_layout.dart';
-import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/models/pks.dart';
 import 'package:sikermatsu/services/pks_service.dart';
 import 'package:sikermatsu/services/auth_service.dart';

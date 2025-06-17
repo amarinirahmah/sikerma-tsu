@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/pages/progres/detail_progres.dart';
 import 'package:sikermatsu/main_layout.dart';
-import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/services/mou_service.dart';
 import 'package:sikermatsu/services/pks_service.dart';
 import '../../styles/style.dart';

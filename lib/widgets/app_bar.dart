@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../helpers/responsive.dart'; // import class Responsive
-import 'package:sikermatsu/states/app_state.dart';
+import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/styles/style.dart';
 import '../services/auth_service.dart';
 

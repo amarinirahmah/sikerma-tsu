@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/user.dart';
-import '../states/app_state.dart';
+import '../core/app_state.dart';
 import '../constants/api_constants.dart';
 
 class AuthService {
