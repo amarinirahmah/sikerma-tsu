@@ -103,7 +103,7 @@ class MyApp extends StatelessWidget {
         switch (settings.name) {
           case '/':
             return MaterialPageRoute(
-              builder: (_) => const HomePage(),
+              builder: (_) => HomePage(),
               settings: settings,
             );
           case '/login':
@@ -149,7 +149,7 @@ class MyApp extends StatelessWidget {
         );
       },
       routes: {
-        '/': (context) => const HomePage(),
+        '/': (context) => HomePage(),
         '/login': (context) => const LoginPage(),
         '/register': (context) => const RegisterPage(),
         // '/superadmin': (context) => const SuperAdminPage(),

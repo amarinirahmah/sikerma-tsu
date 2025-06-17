@@ -4,28 +4,46 @@ import 'package:sikermatsu/styles/style.dart';
 import 'package:sikermatsu/widgets/app_bar.dart';
 import 'package:sikermatsu/helpers/responsive.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:sikermatsu/helpers/animation.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+  final ScrollController _scrollController = ScrollController();
+  HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(isDesktop: false),
       body: SingleChildScrollView(
+        controller: _scrollController,
         child: Column(
           children: [
             _buildHeaderWithBackground(context),
             const SizedBox(height: 20),
-            _buildIntroSection(context),
+            FadeInOnScroll(
+              scrollController: _scrollController,
+              triggerOffset: 150,
+              child: _buildIntroSection(context),
+            ),
             const SizedBox(height: 20),
-            _buildVisiMisiSection(),
+            FadeInOnScroll(
+              scrollController: _scrollController,
+              triggerOffset: 250,
+              child: _buildVisiMisiSection(),
+            ),
             const SizedBox(height: 20),
-            // _buildMottoSection(),
-            // const SizedBox(height: 20),
-            _buildFeatureCards(),
+
+            FadeInOnScroll(
+              scrollController: _scrollController,
+              triggerOffset: 200,
+              child: _buildFeatureCards(),
+            ),
             const SizedBox(height: 20),
-            _buildFAQSection(),
+            FadeInOnScroll(
+              scrollController: _scrollController,
+              triggerOffset: 250,
+              child: _buildFAQSection(),
+            ),
             _buildFooter(context),
           ],
         ),
@@ -33,56 +51,56 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  // Widget _buildHeaderWithBackground(BuildContext context) {
-  //   return Container(
-  //     width: double.infinity,
-  //     height: 550,
-  //     decoration: const BoxDecoration(
-  //       image: DecorationImage(
-  //         image: AssetImage('assets/images/background.jpg'),
-  //         fit: BoxFit.cover,
-  //       ),
-  //     ),
-  //     child: Container(
-  //       // color: Colors.black.withOpacity(0.65),
-  //       color: Colors.teal.withOpacity(0.45),
-  //       child: Center(child: _buildWelcomeSection(context)),
-  //     ),
-  //   );
-  // }
-
   Widget _buildHeaderWithBackground(BuildContext context) {
-    return SizedBox(
+    return Container(
       width: double.infinity,
       height: 550,
-      child: Stack(
-        fit: StackFit.expand,
-        children: [
-          // Background Image
-          Image.asset('assets/images/background.jpg', fit: BoxFit.cover),
-
-          // Gradient Overlay
-          Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.teal.withOpacity(0.45),
-                  Colors.teal.withOpacity(0.25),
-                  Colors.teal.withOpacity(0.15),
-                  Colors.transparent,
-                ],
-              ),
-            ),
-          ),
-
-          // Welcome Section
-          Center(child: _buildWelcomeSection(context)),
-        ],
+      decoration: const BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage('assets/images/background.jpg'),
+          fit: BoxFit.cover,
+        ),
+      ),
+      child: Container(
+        // color: Colors.black.withOpacity(0.65),
+        color: Colors.grey.shade900.withOpacity(0.45),
+        child: Center(child: _buildWelcomeSection(context)),
       ),
     );
   }
+
+  // Widget _buildHeaderWithBackground(BuildContext context) {
+  //   return SizedBox(
+  //     width: double.infinity,
+  //     height: 550,
+  //     child: Stack(
+  //       fit: StackFit.expand,
+  //       children: [
+  //         // Background Image
+  //         Image.asset('assets/images/background.jpg', fit: BoxFit.cover),
+
+  //         // Gradient Overlay
+  //         Container(
+  //           decoration: BoxDecoration(
+  //             gradient: LinearGradient(
+  //               begin: Alignment.topCenter,
+  //               end: Alignment.bottomCenter,
+  //               colors: [
+  //                 Colors.grey.shade900.withOpacity(0.45),
+  //                 Colors.grey.shade800.withOpacity(0.25),
+  //                 Colors.grey.shade700.withOpacity(0.15),
+  //                 Colors.transparent,
+  //               ],
+  //             ),
+  //           ),
+  //         ),
+
+  //         // Welcome Section
+  //         Center(child: _buildWelcomeSection(context)),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildWelcomeSection(BuildContext context) {
     final isMobile = Responsive.isMobile(context);
@@ -353,11 +371,30 @@ class HomePage extends StatelessWidget {
                   : Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(child: _footerSectionAbout()),
+                      Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _footerSectionAbout(),
+                        ),
+                      ),
+
                       const SizedBox(width: 16),
-                      Expanded(child: _footerSectionHours()),
+                      Expanded(
+                        flex: 1,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _footerSectionHours(),
+                        ),
+                      ),
                       const SizedBox(width: 16),
-                      Expanded(child: _footerSectionContact()),
+                      Expanded(
+                        flex: 2,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: _footerSectionContact(),
+                        ),
+                      ),
                     ],
                   ),
         ),
@@ -379,9 +416,10 @@ class HomePage extends StatelessWidget {
   Widget _footerSectionAbout() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        SizedBox(height: 8),
-        Text(
+      children: [
+        Image.asset('assets/images/logo-white.png', height: 48),
+        const SizedBox(height: 12),
+        const Text(
           'Tentang Kami',
           style: TextStyle(
             color: Colors.white,
@@ -389,15 +427,38 @@ class HomePage extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 12),
-        Text(
-          'SiKERMA TSU adalah sistem informasi yang mempermudah proses kerja sama dan pengajuan PKL antara sekolah dan instansi. '
-          'Dengan tampilan yang modern dan fitur yang terintegrasi, SiKERMA membantu proses administrasi menjadi lebih cepat, praktis, dan transparan.',
+        const SizedBox(height: 12),
+        const Text(
+          'SiKERMA TSU adalah sistem informasi yang mempermudah proses kerja sama dan pengajuan PKL antara sekolah dan instansi. Dengan tampilan yang modern dan fitur yang terintegrasi, SiKERMA membantu proses administrasi menjadi lebih cepat, praktis, dan transparan.',
           style: TextStyle(color: Colors.white70),
         ),
+        const SizedBox(height: 20),
       ],
     );
   }
+
+  // Widget _footerSectionAbout() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: const [
+  //       SizedBox(height: 8),
+  //       Text(
+  //         'Tentang Kami',
+  //         style: TextStyle(
+  //           color: Colors.white,
+  //           fontSize: 18,
+  //           fontWeight: FontWeight.bold,
+  //         ),
+  //       ),
+  //       SizedBox(height: 12),
+  //       Text(
+  //         'SiKERMA TSU adalah sistem informasi yang mempermudah proses kerja sama dan pengajuan PKL antara sekolah dan instansi. '
+  //         'Dengan tampilan yang modern dan fitur yang terintegrasi, SiKERMA membantu proses administrasi menjadi lebih cepat, praktis, dan transparan.',
+  //         style: TextStyle(color: Colors.white70),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _footerSectionContact() {
     return Column(
@@ -413,9 +474,16 @@ class HomePage extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _footerContactRow(
+          icon: FontAwesomeIcons.house,
+          label:
+              'Jl. K.H Samanhudi No.84-86, Purwosari, Kec. Laweyan, Kota Surakarta, Jawa Tengah 57149, Indonesia',
+          url: 'https://maps.app.goo.gl/HDBASDWhmfo3K5ME9',
+        ),
+        const SizedBox(height: 8),
+        _footerContactRow(
           icon: FontAwesomeIcons.whatsapp,
-          label: 'Jl. Pendidikan No. 123, Bandung',
-          url: 'https://maps.google.com/?q=Jl. Pendidikan No. 123, Bandung',
+          label: '0895705354767',
+          url: 'https://wa.me/62895705354767',
         ),
         const SizedBox(height: 8),
         _footerContactRow(
@@ -426,8 +494,8 @@ class HomePage extends StatelessWidget {
         const SizedBox(height: 8),
         _footerContactRow(
           icon: Icons.phone,
-          label: '+62 812-3456-7890',
-          url: 'tel:+6281234567890',
+          label: '+62 271 716500',
+          url: 'tel:+62271716500',
         ),
       ],
     );
@@ -463,15 +531,24 @@ class HomePage extends StatelessWidget {
         Row(
           children: [
             IconButton(
-              onPressed: () => _launchURL('https://instagram.com/sikermatsu'),
+              onPressed:
+                  () => _launchURL(
+                    'https://www.instagram.com/tsuniversity.official?igsh=ZWp3dmplazI5OGo4',
+                  ),
               icon: const Icon(FontAwesomeIcons.instagram, color: Colors.white),
             ),
             IconButton(
-              onPressed: () => _launchURL('https://youtube.com/@sikermatsu'),
-              icon: const Icon(FontAwesomeIcons.youtube, color: Colors.white),
+              onPressed:
+                  () => _launchURL(
+                    'https://www.facebook.com/profile.php?id=61573409518530&mibextid=rS40aB7S9Ucbxw6v',
+                  ),
+              icon: const Icon(FontAwesomeIcons.facebook, color: Colors.white),
             ),
             IconButton(
-              onPressed: () => _launchURL('https://tiktok.com/@sikermatsu'),
+              onPressed:
+                  () => _launchURL(
+                    'https://www.tiktok.com/@tsuniversity.official',
+                  ),
               icon: const Icon(FontAwesomeIcons.tiktok, color: Colors.white),
             ),
           ],
