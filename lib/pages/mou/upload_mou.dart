@@ -1,17 +1,13 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sikermatsu/models/mou.dart';
 import 'package:sikermatsu/services/mou_service.dart';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:sikermatsu/main_layout.dart';
 import 'package:sikermatsu/core/app_state.dart';
 import '../../styles/style.dart';
-import 'package:path/path.dart' as p;
 import 'dart:io' show File;
-import 'package:flutter/foundation.dart';
 
 class UploadMoUPage extends StatefulWidget {
   final Mou? mou;
@@ -137,8 +133,7 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
 
       setState(() {
         fileName = file.name;
-        selectedFile =
-            null; // biar clear, kita simpan PlatformFile di variabel lain saja
+        selectedFile = null;
         _pickedPlatformFile = file;
       });
     }
@@ -170,8 +165,8 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
           nama: nama.text,
           judul: judul.text,
           ruangLingkup: ruangLingkup.text,
-          tanggalMulai: tanggalMulai!, // Ganti sesuai form
-          tanggalBerakhir: tanggalBerakhir!, // Ganti sesuai form
+          tanggalMulai: tanggalMulai!,
+          tanggalBerakhir: tanggalBerakhir!,
           pihak1: Pihak(
             nama: nama1.text,
             jabatan: jabatan1.text,
@@ -341,7 +336,7 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
                           label: Text(
                             tanggalMulai == null
                                 ? 'Pilih Tanggal Mulai'
-                                : 'Mulai: ${tanggalMulai!.toLocal().toString().split(' ')[0]}',
+                                : 'Mulai: ${DateFormat('d MMMM yyyy', 'id_ID').format(tanggalMulai!)}',
                             style: CustomStyle.dateTextStyle,
                           ),
 
@@ -356,7 +351,7 @@ class _UploadMoUPageState extends State<UploadMoUPage> {
                           label: Text(
                             tanggalBerakhir == null
                                 ? 'Pilih Tanggal Berakhir'
-                                : 'Berakhir: ${tanggalBerakhir!.toLocal().toString().split(' ')[0]}',
+                                : 'Berakhir: ${DateFormat('d MMMM yyyy', 'id_ID').format(tanggalBerakhir!)}',
                             style: CustomStyle.dateTextStyle,
                           ),
 

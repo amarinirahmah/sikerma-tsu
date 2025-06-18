@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:sikermatsu/services/mou_service.dart';
 import 'package:sikermatsu/services/pks_service.dart';
 import 'package:sikermatsu/main_layout.dart';
 import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/models/pks.dart';
 import 'package:sikermatsu/pages/pks/upload_pks.dart';
 import '../../styles/style.dart';
+import 'package:intl/intl.dart';
 
 class PKSPage extends StatefulWidget {
   const PKSPage({super.key});
@@ -267,18 +267,20 @@ class _PKSPageState extends State<PKSPage> {
                                                 DataCell(Text(pks.namaUnit)),
                                                 DataCell(
                                                   Text(
-                                                    pks.tanggalMulai!
-                                                        .toIso8601String()
-                                                        .split('T')
-                                                        .first,
+                                                    DateFormat(
+                                                      'd MMMM yyyy',
+                                                      'id_ID',
+                                                    ).format(pks.tanggalMulai),
                                                   ),
                                                 ),
                                                 DataCell(
                                                   Text(
-                                                    pks.tanggalBerakhir
-                                                        .toIso8601String()
-                                                        .split('T')
-                                                        .first,
+                                                    DateFormat(
+                                                      'd MMMM yyyy',
+                                                      'id_ID',
+                                                    ).format(
+                                                      pks.tanggalBerakhir,
+                                                    ),
                                                   ),
                                                 ),
                                                 DataCell(Text(pks.statusText)),

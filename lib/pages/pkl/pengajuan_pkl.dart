@@ -6,6 +6,7 @@ import 'package:sikermatsu/models/pkl.dart';
 import 'package:sikermatsu/pages/pkl/upload_pkl.dart';
 import 'package:sikermatsu/services/auth_service.dart';
 import '../../styles/style.dart';
+import 'package:intl/intl.dart';
 
 class PKLPage extends StatefulWidget {
   const PKLPage({super.key});
@@ -300,18 +301,22 @@ class _PKLPageState extends State<PKLPage> {
                                                     DataCell(Text(pkl.sekolah)),
                                                     DataCell(
                                                       Text(
-                                                        pkl.tanggalMulai!
-                                                            .toIso8601String()
-                                                            .split('T')
-                                                            .first,
+                                                        DateFormat(
+                                                          'd MMMM yyyy',
+                                                          'id_ID',
+                                                        ).format(
+                                                          pkl.tanggalMulai,
+                                                        ),
                                                       ),
                                                     ),
                                                     DataCell(
                                                       Text(
-                                                        pkl.tanggalBerakhir
-                                                            .toIso8601String()
-                                                            .split('T')
-                                                            .first,
+                                                        DateFormat(
+                                                          'd MMMM yyyy',
+                                                          'id_ID',
+                                                        ).format(
+                                                          pkl.tanggalBerakhir,
+                                                        ),
                                                       ),
                                                     ),
                                                     DataCell(

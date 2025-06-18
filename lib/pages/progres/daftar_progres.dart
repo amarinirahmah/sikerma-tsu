@@ -5,6 +5,7 @@ import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/services/mou_service.dart';
 import 'package:sikermatsu/services/pks_service.dart';
 import '../../styles/style.dart';
+import 'package:intl/intl.dart';
 
 class ProgressPage extends StatefulWidget {
   const ProgressPage({super.key});
@@ -55,8 +56,10 @@ class _ProgressPageState extends State<ProgressPage> {
           combinedData.add({
             'Nama Mitra': mou.nama,
             'Nomor MoU': mou.nomorMou,
-            'Tanggal Mulai MoU':
-                mou.tanggalMulai.toIso8601String().split('T').first,
+            'Tanggal Mulai MoU': DateFormat(
+              'd MMMM yyyy',
+              'id_ID',
+            ).format(mou.tanggalMulai),
             'Status MoU': mou.statusText,
             'Nomor PKS': '-',
             'Tanggal Mulai PKS': '-',
@@ -69,12 +72,16 @@ class _ProgressPageState extends State<ProgressPage> {
             combinedData.add({
               'Nama Mitra': mou.nama,
               'Nomor MoU': mou.nomorMou,
-              'Tanggal Mulai MoU':
-                  mou.tanggalMulai.toIso8601String().split('T').first,
+              'Tanggal Mulai MoU': DateFormat(
+                'd MMMM yyyy',
+                'id_ID',
+              ).format(mou.tanggalMulai),
               'Status MoU': mou.statusText,
               'Nomor PKS': pks.nomorPks,
-              'Tanggal Mulai PKS':
-                  pks.tanggalMulai.toIso8601String().split('T').first,
+              'Tanggal Mulai PKS': DateFormat(
+                'd MMMM yyyy',
+                'id_ID',
+              ).format(pks.tanggalMulai),
               'Status PKS': pks.statusText,
               'mouId': mou.id,
               'pksId': pks.id,

@@ -5,6 +5,7 @@ import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/models/mou.dart';
 import 'package:sikermatsu/pages/mou/upload_mou.dart';
 import '../../styles/style.dart';
+import 'package:intl/intl.dart';
 
 class MoUPage extends StatefulWidget {
   const MoUPage({super.key});
@@ -185,6 +186,7 @@ class _MoUPageState extends State<MoUPage> {
                                       border: TableBorder.all(
                                         color: Colors.grey,
                                       ),
+                                      //  columnSpacing: 24,
                                       columns: [
                                         DataColumn(
                                           label: Text(
@@ -254,18 +256,20 @@ class _MoUPageState extends State<MoUPage> {
                                                 DataCell(Text(mou.judul)),
                                                 DataCell(
                                                   Text(
-                                                    mou.tanggalMulai!
-                                                        .toIso8601String()
-                                                        .split('T')
-                                                        .first,
+                                                    DateFormat(
+                                                      'd MMMM yyyy',
+                                                      'id_ID',
+                                                    ).format(mou.tanggalMulai),
                                                   ),
                                                 ),
                                                 DataCell(
                                                   Text(
-                                                    mou.tanggalBerakhir
-                                                        .toIso8601String()
-                                                        .split('T')
-                                                        .first,
+                                                    DateFormat(
+                                                      'd MMMM yyyy',
+                                                      'id_ID',
+                                                    ).format(
+                                                      mou.tanggalBerakhir,
+                                                    ),
                                                   ),
                                                 ),
                                                 DataCell(Text(mou.statusText)),

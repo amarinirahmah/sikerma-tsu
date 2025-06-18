@@ -1,18 +1,14 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/widgets.dart';
 import 'package:sikermatsu/models/pkl.dart';
 import 'package:sikermatsu/services/pkl_service.dart';
-
+import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:sikermatsu/main_layout.dart';
 import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/services/auth_service.dart';
 import '../../styles/style.dart';
-import 'package:path/path.dart' as p;
 import 'dart:io' show File;
-import 'package:flutter/foundation.dart';
 
 class UploadPKLPage extends StatefulWidget {
   final Pkl? pkl;
@@ -183,73 +179,6 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
     }
   }
 
-  // Future<void> _submitData() async {
-  //   if (!_formKey.currentState!.validate()) return;
-
-  //   if (tanggalMulai == null || tanggalBerakhir == null) {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(
-  //         content: Text('Tanggal mulai dan berakhir wajib dipilih.'),
-  //       ),
-  //     );
-  //     return;
-  //   }
-
-  //   try {
-  //     if (widget.pkl == null) {
-  //       // Upload
-  //       final pkl = Pkl(
-  //         nisn: nisn.text,
-  //         nama: nama.text,
-  //         sekolah: sekolah.text,
-  //         gender: gender,
-  //         tanggalMulai: tanggalMulai!, // Ganti sesuai form
-  //         tanggalBerakhir: tanggalBerakhir!, // Ganti sesuai form
-  //         telpEmail: telpEmail.text,
-  //         alamat: alamat.text,
-  //         // status: StatusPkl.diproses,
-  //         // status: widget.pkl?.status ?? StatusPkl.diproses,
-  //         status: StatusPkl.diproses,
-  //       );
-
-  //       await PklService.uploadPkl(pkl, file: _pickedPlatformFile);
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('Berhasil mengunggah data siswa!')),
-  //       );
-  //     } else {
-  //       // Update
-  //       final pkl = Pkl(
-  //         nisn: nisn.text,
-  //         nama: nama.text,
-  //         sekolah: sekolah.text,
-  //         gender: gender,
-  //         tanggalMulai: tanggalMulai!,
-  //         tanggalBerakhir: tanggalBerakhir!,
-  //         telpEmail: telpEmail.text,
-  //         alamat: alamat.text,
-  //         // status: widget.pkl!.status,
-  //         status: _selectedStatus,
-  //       );
-
-  //       print('Data yang dikirim:');
-  //       print(pkl.toJson());
-  //       await PklService.updatePkl(
-  //         widget.pkl!.id.toString(),
-  //         pkl,
-  //         file: _pickedPlatformFile,
-  //       );
-  //     }
-
-  //     if (!mounted) return;
-  //     Navigator.pop(context, true);
-  //   } catch (e) {
-  //     if (!mounted) return;
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Gagal mengunggah data siswa: $e')),
-  //     );
-  //   }
-  // }
-
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
@@ -354,7 +283,7 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
                           label: Text(
                             tanggalMulai == null
                                 ? 'Pilih Tanggal Mulai'
-                                : 'Mulai: ${tanggalMulai!.toLocal().toString().split(' ')[0]}',
+                                : 'Mulai: ${DateFormat('d MMMM yyyy', 'id_ID').format(tanggalMulai!)}',
                             style: CustomStyle.dateTextStyle,
                           ),
 
@@ -369,7 +298,7 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
                           label: Text(
                             tanggalBerakhir == null
                                 ? 'Pilih Tanggal Berakhir'
-                                : 'Berakhir: ${tanggalBerakhir!.toLocal().toString().split(' ')[0]}',
+                                : 'Berakhir: ${DateFormat('d MMMM yyyy', 'id_ID').format(tanggalBerakhir!)}',
                             style: CustomStyle.dateTextStyle,
                           ),
 

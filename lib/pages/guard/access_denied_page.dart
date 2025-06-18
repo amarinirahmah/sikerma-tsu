@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/core/app_state.dart';
+import 'package:sikermatsu/styles/style.dart';
 
 class AccessDeniedPage extends StatelessWidget {
   const AccessDeniedPage({super.key});
@@ -21,13 +23,19 @@ class AccessDeniedPage extends StatelessWidget {
                 style: TextStyle(fontSize: 18),
                 textAlign: TextAlign.center,
               ),
-              // const SizedBox(height: 24),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     Navigator.pushReplacementNamed(context, '/dashboard');
-              //   },
-              //   child: const Text('Kembali ke Dashboard'),
-              // ),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                style: CustomStyle.baseButtonStyle,
+                onPressed: () {
+                  final role = AppState.role.value;
+                  if (role == 'userpkl') {
+                    Navigator.pushReplacementNamed(context, '/dashboard2');
+                  } else {
+                    Navigator.pushReplacementNamed(context, '/dashboard');
+                  }
+                },
+                child: const Text('Kembali ke Dashboard'),
+              ),
             ],
           ),
         ),

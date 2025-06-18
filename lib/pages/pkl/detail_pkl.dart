@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:sikermatsu/main_layout.dart';
 import 'package:sikermatsu/core/app_state.dart';
@@ -8,6 +6,7 @@ import 'package:sikermatsu/services/pkl_service.dart';
 import 'package:sikermatsu/services/auth_service.dart';
 import 'package:sikermatsu/helpers/download_file.dart';
 import 'package:sikermatsu/styles/style.dart';
+import 'package:intl/intl.dart';
 
 class DetailPKLPage extends StatefulWidget {
   const DetailPKLPage({super.key});
@@ -100,14 +99,6 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
     );
   }
 
-  String _getExtension(String path) {
-    final dotIndex = path.lastIndexOf('.');
-    if (dotIndex != -1 && dotIndex + 1 < path.length) {
-      return path.substring(dotIndex + 1).toLowerCase();
-    }
-    return 'pdf';
-  }
-
   @override
   Widget build(BuildContext context) {
     return MainLayout(
@@ -147,15 +138,17 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
                           buildRow('Jenis Kelamin', pkl!.gender.toBackend()),
                           buildRow(
                             'Tanggal Mulai',
-                            pkl!.tanggalMulai.toLocal().toString().split(
-                              ' ',
-                            )[0],
+                            DateFormat(
+                              'd MMMM yyyy',
+                              'id_ID',
+                            ).format(pkl!.tanggalMulai),
                           ),
                           buildRow(
                             'Tanggal Berakhir',
-                            pkl!.tanggalBerakhir.toLocal().toString().split(
-                              ' ',
-                            )[0],
+                            DateFormat(
+                              'd MMMM yyyy',
+                              'id_ID',
+                            ).format(pkl!.tanggalBerakhir),
                           ),
                           buildRow('Nomor Telepon / Email', pkl!.telpEmail),
                           buildRow('Alamat', pkl!.alamat),

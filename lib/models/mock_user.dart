@@ -8,7 +8,7 @@ Future<Map<String, dynamic>?> dummyLogin(String email, String password) async {
   if (email == dummyEmail && password == dummyPassword) {
     return {
       'token': 'tokenadmin1',
-      'user': {'name': 'Amarini', 'email': dummyEmail, 'role': 'admin'},
+      'user': {'name': 'Amarini', 'email': dummyEmail, 'role': 'userpkl'},
     };
   }
 

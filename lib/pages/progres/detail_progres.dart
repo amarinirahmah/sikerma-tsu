@@ -136,7 +136,7 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
                           label: Text(
                             tanggal == null
                                 ? "Pilih Tanggal"
-                                : 'Tanggal: ${DateFormat('dd MMM yyyy').format(tanggal!)}',
+                                : 'Tanggal: ${DateFormat('d MMMM yyyy', 'id_ID').format(tanggal!)}',
                           ),
                           onPressed: _pickTanggal,
                         ),
@@ -222,7 +222,7 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
                               rows:
                                   progresList.map((e) {
                                     final formattedDate = DateFormat(
-                                      'dd MMMM yyyy',
+                                      'd MMMM yyyy',
                                       'id',
                                     ).format(DateTime.parse(e.tanggal));
                                     return DataRow(

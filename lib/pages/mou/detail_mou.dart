@@ -3,11 +3,9 @@ import 'package:sikermatsu/main_layout.dart';
 import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/models/mou.dart';
 import 'package:sikermatsu/services/mou_service.dart';
-import 'package:sikermatsu/services/auth_service.dart';
 import 'package:sikermatsu/helpers/download_file.dart';
 import 'package:sikermatsu/styles/style.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class DetailMoUPage extends StatefulWidget {
   const DetailMoUPage({super.key});
@@ -59,57 +57,6 @@ class _DetailMoUPageState extends State<DetailMoUPage> {
     }
   }
 
-  // Future<void> updateKeterangan(KeteranganMou newKeterangan) async {
-  //   if (mou == null) return;
-
-  //   setState(() => isSaving = true);
-
-  //   try {
-  //     final updatedMou = await MouService().updateKeterangan(
-  //       mou!.id.toString(),
-  //       newKeterangan,
-  //     );
-  //     setState(() {
-  //       mou = updatedMou;
-  //       selectedKeterangan = updatedMou.keterangan;
-  //       isSaving = false;
-  //     });
-
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       const SnackBar(content: Text('Keterangan berhasil diperbarui')),
-  //     );
-  //   } catch (e) {
-  //     setState(() => isSaving = false);
-  //     ScaffoldMessenger.of(
-  //       context,
-  //     ).showSnackBar(SnackBar(content: Text('Error saat update: $e')));
-  //   }
-  // }
-
-  // Future<void> _showKeteranganDialog() async {
-  //   if (!isLoggedIn || !(userRole == 'admin' || userRole == 'user')) return;
-
-  //   final selected = await showDialog<KeteranganMou>(
-  //     context: context,
-  //     builder: (context) {
-  //       return SimpleDialog(
-  //         title: const Text('Pilih Keterangan'),
-  //         children:
-  //             KeteranganMou.values.map((k) {
-  //               return SimpleDialogOption(
-  //                 onPressed: () => Navigator.pop(context, k),
-  //                 child: Text(k.label),
-  //               );
-  //             }).toList(),
-  //       );
-  //     },
-  //   );
-
-  //   if (selected != null && selected != selectedKeterangan) {
-  //     await updateKeterangan(selected);
-  //   }
-  // }
-
   Widget buildRow(String label, String value, {VoidCallback? onTap}) {
     Widget content = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,14 +98,6 @@ class _DetailMoUPageState extends State<DetailMoUPage> {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: content,
     );
-  }
-
-  String _getExtension(String path) {
-    final dotIndex = path.lastIndexOf('.');
-    if (dotIndex != -1 && dotIndex + 1 < path.length) {
-      return path.substring(dotIndex + 1).toLowerCase();
-    }
-    return 'pdf';
   }
 
   @override
@@ -208,28 +147,20 @@ class _DetailMoUPageState extends State<DetailMoUPage> {
 
                           buildRow(
                             'Tanggal Mulai',
-                            mou!.tanggalMulai.toLocal().toString().split(
-                              ' ',
-                            )[0],
+                            DateFormat(
+                              'd MMMM yyyy',
+                              'id_ID',
+                            ).format(mou!.tanggalMulai),
                           ),
                           buildRow(
                             'Tanggal Berakhir',
-                            mou!.tanggalBerakhir.toLocal().toString().split(
-                              ' ',
-                            )[0],
+                            DateFormat(
+                              'd MMMM yyyy',
+                              'id_ID',
+                            ).format(mou!.tanggalBerakhir),
                           ),
                           buildRow('Ruang Lingkup', mou!.ruangLingkup),
-                          // // buildRow('Keterangan', pks!.keteranganText),
-                          // buildRow(
-                          //   'Keterangan',
-                          //   mou!.keteranganText,
-                          //   onTap:
-                          //       (isLoggedIn &&
-                          //               (userRole == 'admin' ||
-                          //                   userRole == 'user'))
-                          //           ? _showKeteranganDialog
-                          //           : null,
-                          // ),
+
                           buildRow('Keterangan', mou!.keteranganText),
                           buildRow('Status', mou!.statusText),
                           // buildRow(
@@ -263,40 +194,6 @@ class _DetailMoUPageState extends State<DetailMoUPage> {
                                 //   // token.toString(),
                                 // );
                               },
-                              // onPressed: () async {
-                              //   try {
-                              //     final filename =
-                              //         mou!.fileMou!.split('/').last;
-                              //     final folder = getFolderFromType('mou');
-
-                              //     final fileUrl =
-                              //         'http://192.168.100.104:8000/api/download/$folder/$filename';
-
-                              //     await downloadFile(fileUrl, filename);
-                              //   } catch (e) {
-                              //     print("Gagal mengunduh file: $e");
-                              //     ScaffoldMessenger.of(context).showSnackBar(
-                              //       const SnackBar(
-                              //         content: Text('Gagal mengunduh file'),
-                              //       ),
-                              //     );
-                              //   }
-                              // },
-                              // onPressed: () async {
-                              //   try {
-                              //     await downloadFile(
-                              //       mou!.fileMou!,
-                              //       'mou-${mou!.nomorMou}',
-                              //     );
-                              //   } catch (e) {
-                              //     debugPrint('Download error: $e');
-                              //     ScaffoldMessenger.of(context).showSnackBar(
-                              //       SnackBar(
-                              //         content: Text('Gagal mengunduh file'),
-                              //       ),
-                              //     );
-                              //   }
-                              // },
                             ),
                         ],
                       ),

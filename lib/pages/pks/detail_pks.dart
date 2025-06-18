@@ -3,11 +3,9 @@ import 'package:sikermatsu/main_layout.dart';
 import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/models/pks.dart';
 import 'package:sikermatsu/services/pks_service.dart';
-import 'package:sikermatsu/services/auth_service.dart';
 import 'package:sikermatsu/helpers/download_file.dart';
 import 'package:sikermatsu/styles/style.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 
 class DetailPKSPage extends StatefulWidget {
   const DetailPKSPage({super.key});
@@ -78,14 +76,6 @@ class _DetailPKSPageState extends State<DetailPKSPage> {
     );
   }
 
-  String _getExtension(String path) {
-    final dotIndex = path.lastIndexOf('.');
-    if (dotIndex != -1 && dotIndex + 1 < path.length) {
-      return path.substring(dotIndex + 1).toLowerCase();
-    }
-    return 'pdf';
-  }
-
   @override
   Widget build(BuildContext context) {
     return MainLayout(
@@ -124,15 +114,17 @@ class _DetailPKSPageState extends State<DetailPKSPage> {
                           buildRow('Judul Kerja Sama', pks!.judul),
                           buildRow(
                             'Tanggal Mulai',
-                            pks!.tanggalMulai.toLocal().toString().split(
-                              ' ',
-                            )[0],
+                            DateFormat(
+                              'd MMMM yyyy',
+                              'id_ID',
+                            ).format(pks!.tanggalMulai),
                           ),
                           buildRow(
                             'Tanggal Berakhir',
-                            pks!.tanggalBerakhir.toLocal().toString().split(
-                              ' ',
-                            )[0],
+                            DateFormat(
+                              'd MMMM yyyy',
+                              'id_ID',
+                            ).format(pks!.tanggalBerakhir),
                           ),
                           buildRow('Nama Unit', pks!.namaUnit),
                           buildRow('Ruang Lingkup', pks!.ruangLingkup),
