@@ -148,7 +148,7 @@ class DataController extends Controller
             $mou->file_mou = $filePath;
         }
 
-        $mou->fill($request->except('file_mou'));
+        $mou->fill($request->except('file_mou', 'pihak1', 'pihak2'));
 
         //Update pihak1
         if ($request->hasAny(['nama1', 'jabatan1', 'alamat1'])) {

@@ -1,5 +1,8 @@
 <?php
 
+namespace App\Http\Controllers;
+use Illuminate\Http\Request;
+
 use App\Models\pkl;
 use Illuminate\Support\Facades\Auth;
 
@@ -9,7 +12,7 @@ class PklController extends Controller
     {
         $user = $request->user();
 
-        if (!user) {
+        if (!$user) {
             return response()->json(['message'=>'Unauthorized'], 401);
         }
 

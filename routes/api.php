@@ -18,8 +18,6 @@ Route::post('/registeruser', [AuthController::class, 'registeruser']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::get('/getmou', [DataController::class, 'getmou']);
 Route::get('/getpks', [DataController::class, 'getpks']);
-// Route::get('/getmouid/{id}', [DataController::class, 'getmouid']);
-// Route::get('/getpksid/{id}', [DataController::class, 'getpksid']);
 Route::get('/download/{folder}/{filename}', [FileController::class, 'download']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
 Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
@@ -44,6 +42,7 @@ Route::middleware(['auth:sanctum', 'role:admin,user'])->group(function () {
 });
 Route::middleware(['auth:sanctum', 'role:userpkl'])->group(function() {
     Route::get('/pklSaya', [PklController::class, 'pklSaya']);
+    Route::get('/pklSaya/{id}', [DataController::class, 'getpklid']);
     Route::post('/useruploadpkl', [DataController::class, 'uploadpkl']);
     //Route::get('/getpklid/{id}', [DataController::class, 'getpklid']);
 });
