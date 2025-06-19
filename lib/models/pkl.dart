@@ -73,6 +73,8 @@ class Pkl {
   final DateTime tanggalBerakhir;
   final String? filePkl;
   final String telpEmail;
+  final String cpSekolah;
+  final String jurusan;
   final StatusPkl? status;
   final String alamat;
 
@@ -86,6 +88,8 @@ class Pkl {
     required this.tanggalBerakhir,
     this.filePkl,
     required this.telpEmail,
+    required this.cpSekolah,
+    required this.jurusan,
     required this.alamat,
     this.status,
   });
@@ -104,6 +108,8 @@ class Pkl {
       filePkl: json['file_pkl'] as String?,
       telpEmail: json['telpemail'],
       alamat: json['alamat'],
+      cpSekolah: json['cpsekolah'],
+      jurusan: json['jurusan'],
       status: StatusPklExtension.fromString(json['status']),
       // status: _statusFromString(json['status']),
     );
@@ -120,6 +126,8 @@ class Pkl {
       'tanggal_berakhir': tanggalBerakhir.toIso8601String(),
       'file_pkl': filePkl,
       'telpemail': telpEmail,
+      'cpsekolah': cpSekolah,
+      'jurusan': jurusan,
       'alamat': alamat,
       'status': status?.toBackend(),
     };

@@ -178,10 +178,14 @@ class MouService {
   // Mapping enum ke string backend (sesuai backendmu)
   static String statusToBackend(StatusMou? status) {
     switch (status) {
+      case StatusMou.draft:
+        return 'Draft';
       case StatusMou.aktif:
         return 'Aktif';
       case StatusMou.nonaktif:
         return 'Tidak Aktif';
+      case StatusMou.kadaluarsa:
+        return 'Kadaluarsa';
       default:
         return '';
     }

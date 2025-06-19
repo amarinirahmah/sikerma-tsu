@@ -29,7 +29,9 @@ class _DetailProgressPageState extends State<DetailProgressPage> {
 
   static const List<Map<String, String>> prosesOptions = [
     {'value': 'PembuatanDraft', 'label': 'Pembuatan Draft'},
-    {'value': 'PengajuanDraft', 'label': 'Pengajuan Draft'},
+    {'value': 'PengajuanPihak1', 'label': 'Pengajuan Pihak 1'},
+    {'value': 'PengajuanPihak2', 'label': 'Pengajuan Pihak 2'},
+    {'value': 'DraftBiro', 'label': 'Draft di Biro'},
     {'value': 'PenyerahanMOU', 'label': 'Penyerahan MOU'},
   ];
 

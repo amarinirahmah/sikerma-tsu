@@ -162,7 +162,13 @@ class _PKSPageState extends State<PKSPage> {
                                             }
                                           },
                                           items:
-                                              ['Semua', 'Aktif', 'Tidak Aktif']
+                                              [
+                                                    'Semua',
+                                                    'Draft',
+                                                    'Aktif',
+                                                    'Tidak Aktif',
+                                                    'Kadaluarsa',
+                                                  ]
                                                   .map(
                                                     (role) => DropdownMenuItem(
                                                       value: role,

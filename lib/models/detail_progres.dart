@@ -37,8 +37,12 @@ class DetailProgress {
     switch (proses) {
       case 'PembuatanDraft':
         return 'Pembuatan Draft';
-      case 'PengajuanDraft':
-        return 'Pengajuan Draft';
+      case 'PengajuanPihak1':
+        return 'Pengajuan Pihak 1';
+      case 'PengajuanPihak2':
+        return 'Pengajuan Pihak 2';
+      case 'DraftBiro':
+        return 'Draft di Biro';
       case 'PenyerahanMOU':
         return 'Penyerahan MoU';
       default:

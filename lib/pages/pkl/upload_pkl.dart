@@ -24,6 +24,8 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
   final nama = TextEditingController();
   final sekolah = TextEditingController();
   final telpEmail = TextEditingController();
+  final cpSekolah = TextEditingController();
+  final jurusan = TextEditingController();
   final alamat = TextEditingController();
 
   PlatformFile? _pickedPlatformFile;
@@ -43,6 +45,8 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
       sekolah.text = pkl.sekolah;
       gender = pkl.gender;
       telpEmail.text = pkl.telpEmail;
+      cpSekolah.text = pkl.cpSekolah;
+      jurusan.text = pkl.jurusan;
       alamat.text = pkl.alamat;
 
       // Set tanggal
@@ -144,6 +148,8 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
         tanggalMulai: tanggalMulai!,
         tanggalBerakhir: tanggalBerakhir!,
         telpEmail: telpEmail.text,
+        cpSekolah: cpSekolah.text,
+        jurusan: jurusan.text,
         alamat: alamat.text,
         status: widget.pkl == null ? StatusPkl.diproses : _selectedStatus,
       );
@@ -252,6 +258,19 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
                         ),
                         const SizedBox(height: 16),
 
+                        TextFormField(
+                          controller: jurusan,
+                          decoration: CustomStyle.inputDecorationWithLabel(
+                            labelText: 'Jurusan',
+                          ),
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Wajib diisi'
+                                      : null,
+                        ),
+                        const SizedBox(height: 16),
+
                         DropdownButtonFormField<JenisKelamin>(
                           value: gender,
                           decoration: CustomStyle.inputDecorationWithLabel(
@@ -313,6 +332,19 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
                           controller: telpEmail,
                           decoration: CustomStyle.inputDecorationWithLabel(
                             labelText: 'No. Telepon / Email',
+                          ),
+                          validator:
+                              (value) =>
+                                  value == null || value.isEmpty
+                                      ? 'Wajib diisi'
+                                      : null,
+                        ),
+                        const SizedBox(height: 16),
+
+                        TextFormField(
+                          controller: cpSekolah,
+                          decoration: CustomStyle.inputDecorationWithLabel(
+                            labelText: 'Cp Sekolah',
                           ),
                           validator:
                               (value) =>

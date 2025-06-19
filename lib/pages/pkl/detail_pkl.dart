@@ -135,6 +135,7 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
                           buildRow('NISN', pkl!.nisn),
                           buildRow('Nama Siswa', pkl!.nama),
                           buildRow('Asal Sekolah', pkl!.sekolah),
+                          buildRow('Jurusan', pkl!.jurusan),
                           buildRow('Jenis Kelamin', pkl!.gender.toBackend()),
                           buildRow(
                             'Tanggal Mulai',
@@ -151,6 +152,7 @@ class _DetailPKLPageState extends State<DetailPKLPage> {
                             ).format(pkl!.tanggalBerakhir),
                           ),
                           buildRow('Nomor Telepon / Email', pkl!.telpEmail),
+                          buildRow('Cp Sekolah', pkl!.cpSekolah),
                           buildRow('Alamat', pkl!.alamat),
                           buildRow('Status', pkl!.statusText),
 

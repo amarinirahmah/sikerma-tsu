@@ -1,4 +1,4 @@
-enum StatusPks { aktif, nonaktif }
+enum StatusPks { draft, aktif, nonaktif, kadaluarsa }
 
 enum KeteranganPks { diajukan, disetujui, dibatalkan }
 
@@ -78,10 +78,14 @@ class Pks {
   static StatusPks? _statusFromString(String? status) {
     if (status == null) return null;
     switch (status.toLowerCase()) {
+      case 'draft':
+        return StatusPks.draft;
       case 'aktif':
         return StatusPks.aktif;
       case 'tidak aktif':
         return StatusPks.nonaktif;
+      case 'kadaluarsa':
+        return StatusPks.kadaluarsa;
       default:
         return null;
     }
@@ -102,10 +106,14 @@ class Pks {
 
   String get statusText {
     switch (status) {
+      case StatusPks.draft:
+        return 'Draft';
       case StatusPks.aktif:
         return 'Aktif';
       case StatusPks.nonaktif:
         return 'Tidak Aktif';
+      case StatusPks.kadaluarsa:
+        return 'Kadaluarsa';
       default:
         return '-';
     }

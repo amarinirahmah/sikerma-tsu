@@ -553,11 +553,11 @@ class _PKLPageState extends State<PKLPage> {
                           if (role == 'userpkl') {
                             try {
                               final dataSaya = await PklService.getPklSaya();
-                              if (dataSaya.length >= 3) {
+                              if (dataSaya.length >= 1) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
                                     content: Text(
-                                      'Anda hanya bisa mengajukan PKL maksimal 3 akun.',
+                                      'Anda hanya bisa mengajukan PKL maksimal 1 akun.',
                                     ),
                                   ),
                                 );

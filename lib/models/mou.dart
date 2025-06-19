@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-enum StatusMou { aktif, nonaktif }
+enum StatusMou { draft, aktif, nonaktif, kadaluarsa }
 
 enum KeteranganMou { diajukan, disetujui, dibatalkan }
 
@@ -160,10 +160,14 @@ class Mou {
     // }
     if (status == null) return null;
     switch (status.toString().toLowerCase()) {
+      case 'draft':
+        return StatusMou.draft;
       case 'aktif':
         return StatusMou.aktif;
       case 'tidak aktif':
         return StatusMou.nonaktif;
+      case 'kadaluarsa':
+        return StatusMou.kadaluarsa;
       default:
         return null;
     }
@@ -196,10 +200,14 @@ class Mou {
 
   String get statusText {
     switch (status) {
+      case StatusMou.draft:
+        return 'Draft';
       case StatusMou.aktif:
         return 'Aktif';
       case StatusMou.nonaktif:
         return 'Tidak Aktif';
+      case StatusMou.kadaluarsa:
+        return 'Kadaluarsa';
       default:
         return '-';
     }

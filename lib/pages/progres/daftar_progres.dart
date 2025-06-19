@@ -218,7 +218,13 @@ class _ProgressPageState extends State<ProgressPage> {
                                             }
                                           },
                                           items:
-                                              ['Semua', 'Aktif', 'Tidak Aktif']
+                                              [
+                                                    'Semua',
+                                                    'Draft',
+                                                    'Aktif',
+                                                    'Tidak Aktif',
+                                                    'Kadaluarsa',
+                                                  ]
                                                   .map(
                                                     (status) =>
                                                         DropdownMenuItem(

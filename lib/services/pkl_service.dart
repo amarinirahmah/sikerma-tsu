@@ -18,7 +18,7 @@ class PklService {
     final token = await AuthService.getToken();
     final response = await http.get(
       Uri.parse('${ApiConstants.baseUrl}/getpkl'),
-      headers: {'Accept': 'application/json'},
+      headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
     );
 
     if (response.statusCode == 200) {
@@ -62,6 +62,8 @@ class PklService {
       'tanggal_mulai': pkl.tanggalMulai.toIso8601String(),
       'tanggal_berakhir': pkl.tanggalBerakhir.toIso8601String(),
       'telpemail': pkl.telpEmail,
+      'cpsekolah': pkl.cpSekolah,
+      'jurusan': pkl.jurusan,
       'alamat': pkl.alamat,
       if (pkl.status != null) 'status': statusToBackend(pkl.status),
     }.map((key, value) => MapEntry(key, value.toString()));
@@ -133,6 +135,8 @@ class PklService {
       'tanggal_mulai': pkl.tanggalMulai.toIso8601String(),
       'tanggal_berakhir': pkl.tanggalBerakhir.toIso8601String(),
       'telpemail': pkl.telpEmail,
+      'cpsekolah': pkl.cpSekolah,
+      'jurusan': pkl.jurusan,
       'alamat': pkl.alamat,
     });
 
@@ -240,6 +244,8 @@ class PklService {
       'tanggal_mulai': pkl.tanggalMulai.toIso8601String(),
       'tanggal_berakhir': pkl.tanggalBerakhir.toIso8601String(),
       'telpemail': pkl.telpEmail,
+      'cpsekolah': pkl.telpEmail,
+      'jurusan': pkl.jurusan,
       'alamat': pkl.alamat,
     }.map((key, value) => MapEntry(key, value.toString()));
 

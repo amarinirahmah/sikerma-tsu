@@ -155,10 +155,14 @@ class PksService {
   // Mapping enum ke string backend
   static String statusToBackend(StatusPks? status) {
     switch (status) {
+      case StatusPks.draft:
+        return 'Draft';
       case StatusPks.aktif:
         return 'Aktif';
       case StatusPks.nonaktif:
         return 'Tidak Aktif';
+      case StatusPks.kadaluarsa:
+        return 'Kadaluarsa';
       default:
         return '';
     }

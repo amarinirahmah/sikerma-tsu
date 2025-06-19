@@ -154,7 +154,13 @@ class _MoUPageState extends State<MoUPage> {
                                             }
                                           },
                                           items:
-                                              ['Semua', 'Aktif', 'Tidak Aktif']
+                                              [
+                                                    'Semua',
+                                                    'Draft',
+                                                    'Aktif',
+                                                    'Tidak Aktif',
+                                                    'Kadaluarsa',
+                                                  ]
                                                   .map(
                                                     (role) => DropdownMenuItem(
                                                       value: role,
