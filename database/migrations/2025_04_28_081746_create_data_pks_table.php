@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('file_pks')->nullable();
             $table->string('file_name')->nullable();
             $table->string('ruanglingkup');
-            $table->enum('status',['Aktif', 'Tidak Aktif'])->default('Tidak Aktif');
+            $table->enum('status',['Aktif','Kadaluarsa','Draft','Tidak Aktif'])->default('Draft');
             $table->enum('keterangan',['Diajukan','Disetujui','Dibatalkan'])->default('Diajukan');
             $table->timestamps();
         });

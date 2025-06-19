@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('ruanglingkup');
             $table->json('pihak1');
             $table->json('pihak2');
-            $table->enum('status', ['Aktif', 'Tidak Aktif'])->default('Tidak Aktif');
+            $table->enum('status', ['Aktif','Kadaluarsa','Draft','Tidak Aktif'])->default('Draft');
             $table->enum('keterangan',['Diajukan','Disetujui','Dibatalkan'])->default('Diajukan');
             $table->timestamps();
         });

@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         // Tambahkan perintah artisan khusus di sini
+        \App\Console\Commands\ceknotifikasi::class,
         \App\Console\Commands\MouPksStatus::class,
     ];
 
@@ -26,9 +27,8 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // Jadwalkan tugas yang ingin kamu jalankan, contoh:
-        $schedule->command('check:mou-pks-notification')->everyMinute();
         $schedule->command('cek:notifikasi')->everyMinute();
-        $schedule->command(MouPksStatus::class)->everyMinute();
+        // $schedule->command(MouPksStatus::class)->everyMinute();
         $schedule->command('status:update')->everyMinute();
     }
 

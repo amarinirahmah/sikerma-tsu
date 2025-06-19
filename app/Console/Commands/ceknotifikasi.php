@@ -10,24 +10,10 @@ use Carbon\Carbon;
 
 class ceknotifikasi extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'cek:notifikasi';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Cek status MOU dan PKS';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): void
     {
         $today = Carbon::today();
 
@@ -45,7 +31,7 @@ class ceknotifikasi extends Command
             if ($mulai->isSameDay($today)) {
                 $this->simpanNotif("mou_start", "Mou {$mou->nomormou} dimulai hari ini.", $today);
             }
-            if ($mulai->isSameDay($today)) {
+            if ($berakhir->isSameDay($today)) {
                 $this->simpanNotif("mou_end", "Mou {$mou->nomormou} berakhir hari ini.", $today);
             }
             if ($empatbulan->isSameDay($today)) {
@@ -86,7 +72,7 @@ class ceknotifikasi extends Command
             if ($mulai->isSameDay($today)) {
                 $this->simpanNotif("pks_start", "Pks {$pks->nomorpks} dimulai hari ini.", $today);
             }
-            if ($mulai->isSameDay($today)) {
+            if ($berakhir->isSameDay($today)) {
                 $this->simpanNotif("pks_end", "Pks {$pks->nomorpks} berakhir hari ini.", $today);
             }
             if ($empatbulan->isSameDay($today)) {
@@ -111,8 +97,8 @@ class ceknotifikasi extends Command
         //         $this->simpanNotif("pks_end", "PKS {$pks->nomorpks} berakhir hari ini.", $today);
         //     }
         // }
+        $this->info('Reminder telah dikirim');
 
-        return Command::SUCCESS;
     }
 
     protected function simpanNotif($type, $message, $tanggal)
@@ -124,9 +110,8 @@ class ceknotifikasi extends Command
         ]);
     }
 
-    protected function schedule(Schedule $schedule)
-    {
-        // Jadwalkan tugas yang ingin kamu jalankan, contoh:
-        $schedule->command('cek:notifikasi')->everyMinute();
-    }
+    // public function schedule(Schedule $schedule): void
+    // {
+    //     $schedule->command(static::class)->daily();
+    // }
 }

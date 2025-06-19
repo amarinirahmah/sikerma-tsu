@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('data_mou_id')->constrained()->onDelete('cascade');
             $table->date('tanggal');
-            $table->enum('proses',['PembuatanDraft', 'PengajuanDraft', 'PenyerahanMOU'])->defualt('Pembuatan Draft');
+            $table->enum('proses',['DraftBiro','PembuatanDraft', 'PengajuanPihak1', 'PengajuanPihak2', 'PenyerahanMOU'])->defualt('Pembuatan Draft');
             $table->string('aktivitas');
             $table->timestamps();
         });

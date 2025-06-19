@@ -33,43 +33,47 @@ class MouPksStatus extends Command
 
     public function handle(): void
     {
+        \Log::info('Command berhasil dijalankan pada ' . now());
         $today = Carbon::today();
 
         //Update MOU
         Datamou::all()->each(function ($mou) use ($today) {
-            if (
-                $mou->keterangan === 'Disetujui' &&
-                $mou->tanggal_mulai <= $today &&
-                $mou->tanggal_berakhir >= $today
-            ) {
-                $status = 'Aktif';
-            } else {
-                $status = 'Tidak Aktif';
-            }
-
+            $status = $this->determineStatus($mou, $today);
             $mou->update(['status' => $status]);
         });
         //Update PKS
         DataPks::all()->each(function ($pks) use ($today) {
-            if (
-                $pks->keterangan === 'Disetujui' &&
-                $pks->tanggal_mulai <= $today &&
-                $pks->tanggal_berakhir >= $today
-            ) {
-                $status = 'Aktif';
-            } else {
-                $status = 'Tidak Aktif';
-            }
-
+            $status = $this->determineStatus($pks, $today);
             $pks->update(['status' => $status]);
         });
 
-        $this->info('Status MOU dan PKS berhasil diperbarui berdasarkan tanggal dan keterangan');
+        $this->info('Status MOU dan PKS berhasil diperbarui');
+    }
+
+    protected function determineStatus($document, Carbon $today): string
+    {
+        //Jika dibatalkan
+        if ($document->keterangan === 'Dibatalkan') {
+            return 'Tidak Aktif';
+        }
+
+        //Jika disetujui
+        if ($document->keterangan === 'Disetujui') {
+            if ($document->tanggal_mulai <= $today && $document->tanggal_berakhir >= $today) {
+                return 'Aktif';
+            }
+            //Jika tanggal berakhir
+            if ($document->tanggal_berakhir < $today) {
+                return 'Kadaluarsa';
+            }
+        }
+        //Default
+        return 'Draft';
     }
 
     //Fungsi Auto Scheduling
-    public function schedule(Schedule $schedule): void
-    {
-        $schedule->command(static::class)->everyMinute();
-    }
+    // public function schedule(Schedule $schedule): void
+    // {
+    //     $schedule->command(static::class)->daily();
+    // }
 }

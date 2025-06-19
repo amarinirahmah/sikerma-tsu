@@ -16,12 +16,14 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
             $table->string('nisn')->unique();
             $table->string('sekolah');
+            $table->string('jurusan');
             $table->string('nama');
             $table->enum('gender',['laki-laki', 'perempuan']);
             $table->date('tanggal_mulai');
             $table->date('tanggal_berakhir');
             $table->string('file_pkl')->nullable();
             $table->string('file_name')->nullable();
+            $table->string('cpsekolah');
             $table->string('telpemail');
             $table->string('alamat');
             $table->enum('status',['Diproses','Disetujui','Ditolak'])->default('Diproses');

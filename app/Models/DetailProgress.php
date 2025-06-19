@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class DetailProgress extends Model
 {
-    protected $fillable = ['data_mou_id', 'tanggal', 'aktivitas'];
+    protected $fillable = ['data_mou_id', 'tanggal','proses', 'aktivitas'];
 
     public function mou()
     {

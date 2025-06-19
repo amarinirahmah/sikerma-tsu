@@ -11,7 +11,7 @@ class ProgressController extends Controller
     {
         $request->validate([
             'tanggal' => 'required|date',
-            'proses' => 'required|in:PembuatanDraft,PengajuanDraft,PenyerahanMOU',
+            'proses' => 'required|in:DraftBiro,PembuatanDraft,PengajuanPihak1,PengajuanPihak2,PenyerahanMOU',
             'aktivitas' => 'required|string|max:255',
         ]);
 
