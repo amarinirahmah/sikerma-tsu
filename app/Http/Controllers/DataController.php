@@ -260,21 +260,31 @@ class DataController extends Controller
             ], 404);
         }
 
-        if ($mou->file_mou) {
-            \Storage::disk('public')->delete($mou->file_mou);
+        try{
+            if ($mou->file_mou) {
+                // $filePath = str_replace('storage/', '', $mou->file_mou);
+                if (\Storage::disk('public')->exists($mou->file_mou)) {
+                    \Storage::disk('public')->delete($mou->file_mou);
+                }
+            }
+
+            $mou->delete();
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'action' => 'Hapus MOU',
+                'description' => 'Hapus data MOU dengan nomor ' . $mou->nomormou,
+            ]);
+
+            return response()->json([
+                'message' => 'Data MOU berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menghapus data MOU',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $mou->delete();
-
-        ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'Hapus MOU',
-            'description' => 'Hapus data MOU dengan nomor ' . $mou->nomormou,
-        ]);
-
-        return response()->json([
-            'message' => 'Data MOU berhasil dihapus'
-        ]);
     }
 
     public function getpks()
@@ -425,21 +435,30 @@ class DataController extends Controller
             ], 404);
         }
 
-        if ($pks->file_pks) {
-            \Storage::disk('public')->delete($pks->file_pks);
+        try{
+            if ($pks->file_pks) {
+                if (\Storage::disk('public')->exists($pks->file_pks)) {
+                    \Storage::disk('public')->delete($pks->file_pks);
+                }
+            }
+
+            $pks->delete();
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'action' => 'Hapus PKS',
+                'description' => 'Hapus data MOU dengan nomor ' . $pks->nomorpks,
+            ]);
+
+            return response()->json([
+                'message' => 'Data PKS berhasil dihapus'
+            ]);
+        }catch(\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menghapus data PKL',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $pks->delete();
-
-        ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'Hapus PKS',
-            'description' => 'Hapus data MOU dengan nomor ' . $pks->nomorpks,
-        ]);
-
-        return response()->json([
-            'message' => 'Data PKS berhasil dihapus'
-        ]);
     }
 
     public function getpkl()
@@ -466,7 +485,7 @@ class DataController extends Controller
 
         if ($user->role === 'userpkl') {
             $jumlahPkl = pkl::where('user_id', $user->id)->count();
-            if ($jumlahPkl >= 3) {
+            if ($jumlahPkl >= 1) {
                 return response()->json([
                     'message' => 'Anda hanya bisa mengajukan PKL maksimal 3 NISN.'
                 ], 403);
@@ -618,20 +637,29 @@ class DataController extends Controller
             ], 404);
         }
 
-        if ($pkl->file_pkl) {
-            \Storage::disk('public')->delete($pkl->file_pkl);
+        try{
+            if ($pkl->file_pkl) {
+                if (\Storage::disk('public')->exists($pkl->file_pkl)) {
+                    \Storage::disk('public')->delete($pkl->file_pkl);
+                }
+            }
+
+            $pkl->delete();
+
+            ActivityLog::create([
+                'user_id' => $user->id,
+                'action' => 'Hapus Pengajuan PKL',
+                'description' => 'Hapus data pengajuan PKL dengan NISN ' . $pkl->nisn,
+            ]);
+
+            return response()->json([
+                'message' => 'Data PKL berhasil dihapus'
+            ]);
+        }catch(\Exception $e) {
+            return response()->json([
+                'message' => 'Gagal menghapus data PKL',
+                'error' => $e->getMessage()
+            ], 500);
         }
-
-        $pkl->delete();
-
-        ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'Hapus Pengajuan PKL',
-            'description' => 'Hapus data pengajuan PKL dengan NISN ' . $pkl->nisn,
-        ]);
-
-        return response()->json([
-            'message' => 'Data PKL berhasil dihapus'
-        ]);
     }
 }

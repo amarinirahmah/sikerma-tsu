@@ -2,35 +2,25 @@
 
 namespace App\Models;
 
-use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-// use Illuminate\Foundation\Auth\User as Authenticatable;
-// use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Model
+class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory;
+    use HasFactory;
 
-    protected $fillable = ['name','email','password','role'];
+    protected $fillable = ['name', 'email', 'password', 'role'];
     protected $table = 'user';
+    protected $hidden = ['password', 'remember_token'];
 
-    protected static function booted()
+    public function getJWTIdentifier()
     {
-        static::deleting(function ($user) {
-            \Log::info("Deleting user ID: {$user->id}");
-            $user->tokens()->delete();
-        });
+        return $this->getKey();
     }
 
-    // public function tokens()
-    // {
-    //     return $this->hasMany(\Laravel\Sanctum\PersonalAccessToken::class, 'tokenable_id')
-    //         ->where('tokenable_type', self::class);
-    // }
-
-    // public function pkl()
-    // {
-    //     return $this->hasMany(pkl::class);
-    // }
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
 }
