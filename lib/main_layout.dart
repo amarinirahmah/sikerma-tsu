@@ -158,9 +158,15 @@ class _MainLayoutState extends State<MainLayout> {
                                     context,
                                     'Admin',
                                     '/superadmin',
-                                    Icons.accessibility,
+                                    Icons.manage_accounts,
                                   ),
                                 ],
+                                _buildDrawerItem(
+                                  context,
+                                  'Profil',
+                                  '/profilsaya',
+                                  Icons.account_circle,
+                                ),
                               ],
                             ),
                           );

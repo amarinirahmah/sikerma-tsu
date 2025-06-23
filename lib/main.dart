@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sikermatsu/pages/user/profil_saya.dart';
 import 'pages/user/login.dart';
 import 'pages/user/super_admin.dart';
 import 'pages/dashboard/dashboard.dart';
@@ -17,6 +18,7 @@ import 'pages/pkl/pengajuan_pkl.dart';
 import 'pages/pkl/upload_pkl.dart';
 import 'pages/pkl/detail_pkl.dart';
 import 'pages/home/home.dart';
+import 'pages/pkl/daftar_pkl.dart';
 import 'styles/style.dart';
 import 'core/app_state.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,25 +26,30 @@ import 'pages/dashboard/dashboard2.dart';
 import 'pages/guard/access_denied_page.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'pages/guard/splash_screen.dart';
 
 void main() async {
   // Future<void> loadLoginStatus() async {
   usePathUrlStrategy();
-  WidgetsFlutterBinding.ensureInitialized();
-  final prefs = await SharedPreferences.getInstance();
   await initializeDateFormatting('id', null);
-  final token = prefs.getString('token');
-  final role = prefs.getString('role') ?? 'guest';
+  WidgetsFlutterBinding.ensureInitialized();
+  // final prefs = await SharedPreferences.getInstance();
+  // final token = prefs.getString('token');
+  // final role = prefs.getString('role') ?? 'guest';
+  // final name = prefs.getString('name') ?? '';
+  // final email = prefs.getString('email') ?? '';
 
-  print('Main: token = $token, role = $role');
+  // print('Main: token = $token, role = $role, name= $name');
 
-  if (token != null && token.isNotEmpty) {
-    AppState.loginAs(role, token);
-    print('Main: loginAs dipanggil dengan role=$role dan token=$token');
-  } else {
-    AppState.logout();
-    print('Main: logout dipanggil, set role=guest dan token=null');
-  }
+  // if (token != null && token.isNotEmpty) {
+  //   AppState.loginAs(role, token, name, email);
+  //   print(
+  //     'Main: loginAs dipanggil dengan role=$role dan token=$token, name=$name',
+  //   );
+  // } else {
+  //   AppState.logout();
+  //   print('Main: logout dipanggil, set role=guest dan token=null, name=null');
+  // }
 
   runApp(const MyApp());
 }
@@ -75,9 +82,17 @@ class MyApp extends StatelessWidget {
           style: CustomStyle.baseButtonStyle,
         ),
       ),
-      initialRoute: '/',
+      // initialRoute: '/splash',
       onGenerateRoute: (settings) {
-        final role = AppState.role.value;
+        // final role = AppState.role.value;
+        final role =
+            AppState.role.value.isEmpty ? 'guest' : AppState.role.value;
+        if (role == 'guest') {
+          return MaterialPageRoute(
+            builder: (_) => const SplashScreen(),
+            settings: settings,
+          );
+        }
 
         // Route guard
         Map<String, (List<String> allowedRoles, Widget page)>
@@ -97,6 +112,7 @@ class MyApp extends StatelessWidget {
           '/uploadpkl': (['admin', 'user', 'userpkl'], const UploadPKLPage()),
           '/pkl': (['admin', 'user', 'userpkl'], const PKLPage()),
           '/detailpkl': (['admin', 'user', 'userpkl'], const DetailPKLPage()),
+          '/profilsaya': (['admin', 'user', 'userpkl'], const MyProfilePage()),
         };
 
         // Halaman publik
@@ -104,6 +120,11 @@ class MyApp extends StatelessWidget {
           case '/':
             return MaterialPageRoute(
               builder: (_) => HomePage(),
+              settings: settings,
+            );
+          case '/splash':
+            return MaterialPageRoute(
+              builder: (_) => SplashScreen(),
               settings: settings,
             );
           case '/login':
@@ -126,6 +147,24 @@ class MyApp extends StatelessWidget {
               builder: (_) => const PKSPage(),
               settings: settings,
             );
+          case '/registerpkl':
+            if (role == 'guest' || role == 'userpkl') {
+              return MaterialPageRoute(
+                builder: (_) => const RegisterPKLPage(),
+                settings: settings,
+              );
+            } else {
+              return MaterialPageRoute(
+                builder: (_) => const AccessDeniedPage(),
+                settings: settings,
+              );
+            }
+
+          // case '/registerpkl':
+          //   return MaterialPageRoute(
+          //     builder: (_) => const RegisterPKLPage(),
+          //     settings: settings,
+          //   );
         }
 
         // Cek apakah route dilindungi
@@ -147,6 +186,19 @@ class MyApp extends StatelessWidget {
               ),
           settings: settings,
         );
+      },
+
+      onGenerateInitialRoutes: (String initialRoute) {
+        // Tangkap path dari URL
+        final currentPath = Uri.base.path;
+        print('Initial path from browser: $currentPath');
+
+        return [
+          MaterialPageRoute(
+            builder: (_) => SplashScreen(initialPath: currentPath),
+            settings: RouteSettings(name: currentPath),
+          ),
+        ];
       },
       // routes: {
       //   '/': (context) => HomePage(),

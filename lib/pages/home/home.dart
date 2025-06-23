@@ -6,9 +6,113 @@ import 'package:sikermatsu/helpers/responsive.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:sikermatsu/helpers/animation.dart';
 
-class HomePage extends StatelessWidget {
-  final ScrollController _scrollController = ScrollController();
+class HomePage extends StatefulWidget {
   HomePage({super.key});
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final ScrollController _scrollController = ScrollController();
+  final PageController _pageController = PageController(viewportFraction: 0.85);
+  int _currentPage = 0;
+
+  final List<String> _imageList = [
+    'assets/images/image-placeholder.jpg',
+    'assets/images/image-placeholder.jpg',
+    'assets/images/image-placeholder.jpg',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _startAutoSlide();
+  }
+
+  void _startAutoSlide() {
+    Future.delayed(const Duration(seconds: 4), () {
+      if (!mounted) return;
+      setState(() {
+        _currentPage = (_currentPage + 1) % _imageList.length;
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      });
+      _startAutoSlide();
+    });
+  }
+
+  Widget _buildGalleryCarousel() {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1000),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Galeri Kegiatan',
+                style: CustomStyle.headline1,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 10),
+            SizedBox(
+              height: 300,
+              child: PageView.builder(
+                controller: _pageController,
+                itemCount: _imageList.length,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentPage = index;
+                  });
+                },
+                itemBuilder: (context, index) {
+                  return AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    margin: const EdgeInsets.symmetric(horizontal: 8.0),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      image: DecorationImage(
+                        image: AssetImage(_imageList[index]),
+                        fit: BoxFit.cover,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 6,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                _imageList.length,
+                (index) => Container(
+                  width: 8,
+                  height: 8,
+                  margin: const EdgeInsets.symmetric(horizontal: 4),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: _currentPage == index ? Colors.teal : Colors.grey,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +143,14 @@ class HomePage extends StatelessWidget {
               child: _buildFeatureCards(),
             ),
             const SizedBox(height: 20),
+
+            FadeInOnScroll(
+              scrollController: _scrollController,
+              triggerOffset: 250,
+              child: _buildGalleryCarousel(),
+            ),
+            const SizedBox(height: 20),
+
             FadeInOnScroll(
               scrollController: _scrollController,
               triggerOffset: 250,
@@ -347,6 +459,47 @@ class HomePage extends StatelessWidget {
       ),
     );
   }
+
+  // Widget _buildGalleryCarousel() {
+  //   final List<String> imageList = [
+  //     'assets/images/image-placeholder.jpg',
+  //     'assets/images/image-placeholder.jpg',
+  //     'assets/images/image-placeholder.jpg',
+  //   ];
+
+  //   PageController _pageController = PageController(viewportFraction: 0.8);
+
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       const Padding(
+  //         padding: EdgeInsets.symmetric(horizontal: 16.0),
+  //         child: Text(
+  //           'Galeri Kegiatan',
+  //           style: CustomStyle.headline1,
+  //           textAlign: TextAlign.center,
+  //         ),
+  //       ),
+  //       const SizedBox(height: 10),
+  //       SizedBox(
+  //         height: 200,
+  //         child: PageView.builder(
+  //           controller: _pageController,
+  //           itemCount: imageList.length,
+  //           itemBuilder: (context, index) {
+  //             return Padding(
+  //               padding: const EdgeInsets.symmetric(horizontal: 8.0),
+  //               child: ClipRRect(
+  //                 borderRadius: BorderRadius.circular(12),
+  //                 child: Image.asset(imageList[index], fit: BoxFit.cover),
+  //               ),
+  //             );
+  //           },
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   Widget _buildFooter(BuildContext context) {
     final isMobile = Responsive.isMobile(context);

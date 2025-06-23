@@ -1,4 +1,5 @@
 {
   "dart.flutterSdkPath": "D:/flutter/bin/cache/dart-sdk",
-  "flutter.sdkPath": "D:/flutter"
+  "flutter.sdkPath": "D:/flutter",
+  "cmake.sourceDirectory": "D:/sikerma/backupppp/sikerma-tsu/linux"
 }

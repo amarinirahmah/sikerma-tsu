@@ -9,6 +9,7 @@ class AuthService {
   // static const baseUrl = "http://192.168.100.238:8000/api";
   static String? token;
   static String? role;
+  static String? name;
 
   // Login
   static Future<User> login(String email, String password) async {
@@ -27,11 +28,16 @@ class AuthService {
       // Simpan token & role ke SharedPreferences
       final token = data['token'] ?? '';
       final role = data['user']['role'] ?? '';
+      // final name = data['name'] ?? '';
+      final name = data['user']['name'] ?? '';
+      final email = data['user']['email'] ?? '';
 
       await prefs.setString('token', token);
       await prefs.setString('role', role);
+      await prefs.setString('name', name);
+      await prefs.setString('email', email);
 
-      AppState.loginAs(role, token);
+      AppState.loginAs(role, token, name, email);
       // await AppState.loginAs(token, role);
 
       return user;
@@ -58,6 +64,14 @@ class AuthService {
     role = prefs.getString('role');
     return role;
   }
+
+  // // Ambil nama dari memori atau SharedPreferences
+  // static Future<String?> getName() async {
+  //   if (name != null) return name;
+  //   final prefs = await SharedPreferences.getInstance();
+  //   name = prefs.getString('name');
+  //   return name;
+  // }
 
   // Logout: hapus token & role di memori dan SharedPreferences
   static Future<void> logout() async {

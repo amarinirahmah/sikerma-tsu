@@ -6,19 +6,31 @@ class AppState {
     'guest',
   ); // admin, user, userpkl
   static final ValueNotifier<String?> token = ValueNotifier(null);
+  static final ValueNotifier<String?> name = ValueNotifier(null);
+  static final ValueNotifier<String?> email = ValueNotifier(null);
 
-  static void loginAs(String newRole, String? newToken) {
+  static void loginAs(
+    String newRole,
+    String? newToken,
+    String nameUser,
+    String emailUser,
+  ) {
     isLoggedIn.value = true;
     role.value = newRole;
     token.value = newToken;
-    print('AppState.loginAs => role: $newRole, token: $newToken');
+    name.value = nameUser;
+    email.value = emailUser;
+    print(
+      'AppState.loginAs => role: $newRole, token: $newToken, name: $nameUser',
+    );
   }
 
   static void logout() {
     isLoggedIn.value = false;
     role.value = 'guest';
     token.value = null;
-    print('AppState.logout => role: guest, token: null');
+    name.value = null;
+    print('AppState.logout => role: guest, token: null, name: null');
   }
 }
 

@@ -48,8 +48,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           Image.asset('assets/images/logo.png', height: 32),
           const SizedBox(width: 12),
 
-          // Show menu items only on desktop and tablet (not mobile)
           if (!isMobile) ...[
+            // Hanya tampilkan menu "Home" jika belum login
             if (!isLoggedIn)
               TextButton(
                 onPressed: () {
@@ -61,6 +61,8 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 },
                 child: const Text('Home'),
               ),
+
+            // Menu publik yang selalu tampil
             TextButton(
               onPressed: () {
                 Navigator.pushNamedAndRemoveUntil(
@@ -81,18 +83,24 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               },
               child: const Text('Daftar PKS'),
             ),
-            // TextButton(
-            //   onPressed: () {
-            //     Navigator.pushReplacementNamed(context, '/mou');
-            //   },
-            //   child: const Text('Daftar MoU'),
-            // ),
-            // TextButton(
-            //   onPressed: () {
-            //     Navigator.pushReplacementNamed(context, '/pks');
-            //   },
-            //   child: const Text('Daftar PKS'),
-            // ),
+            ValueListenableBuilder<String>(
+              valueListenable: AppState.role,
+              builder: (context, role, _) {
+                if (role == 'guest' || role == 'userpkl') {
+                  return TextButton(
+                    onPressed: () {
+                      Navigator.pushNamedAndRemoveUntil(
+                        context,
+                        '/registerpkl',
+                        (route) => false,
+                      );
+                    },
+                    child: const Text('Daftar PKL'),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
           ],
         ],
       ),
@@ -142,6 +150,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       break;
                     case 'pks':
                       Navigator.pushReplacementNamed(context, '/pks');
+                      break;
+                    case 'registerpkl':
+                      Navigator.pushReplacementNamed(context, '/registerpkl');
                       break;
                     case 'login':
                       Navigator.pushReplacementNamed(context, '/login');
@@ -194,7 +205,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 itemBuilder: (context) {
                   return [
                     if (!isLoggedIn)
-                      const PopupMenuItem(value: 'home', child: Text('Home')),
+                      const PopupMenuItem(value: '/', child: Text('Home')),
                     const PopupMenuItem(
                       value: 'mou',
                       child: Text('Daftar MoU'),
@@ -203,6 +214,13 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       value: 'pks',
                       child: Text('Daftar PKS'),
                     ),
+                    if (AppState.role.value == 'guest' ||
+                        AppState.role.value == 'userpkl')
+                      const PopupMenuItem(
+                        value: 'registerpkl',
+                        child: Text('Daftar PKL'),
+                      ),
+
                     PopupMenuItem(
                       value: isLoggedIn ? 'logout' : 'login',
                       child: Text(isLoggedIn ? 'Logout' : 'Login'),
@@ -212,59 +230,125 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
               )
             else
               // For desktop/tablet, show person icon for login/logout
-              IconButton(
-                icon: const Icon(Icons.person),
-                style: CustomStyle.iconButtonStyle,
-                tooltip: isLoggedIn ? 'Logout' : 'Login',
-                onPressed: () {
-                  if (isLoggedIn) {
-                    showDialog(
-                      context: context,
-                      builder:
-                          (context) => AlertDialog(
-                            title: const Text('Konfirmasi Logout'),
-                            content: const Text(
-                              'Apakah Anda yakin ingin logout?',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(context),
-                                child: const Text('Batal'),
-                              ),
-                              TextButton(
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  await AuthService.logout();
+              ValueListenableBuilder<String?>(
+                valueListenable: AppState.name,
+                builder: (context, name, _) {
+                  return ElevatedButton.icon(
+                    icon: const Icon(Icons.person),
+                    label: Text(
+                      isLoggedIn ? 'Hi, ${name ?? 'User'}' : 'Sign In',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    style: CustomStyle.baseButtonStyle,
+                    onPressed: () {
+                      if (isLoggedIn) {
+                        showDialog(
+                          context: context,
+                          builder:
+                              (context) => AlertDialog(
+                                title: const Text('Konfirmasi Logout'),
+                                content: const Text(
+                                  'Apakah Anda yakin ingin logout?',
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    child: const Text('Batal'),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      Navigator.pop(context);
+                                      await AuthService.logout();
 
-                                  final token = await AuthService.getToken();
-                                  final role = await AuthService.getRole();
+                                      final token =
+                                          await AuthService.getToken();
+                                      final role = await AuthService.getRole();
 
-                                  if (token == null && role == null) {
-                                    print(
-                                      'Logout berhasil, token dan role sudah terhapus',
-                                    );
-                                  } else {
-                                    print(
-                                      'Logout gagal, token atau role masih ada',
-                                    );
-                                  }
-                                  Navigator.pushNamedAndRemoveUntil(
-                                    context,
-                                    '/',
-                                    (route) => false,
-                                  );
-                                },
-                                child: const Text('Logout'),
+                                      if (token == null && role == null) {
+                                        print(
+                                          'Logout berhasil, token dan role sudah terhapus',
+                                        );
+                                      } else {
+                                        print(
+                                          'Logout gagal, token atau role masih ada',
+                                        );
+                                      }
+
+                                      AppState.logout(); // penting!
+                                      Navigator.pushNamedAndRemoveUntil(
+                                        context,
+                                        '/',
+                                        (route) => false,
+                                      );
+                                    },
+                                    child: const Text('Logout'),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
-                    );
-                  } else {
-                    Navigator.pushReplacementNamed(context, '/login');
-                  }
+                        );
+                      } else {
+                        Navigator.pushReplacementNamed(context, '/login');
+                      }
+                    },
+                  );
                 },
               ),
+
             const SizedBox(width: 8),
+
+            //   IconButton(
+            //     icon: const Icon(Icons.person),
+            //     style: CustomStyle.iconButtonStyle,
+            //     tooltip: isLoggedIn ? 'Logout' : 'Login',
+            //     onPressed: () {
+            //       if (isLoggedIn) {
+            //         showDialog(
+            //           context: context,
+            //           builder:
+            //               (context) => AlertDialog(
+            //                 title: const Text('Konfirmasi Logout'),
+            //                 content: const Text(
+            //                   'Apakah Anda yakin ingin logout?',
+            //                 ),
+            //                 actions: [
+            //                   TextButton(
+            //                     onPressed: () => Navigator.pop(context),
+            //                     child: const Text('Batal'),
+            //                   ),
+            //                   TextButton(
+            //                     onPressed: () async {
+            //                       Navigator.pop(context);
+            //                       await AuthService.logout();
+
+            //                       final token = await AuthService.getToken();
+            //                       final role = await AuthService.getRole();
+
+            //                       if (token == null && role == null) {
+            //                         print(
+            //                           'Logout berhasil, token dan role sudah terhapus',
+            //                         );
+            //                       } else {
+            //                         print(
+            //                           'Logout gagal, token atau role masih ada',
+            //                         );
+            //                       }
+            //                       Navigator.pushNamedAndRemoveUntil(
+            //                         context,
+            //                         '/',
+            //                         (route) => false,
+            //                       );
+            //                     },
+            //                     child: const Text('Logout'),
+            //                   ),
+            //                 ],
+            //               ),
+            //         );
+            //       } else {
+            //         Navigator.pushReplacementNamed(context, '/login');
+            //       }
+            //     },
+            //   ),
+            // const SizedBox(width: 8),
           ],
     );
   }
