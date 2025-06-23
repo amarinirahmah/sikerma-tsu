@@ -26,10 +26,11 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // Jadwalkan tugas yang ingin kamu jalankan, contoh:
         $schedule->command('cek:notifikasi')->everyMinute();
-        // $schedule->command(MouPksStatus::class)->everyMinute();
         $schedule->command('status:update')->everyMinute();
+        $schedule->call(function () {
+            \Log::info('Tes jadwal closure berhasil: ' . now());
+        })->everyMinute();
     }
 
     /**

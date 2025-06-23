@@ -109,9 +109,4 @@ class ceknotifikasi extends Command
             'tanggal_notif' => $tanggal,
         ]);
     }
-
-    // public function schedule(Schedule $schedule): void
-    // {
-    //     $schedule->command(static::class)->daily();
-    // }
 }
