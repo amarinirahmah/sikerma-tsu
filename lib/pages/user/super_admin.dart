@@ -23,6 +23,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
   int currentPage = 0;
   String searchQuery = '';
   String selectedRole = 'Semua';
+  final ScrollController _horizontalScrollController = ScrollController();
 
   @override
   void initState() {
@@ -33,6 +34,7 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _horizontalScrollController.dispose();
     super.dispose();
   }
 
@@ -175,7 +177,16 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                                   .map(
                                                     (role) => DropdownMenuItem(
                                                       value: role,
-                                                      child: Text(role),
+                                                      child: Text(
+                                                        role == 'Semua'
+                                                            ? 'Semua'
+                                                            : User(
+                                                              id: 0,
+                                                              name: '',
+                                                              email: '',
+                                                              role: role,
+                                                            ).displayRole,
+                                                      ),
                                                     ),
                                                   )
                                                   .toList(),
@@ -184,176 +195,207 @@ class _SuperAdminPageState extends State<SuperAdminPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 16),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        // minWidth:
-                                        //     MediaQuery.of(context).size.width *
-                                        //     0.8, // minimal 80% layar
-                                        maxWidth: 1000,
-                                      ),
-                                      child: SizedBox(
-                                        width: double.infinity,
-                                        child: DataTable(
-                                          headingRowColor:
-                                              MaterialStateProperty.all<Color>(
-                                                Colors.grey[300]!,
-                                              ),
-                                          headingTextStyle: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          border: TableBorder.all(
-                                            color: Colors.grey,
-                                          ),
-                                          columns: [
-                                            DataColumn(label: Text('Nama')),
-                                            DataColumn(label: Text('Email')),
-                                            DataColumn(label: Text('Role')),
-                                            DataColumn(label: Text('Aksi')),
-                                          ],
-                                          rows:
-                                              displayedRows.map((user) {
-                                                return DataRow(
-                                                  cells: [
-                                                    DataCell(Text(user.name)),
-                                                    DataCell(Text(user.email)),
-                                                    DataCell(Text(user.role)),
 
-                                                    DataCell(
-                                                      Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
-                                                          if (isLoggedIn &&
-                                                              (role ==
-                                                                      'admin' ||
-                                                                  role ==
-                                                                      'user'))
-                                                            IconButton(
-                                                              icon: const Icon(
-                                                                Icons.edit,
-                                                                color:
-                                                                    Colors
-                                                                        .orange,
+                                  Scrollbar(
+                                    controller: _horizontalScrollController,
+                                    thumbVisibility: true,
+                                    trackVisibility: true,
+                                    interactive: true,
+                                    scrollbarOrientation:
+                                        ScrollbarOrientation.bottom,
+                                    thickness: 4,
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      controller: _horizontalScrollController,
+                                      child: ConstrainedBox(
+                                        constraints: const BoxConstraints(
+                                          maxWidth: 1000,
+                                        ),
+                                        child: SizedBox(
+                                          width: double.infinity,
+                                          child: DataTable(
+                                            headingRowColor:
+                                                MaterialStateProperty.all<
+                                                  Color
+                                                >(Colors.grey[300]!),
+                                            headingTextStyle: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            border: TableBorder.all(
+                                              color: Colors.grey,
+                                            ),
+                                            columns: const [
+                                              DataColumn(label: Text('Nama')),
+                                              DataColumn(label: Text('Email')),
+                                              DataColumn(label: Text('Role')),
+                                              DataColumn(label: Text('Aksi')),
+                                            ],
+                                            rows:
+                                                displayedRows.map((user) {
+                                                  return DataRow(
+                                                    cells: [
+                                                      DataCell(
+                                                        Text(
+                                                          user.name,
+                                                          style:
+                                                              CustomStyle
+                                                                  .bodyText2,
+                                                        ),
+                                                      ),
+                                                      DataCell(
+                                                        Text(
+                                                          user.email,
+                                                          style:
+                                                              CustomStyle
+                                                                  .bodyText2,
+                                                        ),
+                                                      ),
+                                                      DataCell(
+                                                        Text(
+                                                          user.displayRole,
+                                                          style:
+                                                              CustomStyle
+                                                                  .bodyText2,
+                                                        ),
+                                                      ),
+                                                      DataCell(
+                                                        Row(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            if (isLoggedIn &&
+                                                                (role ==
+                                                                        'admin' ||
+                                                                    role ==
+                                                                        'user'))
+                                                              IconButton(
+                                                                icon: const Icon(
+                                                                  Icons.edit,
+                                                                  color:
+                                                                      Colors
+                                                                          .orange,
+                                                                ),
+                                                                tooltip: 'Edit',
+                                                                onPressed: () {
+                                                                  Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(
+                                                                      builder:
+                                                                          (
+                                                                            _,
+                                                                          ) => AddRolePage(
+                                                                            user:
+                                                                                user,
+                                                                          ),
+                                                                    ),
+                                                                  ).then((
+                                                                    value,
+                                                                  ) {
+                                                                    if (value ==
+                                                                        true)
+                                                                      _loadUser();
+                                                                  });
+                                                                },
                                                               ),
-                                                              tooltip: 'Edit',
-                                                              onPressed: () {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
+                                                            if (isLoggedIn &&
+                                                                (role ==
+                                                                        'admin' ||
+                                                                    role ==
+                                                                        'user'))
+                                                              IconButton(
+                                                                icon: const Icon(
+                                                                  Icons.delete,
+                                                                  color:
+                                                                      Colors
+                                                                          .red,
+                                                                ),
+                                                                tooltip:
+                                                                    'Hapus',
+                                                                onPressed: () async {
+                                                                  final confirm = await showDialog<
+                                                                    bool
+                                                                  >(
+                                                                    context:
+                                                                        context,
                                                                     builder:
                                                                         (
                                                                           context,
-                                                                        ) => AddRolePage(
-                                                                          user:
-                                                                              user,
+                                                                        ) => AlertDialog(
+                                                                          title: const Text(
+                                                                            'Konfirmasi',
+                                                                          ),
+                                                                          content: Text(
+                                                                            'Hapus user dengan nama ${user.name}?',
+                                                                          ),
+                                                                          actions: [
+                                                                            TextButton(
+                                                                              onPressed:
+                                                                                  () => Navigator.pop(
+                                                                                    context,
+                                                                                    false,
+                                                                                  ),
+                                                                              child: const Text(
+                                                                                'Batal',
+                                                                              ),
+                                                                            ),
+                                                                            TextButton(
+                                                                              onPressed:
+                                                                                  () => Navigator.pop(
+                                                                                    context,
+                                                                                    true,
+                                                                                  ),
+                                                                              child: const Text(
+                                                                                'Hapus',
+                                                                              ),
+                                                                            ),
+                                                                          ],
                                                                         ),
-                                                                  ),
-                                                                ).then((value) {
-                                                                  if (value ==
+                                                                  );
+                                                                  if (confirm ==
                                                                       true) {
-                                                                    _loadUser();
-                                                                  }
-                                                                });
-                                                              },
-                                                            ),
-                                                          if (isLoggedIn &&
-                                                              (role ==
-                                                                      'admin' ||
-                                                                  role ==
-                                                                      'user'))
-                                                            IconButton(
-                                                              icon: const Icon(
-                                                                Icons.delete,
-                                                                color:
-                                                                    Colors.red,
-                                                              ),
-                                                              tooltip: 'Hapus',
-                                                              onPressed: () async {
-                                                                final confirm = await showDialog<
-                                                                  bool
-                                                                >(
-                                                                  context:
-                                                                      context,
-                                                                  builder:
-                                                                      (
+                                                                    try {
+                                                                      await AuthService.deleteUser(
+                                                                        user.id
+                                                                            .toString(),
+                                                                      );
+                                                                      ScaffoldMessenger.of(
                                                                         context,
-                                                                      ) => AlertDialog(
-                                                                        title: const Text(
-                                                                          'Konfirmasi',
+                                                                      ).showSnackBar(
+                                                                        const SnackBar(
+                                                                          content: Text(
+                                                                            'Berhasil menghapus user',
+                                                                          ),
                                                                         ),
-                                                                        content:
-                                                                            Text(
-                                                                              'Hapus user dengan nama ${user.name}?',
-                                                                            ),
-                                                                        actions: [
-                                                                          TextButton(
-                                                                            onPressed:
-                                                                                () => Navigator.pop(
-                                                                                  context,
-                                                                                  false,
-                                                                                ),
-                                                                            child: const Text(
-                                                                              'Batal',
-                                                                            ),
+                                                                      );
+                                                                      await _loadUser();
+                                                                    } catch (
+                                                                      e
+                                                                    ) {
+                                                                      ScaffoldMessenger.of(
+                                                                        context,
+                                                                      ).showSnackBar(
+                                                                        SnackBar(
+                                                                          content: Text(
+                                                                            'Gagal menghapus user: $e',
                                                                           ),
-                                                                          TextButton(
-                                                                            onPressed:
-                                                                                () => Navigator.pop(
-                                                                                  context,
-                                                                                  true,
-                                                                                ),
-                                                                            child: const Text(
-                                                                              'Hapus',
-                                                                            ),
-                                                                          ),
-                                                                        ],
-                                                                      ),
-                                                                );
-                                                                if (confirm ==
-                                                                    true) {
-                                                                  try {
-                                                                    await AuthService.deleteUser(
-                                                                      user.id
-                                                                          .toString(),
-                                                                    );
-                                                                    ScaffoldMessenger.of(
-                                                                      context,
-                                                                    ).showSnackBar(
-                                                                      const SnackBar(
-                                                                        content:
-                                                                            Text(
-                                                                              'Berhasil menghapus user',
-                                                                            ),
-                                                                      ),
-                                                                    );
-                                                                    await _loadUser();
-                                                                  } catch (e) {
-                                                                    ScaffoldMessenger.of(
-                                                                      context,
-                                                                    ).showSnackBar(
-                                                                      SnackBar(
-                                                                        content:
-                                                                            Text(
-                                                                              'Gagal menghapus user: $e',
-                                                                            ),
-                                                                      ),
-                                                                    );
+                                                                        ),
+                                                                      );
+                                                                    }
                                                                   }
-                                                                }
-                                                              },
-                                                            ),
-                                                        ],
+                                                                },
+                                                              ),
+                                                          ],
+                                                        ),
                                                       ),
-                                                    ),
-                                                  ],
-                                                );
-                                              }).toList(),
+                                                    ],
+                                                  );
+                                                }).toList(),
+                                          ),
                                         ),
                                       ),
                                     ),
                                   ),
+
                                   const SizedBox(height: 16),
                                   Row(
                                     mainAxisAlignment:

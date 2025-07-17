@@ -60,6 +60,13 @@ class CustomStyle {
     color: textColorPrimary,
   );
 
+  static final TextStyle bodyText2 = TextStyle(
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: textColorPrimary,
+    // fontStyle: FontStyle.italic,
+  );
+
   static final TextStyle hintText = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w400,

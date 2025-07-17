@@ -27,6 +27,8 @@ class _ProgressPageState extends State<ProgressPage> {
   String searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
   String selectedStatus = 'Semua';
+  final ScrollController _horizontalScrollController = ScrollController();
+
   // String selectedJenis = 'Semua';
 
   @override
@@ -38,7 +40,7 @@ class _ProgressPageState extends State<ProgressPage> {
   @override
   void dispose() {
     _searchController.dispose();
-    super.dispose();
+    _horizontalScrollController.dispose();
   }
 
   Future<void> _loadData() async {
@@ -166,7 +168,7 @@ class _ProgressPageState extends State<ProgressPage> {
                                           controller: _searchController,
                                           decoration:
                                               CustomStyle.searchInputDecoration(
-                                                labelText: 'Cari Nama Mitra',
+                                                labelText: 'Cari nama mitra...',
                                                 prefixIcon: Icon(
                                                   Icons.search,
                                                   color: Colors.grey,
@@ -238,157 +240,246 @@ class _ProgressPageState extends State<ProgressPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 16),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
 
-                                    child: DataTable(
-                                      headingRowColor:
-                                          MaterialStateProperty.all<Color>(
-                                            Colors.grey[300]!,
-                                          ),
-                                      headingTextStyle: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      border: TableBorder.all(
-                                        color: Colors.grey,
-                                      ),
-                                      columns: [
-                                        DataColumn(
-                                          label: Text(
-                                            'Nomor MoU',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Nomor PKS',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Nama Mitra',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Tanggal Mulai MoU',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Status MoU',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Tanggal Mulai PKS',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Status PKS',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Aksi',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                      ],
-                                      rows:
-                                          displayedRows.map((data) {
-                                            return DataRow(
-                                              cells: [
-                                                DataCell(
-                                                  Text(data['Nomor MoU'] ?? ''),
-                                                ),
-                                                DataCell(
-                                                  Text(data['Nomor PKS'] ?? ''),
-                                                ),
-                                                DataCell(
-                                                  Text(
-                                                    data['Nama Mitra'] ?? '',
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Text(
-                                                    data['Tanggal Mulai MoU'] ??
-                                                        '',
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Text(
-                                                    data['Status MoU'] ?? '',
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Text(
-                                                    data['Tanggal Mulai PKS'] ??
-                                                        '',
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Text(
-                                                    data['Status PKS'] ?? '',
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Row(
-                                                    mainAxisSize:
-                                                        MainAxisSize.min,
-                                                    children: [
-                                                      IconButton(
-                                                        icon: const Icon(
-                                                          Icons.info,
-                                                          color: Colors.teal,
-                                                        ),
-                                                        tooltip: 'Detail',
-                                                        onPressed: () {
-                                                          final int? mouId =
-                                                              data['mouId'];
+                                  Scrollbar(
+                                    controller: _horizontalScrollController,
+                                    thumbVisibility: true,
+                                    trackVisibility: true,
+                                    interactive: true,
+                                    thickness: 4,
+                                    scrollbarOrientation:
+                                        ScrollbarOrientation.bottom,
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
 
-                                                          if (mouId != null) {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder:
-                                                                    (
-                                                                      context,
-                                                                    ) => DetailProgressPage(
-                                                                      mouId:
-                                                                          mouId,
-                                                                    ),
-                                                              ),
-                                                            ).then((value) {
-                                                              if (value ==
-                                                                  true) {
-                                                                _loadData();
-                                                              }
-                                                            });
-                                                          }
-                                                        },
+                                      child: DataTable(
+                                        headingRowColor:
+                                            MaterialStateProperty.all<Color>(
+                                              Colors.grey[300]!,
+                                            ),
+                                        headingTextStyle: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        border: TableBorder.all(
+                                          color: Colors.grey,
+                                        ),
+                                        columns: [
+                                          DataColumn(
+                                            label: Text(
+                                              'Nomor MoU',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Nomor PKS',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Nama Mitra',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Tanggal Mulai MoU',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Status MoU',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Tanggal Mulai PKS',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Status PKS',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Aksi',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                        ],
+                                        rows:
+                                            displayedRows.map((data) {
+                                              return DataRow(
+                                                cells: [
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        data['Nomor MoU'] ?? '',
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
                                                       ),
-                                                    ],
+                                                    ),
                                                   ),
-                                                ),
-                                              ],
-                                            );
-                                          }).toList(),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        data['Nomor PKS'] ?? '',
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 140,
+                                                      child: Text(
+                                                        data['Nama Mitra'] ??
+                                                            '',
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        data['Tanggal Mulai MoU'] ??
+                                                            '',
+
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        data['Status MoU'] ??
+                                                            '',
+
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        data['Tanggal Mulai PKS'] ??
+                                                            '',
+
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        data['Status PKS'] ??
+                                                            '',
+
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+
+                                                  DataCell(
+                                                    Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                            Icons.info,
+                                                            color: Colors.teal,
+                                                          ),
+                                                          tooltip: 'Detail',
+                                                          onPressed: () {
+                                                            final int? mouId =
+                                                                data['mouId'];
+
+                                                            if (mouId != null) {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (
+                                                                        context,
+                                                                      ) => DetailProgressPage(
+                                                                        mouId:
+                                                                            mouId,
+                                                                      ),
+                                                                ),
+                                                              ).then((value) {
+                                                                if (value ==
+                                                                    true) {
+                                                                  _loadData();
+                                                                }
+                                                              });
+                                                            }
+                                                          },
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              );
+                                            }).toList(),
+                                      ),
                                     ),
                                   ),
                                   const SizedBox(height: 16),

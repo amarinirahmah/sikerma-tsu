@@ -6,6 +6,19 @@ class User {
   String role;
   String? token;
 
+  String get displayRole {
+    switch (role) {
+      case 'admin':
+        return 'Admin';
+      case 'user':
+        return 'User';
+      case 'userpkl':
+        return 'User PKL';
+      default:
+        return role;
+    }
+  }
+
   User({
     required this.id,
     required this.name,

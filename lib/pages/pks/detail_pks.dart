@@ -65,12 +65,12 @@ class _DetailPKSPageState extends State<DetailPKSPage> {
         children: [
           Expanded(
             flex: 2,
-            child: Text(
+            child: SelectableText(
               label,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
-          Expanded(flex: 3, child: Text(value)),
+          Expanded(flex: 3, child: SelectableText(value)),
         ],
       ),
     );

@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sikermatsu/core/app_state.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:intl/date_symbol_data_local.dart';
-
+import 'package:flutter/gestures.dart';
 import 'pages/guard/splash_screen.dart';
 import 'pages/home/home.dart';
 import 'pages/user/login.dart';
@@ -74,6 +74,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Sikerma TSU',
       debugShowCheckedModeBanner: false,
+      scrollBehavior: const MaterialScrollBehavior().copyWith(
+        dragDevices: {
+          PointerDeviceKind.touch,
+          PointerDeviceKind.mouse,
+          PointerDeviceKind.stylus,
+          PointerDeviceKind.unknown,
+        },
+      ),
       theme: ThemeData(
         primarySwatch: Colors.teal,
         colorScheme: ColorScheme.fromSwatch(

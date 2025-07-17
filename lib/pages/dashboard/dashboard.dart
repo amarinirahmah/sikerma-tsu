@@ -91,7 +91,7 @@ class AdminDashboardPage extends StatelessWidget {
                       return Center(
                         child: Text(
                           'Gagal memuat data: ${snapshot.error}',
-                          style: const TextStyle(color: Colors.red),
+                          // style: const TextStyle(color: Colors.red),
                         ),
                       );
                     }
@@ -132,10 +132,11 @@ class AdminDashboardPage extends StatelessWidget {
                           ),
                           const SizedBox(height: 40),
                           Card(
-                            color: Colors.grey.shade100,
-                            elevation: 0,
+                            // color: Colors.grey.shade100,
+                            color: Colors.white,
+                            elevation: 1,
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
+                              borderRadius: BorderRadius.circular(4),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.all(24),
@@ -146,32 +147,77 @@ class AdminDashboardPage extends StatelessWidget {
                                     'Alur Kerja Sama',
                                     style: CustomStyle.headline1,
                                   ),
+
                                   const SizedBox(height: 24),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: Row(
-                                      children: List.generate(
-                                        steps.length * 2 - 1,
-                                        (index) {
-                                          if (index.isEven) {
-                                            final step = steps[index ~/ 2];
-                                            return _buildStepItem(step);
-                                          } else {
-                                            return Container(
-                                              width: 40,
-                                              height: 4,
-                                              color: Colors.grey.shade300,
-                                              margin:
-                                                  const EdgeInsets.symmetric(
-                                                    horizontal: 8,
-                                                    vertical: 40,
-                                                  ),
-                                            );
-                                          }
-                                        },
+                                  Scrollbar(
+                                    thumbVisibility: true,
+                                    trackVisibility: true,
+                                    interactive: true,
+                                    thickness: 4,
+                                    scrollbarOrientation:
+                                        ScrollbarOrientation.bottom,
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: List.generate(
+                                          steps.length * 2 - 1,
+                                          (index) {
+                                            if (index.isEven) {
+                                              final step = steps[index ~/ 2];
+                                              return _buildStepItem(step);
+                                            } else {
+                                              return Container(
+                                                width: 40,
+                                                height: 4,
+                                                color: Colors.grey.shade300,
+                                                margin:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 8,
+                                                      vertical: 40,
+                                                    ),
+                                              );
+                                            }
+                                          },
+                                        ),
                                       ),
                                     ),
                                   ),
+                                  // const SizedBox(height: 8),
+                                  // const Text(
+                                  //   'Geser ke samping untuk melihat semua langkah...',
+                                  //   textAlign: TextAlign.center,
+                                  //   style: TextStyle(
+                                  //     fontSize: 13,
+                                  //     color: Colors.grey,
+                                  //     fontStyle: FontStyle.italic,
+                                  //   ),
+                                  // ),
+
+                                  // SingleChildScrollView(
+                                  //   scrollDirection: Axis.horizontal,
+                                  //   child: Row(
+                                  //     children: List.generate(
+                                  //       steps.length * 2 - 1,
+                                  //       (index) {
+                                  //         if (index.isEven) {
+                                  //           final step = steps[index ~/ 2];
+                                  //           return _buildStepItem(step);
+                                  //         } else {
+                                  //           return Container(
+                                  //             width: 40,
+                                  //             height: 4,
+                                  //             color: Colors.grey.shade300,
+                                  //             margin:
+                                  //                 const EdgeInsets.symmetric(
+                                  //                   horizontal: 8,
+                                  //                   vertical: 40,
+                                  //                 ),
+                                  //           );
+                                  //         }
+                                  //       },
+                                  //     ),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                             ),
@@ -278,6 +324,7 @@ Widget _buildStepItem(_StepData step) {
             style: TextStyle(fontSize: 13, color: Colors.grey.shade700),
           ),
         ),
+        const SizedBox(height: 24),
       ],
     ),
   );

@@ -25,6 +25,7 @@ class _PKLPageState extends State<PKLPage> {
   int currentPage = 0;
   String searchQuery = '';
   String selectedStatus = 'Semua';
+  final ScrollController _horizontalScrollController = ScrollController();
 
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _PKLPageState extends State<PKLPage> {
   @override
   void dispose() {
     _searchController.dispose();
+    _horizontalScrollController.dispose();
     super.dispose();
   }
 
@@ -222,85 +224,138 @@ class _PKLPageState extends State<PKLPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 16),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    child: ConstrainedBox(
-                                      constraints: BoxConstraints(
-                                        maxWidth: 1000,
-                                      ),
-                                      child: SizedBox(
-                                        width: double.infinity,
-                                        child: DataTable(
-                                          headingRowColor:
-                                              MaterialStateProperty.all<Color>(
-                                                Colors.grey[300]!,
-                                              ),
-                                          headingTextStyle: const TextStyle(
-                                            fontWeight: FontWeight.bold,
+
+                                  Scrollbar(
+                                    controller: _horizontalScrollController,
+                                    thumbVisibility: true,
+                                    trackVisibility: true,
+                                    interactive: true,
+                                    thickness: 4,
+                                    scrollbarOrientation:
+                                        ScrollbarOrientation.bottom,
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: DataTable(
+                                        headingRowColor:
+                                            MaterialStateProperty.all<Color>(
+                                              Colors.grey[300]!,
+                                            ),
+                                        headingTextStyle: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        border: TableBorder.all(
+                                          color: Colors.grey,
+                                        ),
+                                        columnSpacing: 12,
+                                        dataRowMinHeight: 40,
+                                        dataRowMaxHeight: 60,
+                                        columns: [
+                                          DataColumn(
+                                            label: Text(
+                                              'NISN',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
                                           ),
-                                          border: TableBorder.all(
-                                            color: Colors.grey,
+                                          DataColumn(
+                                            label: Text(
+                                              'Nama Siswa',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
                                           ),
-                                          columns: [
-                                            DataColumn(
-                                              label: Text(
-                                                'NISN',
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                              ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Sekolah',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
                                             ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Nama Siswa',
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                              ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Tanggal Mulai',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
                                             ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Sekolah',
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                              ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Tanggal Berakhir',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
                                             ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Tanggal Mulai',
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                              ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Status',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
                                             ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Tanggal Berakhir',
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                              ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Aksi',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
                                             ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Status',
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                              ),
-                                            ),
-                                            DataColumn(
-                                              label: Text(
-                                                'Aksi',
-                                                overflow: TextOverflow.ellipsis,
-                                                softWrap: false,
-                                              ),
-                                            ),
-                                          ],
-                                          rows:
-                                              displayedRows.map((pkl) {
-                                                return DataRow(
-                                                  cells: [
-                                                    DataCell(Text(pkl.nisn)),
-                                                    DataCell(Text(pkl.nama)),
-                                                    DataCell(Text(pkl.sekolah)),
-                                                    DataCell(
-                                                      Text(
+                                          ),
+                                        ],
+                                        rows:
+                                            displayedRows.map((pkl) {
+                                              return DataRow(
+                                                cells: [
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        pkl.nisn,
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 250,
+                                                      child: Text(
+                                                        pkl.nama,
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 140,
+                                                      child: Text(
+                                                        pkl.sekolah,
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
                                                         DateFormat(
                                                           'd MMMM yyyy',
                                                           'id_ID',
@@ -309,8 +364,14 @@ class _PKLPageState extends State<PKLPage> {
                                                         ),
                                                       ),
                                                     ),
-                                                    DataCell(
-                                                      Text(
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
                                                         DateFormat(
                                                           'd MMMM yyyy',
                                                           'id_ID',
@@ -319,158 +380,159 @@ class _PKLPageState extends State<PKLPage> {
                                                         ),
                                                       ),
                                                     ),
-                                                    DataCell(
-                                                      Text(pkl.statusText),
-                                                    ),
+                                                  ),
 
-                                                    DataCell(
-                                                      Row(
-                                                        mainAxisSize:
-                                                            MainAxisSize.min,
-                                                        children: [
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        pkl.statusText,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    Row(
+                                                      mainAxisSize:
+                                                          MainAxisSize.min,
+                                                      children: [
+                                                        IconButton(
+                                                          icon: const Icon(
+                                                            Icons.info,
+                                                            color: Colors.teal,
+                                                          ),
+                                                          tooltip: 'Detail',
+                                                          onPressed: () {
+                                                            Navigator.pushNamed(
+                                                              context,
+                                                              '/detailpkl',
+                                                              arguments:
+                                                                  pkl.id
+                                                                      .toString(),
+                                                            );
+                                                          },
+                                                        ),
+                                                        if (isLoggedIn &&
+                                                            (role == 'admin' ||
+                                                                role == 'user'))
                                                           IconButton(
                                                             icon: const Icon(
-                                                              Icons.info,
+                                                              Icons.edit,
                                                               color:
-                                                                  Colors.teal,
+                                                                  Colors.orange,
                                                             ),
-                                                            tooltip: 'Detail',
+                                                            tooltip: 'Edit',
                                                             onPressed: () {
-                                                              Navigator.pushNamed(
+                                                              Navigator.push(
                                                                 context,
-                                                                '/detailpkl',
-                                                                arguments:
-                                                                    pkl.id
-                                                                        .toString(),
-                                                              );
-                                                            },
-                                                          ),
-                                                          if (isLoggedIn &&
-                                                              (role ==
-                                                                      'admin' ||
-                                                                  role ==
-                                                                      'user'))
-                                                            IconButton(
-                                                              icon: const Icon(
-                                                                Icons.edit,
-                                                                color:
-                                                                    Colors
-                                                                        .orange,
-                                                              ),
-                                                              tooltip: 'Edit',
-                                                              onPressed: () {
-                                                                Navigator.push(
-                                                                  context,
-                                                                  MaterialPageRoute(
-                                                                    builder:
-                                                                        (
-                                                                          context,
-                                                                        ) => UploadPKLPage(
-                                                                          pkl:
-                                                                              pkl,
-                                                                        ),
-                                                                  ),
-                                                                ).then((value) {
-                                                                  if (value ==
-                                                                      true) {
-                                                                    _loadPkl();
-                                                                  }
-                                                                });
-                                                              },
-                                                            ),
-                                                          if (isLoggedIn &&
-                                                              (role ==
-                                                                      'admin' ||
-                                                                  role ==
-                                                                      'user'))
-                                                            IconButton(
-                                                              icon: const Icon(
-                                                                Icons.delete,
-                                                                color:
-                                                                    Colors.red,
-                                                              ),
-                                                              tooltip: 'Hapus',
-                                                              onPressed: () async {
-                                                                final confirm = await showDialog<
-                                                                  bool
-                                                                >(
-                                                                  context:
-                                                                      context,
+                                                                MaterialPageRoute(
                                                                   builder:
                                                                       (
                                                                         context,
-                                                                      ) => AlertDialog(
-                                                                        title: const Text(
-                                                                          'Konfirmasi',
-                                                                        ),
-                                                                        content:
-                                                                            Text(
-                                                                              'Hapus data siswa dengan nama ${pkl.nama}?',
-                                                                            ),
-                                                                        actions: [
-                                                                          TextButton(
-                                                                            onPressed:
-                                                                                () => Navigator.pop(
-                                                                                  context,
-                                                                                  false,
-                                                                                ),
-                                                                            child: const Text(
-                                                                              'Batal',
-                                                                            ),
-                                                                          ),
-                                                                          TextButton(
-                                                                            onPressed:
-                                                                                () => Navigator.pop(
-                                                                                  context,
-                                                                                  true,
-                                                                                ),
-                                                                            child: const Text(
-                                                                              'Hapus',
-                                                                            ),
-                                                                          ),
-                                                                        ],
+                                                                      ) => UploadPKLPage(
+                                                                        pkl:
+                                                                            pkl,
                                                                       ),
-                                                                );
-                                                                if (confirm ==
+                                                                ),
+                                                              ).then((value) {
+                                                                if (value ==
                                                                     true) {
-                                                                  try {
-                                                                    await PklService.deletePkl(
-                                                                      pkl.id
-                                                                          .toString(),
-                                                                    );
-                                                                    ScaffoldMessenger.of(
-                                                                      context,
-                                                                    ).showSnackBar(
-                                                                      const SnackBar(
-                                                                        content:
-                                                                            Text(
-                                                                              'Berhasil menghapus data siswa',
-                                                                            ),
-                                                                      ),
-                                                                    );
-                                                                    await _loadPkl();
-                                                                  } catch (e) {
-                                                                    ScaffoldMessenger.of(
-                                                                      context,
-                                                                    ).showSnackBar(
-                                                                      SnackBar(
-                                                                        content:
-                                                                            Text(
-                                                                              'Gagal menghapus data siswa: $e',
-                                                                            ),
-                                                                      ),
-                                                                    );
-                                                                  }
+                                                                  _loadPkl();
                                                                 }
-                                                              },
+                                                              });
+                                                            },
+                                                          ),
+                                                        if (isLoggedIn &&
+                                                            (role == 'admin' ||
+                                                                role == 'user'))
+                                                          IconButton(
+                                                            icon: const Icon(
+                                                              Icons.delete,
+                                                              color: Colors.red,
                                                             ),
-                                                        ],
-                                                      ),
+                                                            tooltip: 'Hapus',
+                                                            onPressed: () async {
+                                                              final confirm = await showDialog<
+                                                                bool
+                                                              >(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (
+                                                                      context,
+                                                                    ) => AlertDialog(
+                                                                      title: const Text(
+                                                                        'Konfirmasi',
+                                                                      ),
+                                                                      content: Text(
+                                                                        'Hapus data siswa dengan nama ${pkl.nama}?',
+                                                                      ),
+                                                                      actions: [
+                                                                        TextButton(
+                                                                          onPressed:
+                                                                              () => Navigator.pop(
+                                                                                context,
+                                                                                false,
+                                                                              ),
+                                                                          child: const Text(
+                                                                            'Batal',
+                                                                          ),
+                                                                        ),
+                                                                        TextButton(
+                                                                          onPressed:
+                                                                              () => Navigator.pop(
+                                                                                context,
+                                                                                true,
+                                                                              ),
+                                                                          child: const Text(
+                                                                            'Hapus',
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                              );
+                                                              if (confirm ==
+                                                                  true) {
+                                                                try {
+                                                                  await PklService.deletePkl(
+                                                                    pkl.id
+                                                                        .toString(),
+                                                                  );
+                                                                  ScaffoldMessenger.of(
+                                                                    context,
+                                                                  ).showSnackBar(
+                                                                    const SnackBar(
+                                                                      content: Text(
+                                                                        'Berhasil menghapus data siswa',
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                  await _loadPkl();
+                                                                } catch (e) {
+                                                                  ScaffoldMessenger.of(
+                                                                    context,
+                                                                  ).showSnackBar(
+                                                                    SnackBar(
+                                                                      content: Text(
+                                                                        'Gagal menghapus data siswa: $e',
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                }
+                                                              }
+                                                            },
+                                                          ),
+                                                      ],
                                                     ),
-                                                  ],
-                                                );
-                                              }).toList(),
-                                        ),
+                                                  ),
+                                                ],
+                                              );
+                                            }).toList(),
                                       ),
                                     ),
                                   ),

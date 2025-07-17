@@ -42,24 +42,31 @@ class MyProfilePage extends StatelessWidget {
                         InfoRow(title: 'Nama', value: name),
                         InfoRow(title: 'Email', value: email),
                         InfoRow(title: 'Role', value: role),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'Token',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 14,
-                          ),
+                        // const SizedBox(height: 16),
+                        InfoRow(
+                          title: 'Token',
+                          value:
+                              token.length > 40
+                                  ? '${token.substring(0, 40)}...'
+                                  : token,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          token.length > 40
-                              ? '${token.substring(0, 40)}...'
-                              : token,
-                          style: const TextStyle(
-                            color: Colors.black87,
-                            fontSize: 13,
-                          ),
-                        ),
+                        // const Text(
+                        //   'Token',
+                        //   style: TextStyle(
+                        //     fontWeight: FontWeight.bold,
+                        //     fontSize: 14,
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 4),
+                        // Text(
+                        //   token.length > 40
+                        //       ? '${token.substring(0, 40)}...'
+                        //       : token,
+                        //   style: const TextStyle(
+                        //     color: Colors.black87,
+                        //     fontSize: 13,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -85,7 +92,13 @@ class InfoRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         children: [
-          SizedBox(width: 100, child: Text('$title:')),
+          SizedBox(
+            width: 100,
+            child: Text(
+              '$title',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ),
           Expanded(
             child: Text(
               value,

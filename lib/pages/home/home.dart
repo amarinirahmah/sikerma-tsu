@@ -53,7 +53,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
-              child: Text(
+              child: SelectableText(
                 'Galeri Kegiatan',
                 style: CustomStyle.headline1,
                 textAlign: TextAlign.center,
@@ -258,22 +258,27 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Center(
-                  child: Text('Visi dan Misi', style: CustomStyle.headline1),
+                  child: SelectableText(
+                    'Visi dan Misi',
+                    style: CustomStyle.headline1,
+                  ),
                 ),
                 SizedBox(height: 24),
-                Text('Visi', style: CustomStyle.headline4),
+                SelectableText('Visi', style: CustomStyle.headline4),
                 SizedBox(height: 8),
-                Text(
-                  'Menjadi pusat informasi kerja sama pendidikan yang profesional, modern, dan terpercaya.',
+                SelectableText(
+                  'Menjadi biro yang unggul, profesional, dan inovatif dalam mendukung perencanaan strategis, pengembangan kemitraan, serta perluasan usaha untuk mewujudkan Universitas Tiga Serangkai sebagai perguruan tinggi yang berdaya saing dan berkelanjutan.',
                   style: TextStyle(fontSize: 16),
                 ),
                 SizedBox(height: 24),
-                Text('Misi', style: CustomStyle.headline4),
+                SelectableText('Misi', style: CustomStyle.headline4),
                 SizedBox(height: 8),
-                Text(
-                  '1. Memfasilitasi kerja sama institusional dengan sistem efisien.\n'
-                  '2. Meningkatkan transparansi dan akuntabilitas.\n'
-                  '3. Mendukung program PKL dan pengembangan SDM.',
+                SelectableText(
+                  '1. Merancang dan mengelola sistem perencanaan strategis dan operasional universitas yang adaptif, akuntabel, dan selaras dengan visi institusi.\n'
+                  '2. Merancang dan mengelola sistem perencanaan strategis dan operasional universitas yang adaptif, akuntabel, dan selaras dengan visi institusi.\n'
+                  '3. Merancang dan mengelola sistem perencanaan strategis dan operasional universitas yang adaptif, akuntabel, dan selaras dengan visi institusi.\n'
+                  '4. Melakukan pemantauan, evaluasi, dan pelaporan terhadap implementasi program perencanaan, kemitraan, dan usaha sebagai dasar pengambilan keputusan yang tepat.\n'
+                  '5. Membangun budaya kerja birokrasi yang profesional, kolaboratif, dan berorientasi pada hasil, guna menciptakan nilai tambah bagi seluruh sivitas akademika dan pemangku kepentingan.\n',
                   style: TextStyle(fontSize: 16),
                 ),
               ],
@@ -289,7 +294,10 @@ class _HomePageState extends State<HomePage> {
       padding: const EdgeInsets.all(24),
       child: Column(
         children: [
-          const Text('Pertanyaan Umum (FAQ)', style: CustomStyle.headline1),
+          const SelectableText(
+            'Pertanyaan Umum (FAQ)',
+            style: CustomStyle.headline1,
+          ),
           const SizedBox(height: 20),
           _faqItem(
             'Apa saja yang bisa dikelola lewat SiKERMA TSU?',
@@ -361,7 +369,7 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Text(
+          SelectableText(
             'Apa itu SiKERMA TSU?',
             style: CustomStyle.headline1,
             textAlign: TextAlign.center,
@@ -369,8 +377,8 @@ class _HomePageState extends State<HomePage> {
           const SizedBox(height: 20),
           ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 800),
-            child: const Text(
-              'SiKERMA TSU (Sistem Informasi Kerja Sama) adalah sebuah platform digital terintegrasi yang dikembangkan oleh Unit Bursa Kerja Khusus (BKK) di Tiga Serangkai University (TSU). '
+            child: const SelectableText(
+              'SiKERMA TSU (Sistem Informasi Kerja Sama) adalah sebuah platform digital terintegrasi yang dikembangkan oleh Badan Pengembangan dan Urusan Kerja Sama (BPUK) di Tiga Serangkai University (TSU). '
               'Platform ini dirancang khusus untuk memfasilitasi berbagai bentuk kerja sama antara lembaga pendidikan, khususnya sekolah-sekolah kejuruan, dengan mitra industri atau institusi terkait. '
               'Melalui SiKERMA TSU, proses administrasi dan komunikasi dalam pengajuan kerja sama, penempatan siswa PKL (Praktik Kerja Lapangan), hingga pelacakan progres dan pelaporan kegiatan dapat dilakukan secara cepat, transparan, dan terdokumentasi dengan baik.\n\n'
               'Inisiatif ini bertujuan untuk menjawab tantangan birokrasi dan kurangnya sistem pendataan dalam hubungan kerja sama pendidikan. Dengan fitur seperti pengajuan PKL online, daftar mitra terpercaya, sistem tracking kerja sama, dan dokumentasi MoU/PKS yang terorganisir, '
@@ -382,14 +390,14 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-  }
+  } //Badan Pengembangan Usaha Kampus (BPUK)
 
   Widget _buildFeatureCards() {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
       child: Column(
         children: [
-          Text(
+          SelectableText(
             'Fitur Unggulan',
             style: CustomStyle.headline1,
             textAlign: TextAlign.center,
@@ -441,7 +449,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               Icon(icon, size: 48, color: Colors.teal),
               const SizedBox(height: 12),
-              Text(
+              SelectableText(
                 title,
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
@@ -451,7 +459,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 8),
               Expanded(
-                child: Text(
+                child: SelectableText(
                   subtitle,
                   textAlign: TextAlign.center,
                   style: const TextStyle(color: Colors.black54),
@@ -639,21 +647,21 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 8),
         _footerContactRow(
           icon: FontAwesomeIcons.whatsapp,
-          label: '0895705354767',
-          url: 'https://wa.me/62895705354767',
+          label: '+62 858-0362-0777',
+          url: 'https://wa.me/6285803620777',
         ),
         const SizedBox(height: 8),
         _footerContactRow(
           icon: Icons.email,
-          label: 'info@sikermatsu.id',
-          url: 'mailto:info@sikermatsu.id',
+          label: 'bakpu@tsu.ac.id',
+          url: 'mailto:bakpu@tsu.ac.id',
         ),
-        const SizedBox(height: 8),
-        _footerContactRow(
-          icon: Icons.phone,
-          label: '+62 271 716500',
-          url: 'tel:+62271716500',
-        ),
+        // const SizedBox(height: 8),
+        // _footerContactRow(
+        //   icon: Icons.phone,
+        //   label: '+62 271 716500',
+        //   url: 'tel:+62271716500',
+        // ),
       ],
     );
   }

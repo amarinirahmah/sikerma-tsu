@@ -63,14 +63,14 @@ class _DetailMoUPageState extends State<DetailMoUPage> {
       children: [
         Expanded(
           flex: 2,
-          child: Text(
+          child: SelectableText(
             label,
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
         ),
         Expanded(
           flex: 3,
-          child: Text(
+          child: SelectableText(
             value,
             style:
                 onTap != null

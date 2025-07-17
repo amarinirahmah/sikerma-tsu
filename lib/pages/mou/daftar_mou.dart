@@ -24,11 +24,19 @@ class _MoUPageState extends State<MoUPage> {
   int currentPage = 0;
   String searchQuery = '';
   String selectedStatus = 'Semua';
+  final ScrollController _horizontalScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _loadMou();
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _horizontalScrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadMou() async {
@@ -109,7 +117,7 @@ class _MoUPageState extends State<MoUPage> {
                                         child: TextField(
                                           decoration:
                                               CustomStyle.searchInputDecoration(
-                                                labelText: 'Cari Nama Mitra',
+                                                labelText: 'Cari nama mitra...',
                                                 prefixIcon: Icon(
                                                   Icons.search,
                                                   color: Colors.grey,
@@ -174,315 +182,408 @@ class _MoUPageState extends State<MoUPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 16),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
-                                    // child: ConstrainedBox(
-                                    //   constraints: BoxConstraints(
-                                    //     minWidth: 1000,
-                                    //   ),
-                                    //   child: SizedBox(
-                                    //     width: double.infinity,
-                                    child: DataTable(
-                                      headingRowColor:
-                                          MaterialStateProperty.all<Color>(
-                                            Colors.grey[300]!,
-                                          ),
-                                      headingTextStyle: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      border: TableBorder.all(
-                                        color: Colors.grey,
-                                      ),
-                                      //  columnSpacing: 24,
-                                      columns: [
-                                        DataColumn(
-                                          label: Text(
-                                            'Nomor MoU',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
+                                  Scrollbar(
+                                    controller: _horizontalScrollController,
+                                    thumbVisibility: true,
+                                    trackVisibility: true,
+                                    interactive: true,
+                                    thickness: 4,
+                                    scrollbarOrientation:
+                                        ScrollbarOrientation.bottom,
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      // child: ConstrainedBox(
+                                      //   constraints: BoxConstraints(
+                                      //     minWidth: 1000,
+                                      //   ),
+                                      //   child: SizedBox(
+                                      //     width: double.infinity,
+                                      child: DataTable(
+                                        headingRowColor:
+                                            MaterialStateProperty.all<Color>(
+                                              Colors.grey[300]!,
+                                            ),
+                                        headingTextStyle: const TextStyle(
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Nama Mitra',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
+                                        border: TableBorder.all(
+                                          color: Colors.grey,
                                         ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Judul',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Tanggal Mulai',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Tanggal Berakhir',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Status',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Keterangan',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        if (isLoggedIn &&
-                                            (role == 'admin' || role == 'user'))
+                                        //  columnSpacing: 24,
+                                        columnSpacing: 12,
+                                        dataRowMinHeight: 40,
+                                        dataRowMaxHeight: 60,
+                                        columns: [
                                           DataColumn(
                                             label: Text(
-                                              'Aksi',
+                                              'Nomor MoU',
                                               overflow: TextOverflow.ellipsis,
                                               softWrap: false,
                                             ),
                                           ),
-                                      ],
-                                      rows:
-                                          displayedRows.map((mou) {
-                                            return DataRow(
-                                              cells: [
-                                                DataCell(Text(mou.nomorMou)),
-                                                DataCell(Text(mou.nama)),
-                                                DataCell(Text(mou.judul)),
-                                                DataCell(
-                                                  Text(
-                                                    DateFormat(
-                                                      'd MMMM yyyy',
-                                                      'id_ID',
-                                                    ).format(mou.tanggalMulai),
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Text(
-                                                    DateFormat(
-                                                      'd MMMM yyyy',
-                                                      'id_ID',
-                                                    ).format(
-                                                      mou.tanggalBerakhir,
-                                                    ),
-                                                  ),
-                                                ),
-                                                DataCell(Text(mou.statusText)),
-                                                DataCell(
-                                                  InkWell(
-                                                    onTap: () {
-                                                      if (mou.id != null) {
-                                                        Navigator.push(
-                                                          context,
-                                                          MaterialPageRoute(
-                                                            builder:
-                                                                (
-                                                                  _,
-                                                                ) => DetailProgressPage(
-                                                                  mouId:
-                                                                      mou.id!,
-                                                                ),
-                                                          ),
-                                                        );
-                                                      } else {
-                                                        ScaffoldMessenger.of(
-                                                          context,
-                                                        ).showSnackBar(
-                                                          const SnackBar(
-                                                            content: Text(
-                                                              'ID MoU tidak tersedia',
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
-                                                    },
-                                                    child: Text(
-                                                      mou.keteranganText,
-                                                      style: const TextStyle(
-                                                        color: Colors.blue,
-                                                        decoration:
-                                                            TextDecoration
-                                                                .underline,
+                                          DataColumn(
+                                            label: Text(
+                                              'Nama Mitra',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Judul',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Tanggal Mulai',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Tanggal Berakhir',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Status',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          if (isLoggedIn &&
+                                              (role == 'admin' ||
+                                                  role == 'user'))
+                                            DataColumn(
+                                              label: Text(
+                                                'Keterangan',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                          if (isLoggedIn &&
+                                              (role == 'admin' ||
+                                                  role == 'user'))
+                                            DataColumn(
+                                              label: Text(
+                                                'Aksi',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                        ],
+                                        rows:
+                                            displayedRows.map((mou) {
+                                              return DataRow(
+                                                cells: [
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        mou.nomorMou,
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
                                                       ),
                                                     ),
                                                   ),
-                                                ),
-
-                                                // DataCell(
-                                                //   Text(mou.keteranganText),
-                                                // ),
-                                                if (isLoggedIn &&
-                                                    (role == 'admin' ||
-                                                        role == 'user'))
                                                   DataCell(
-                                                    Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.info,
-                                                            color: Colors.teal,
-                                                          ),
-                                                          tooltip: 'Detail',
-                                                          onPressed: () {
-                                                            Navigator.pushNamed(
-                                                              context,
-                                                              '/detailmou',
-                                                              arguments:
-                                                                  mou.id
-                                                                      .toString(),
-                                                            );
-                                                          },
+                                                    SizedBox(
+                                                      width: 140,
+                                                      child: Text(
+                                                        mou.nama,
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        // overflow:
+                                                        //     TextOverflow
+                                                        //         .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 250,
+                                                      child: Text(
+                                                        mou.judul,
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        // overflow:
+                                                        //     TextOverflow
+                                                        //         .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        DateFormat(
+                                                          'd MMMM yyyy',
+                                                          'id_ID',
+                                                        ).format(
+                                                          mou.tanggalMulai,
                                                         ),
-
-                                                        // IconButton(
-                                                        //   icon: const Icon(
-                                                        //     Icons.track_changes,
-                                                        //     color: Colors.blue,
-                                                        //   ),
-                                                        //   tooltip:
-                                                        //       'Detail Progres',
-                                                        //   onPressed: () {
-                                                        //     Navigator.push(
-                                                        //       context,
-                                                        //       MaterialPageRoute(
-                                                        //         builder:
-                                                        //             (
-                                                        //               _,
-                                                        //             ) => DetailProgressPage(
-                                                        //               mouId:
-                                                        //                   mou.id!,
-                                                        //             ),
-                                                        //       ),
-                                                        //     );
-                                                        //   },
-                                                        // ),
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.edit,
-                                                            color:
-                                                                Colors.orange,
-                                                          ),
-                                                          tooltip: 'Edit',
-                                                          onPressed: () {
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        DateFormat(
+                                                          'd MMMM yyyy',
+                                                          'id_ID',
+                                                        ).format(
+                                                          mou.tanggalBerakhir,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        mou.statusText,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  if (isLoggedIn &&
+                                                      (role == 'admin' ||
+                                                          role == 'user'))
+                                                    DataCell(
+                                                      InkWell(
+                                                        onTap: () {
+                                                          if (mou.id != null) {
                                                             Navigator.push(
                                                               context,
                                                               MaterialPageRoute(
                                                                 builder:
                                                                     (
-                                                                      context,
-                                                                    ) => UploadMoUPage(
-                                                                      mou: mou,
+                                                                      _,
+                                                                    ) => DetailProgressPage(
+                                                                      mouId:
+                                                                          mou.id!,
                                                                     ),
                                                               ),
-                                                            ).then((value) {
-                                                              if (value ==
-                                                                  true) {
-                                                                _loadMou();
-                                                              }
-                                                            });
-                                                          },
-                                                        ),
-
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.delete,
-                                                            color: Colors.red,
-                                                          ),
-                                                          tooltip: 'Hapus',
-                                                          onPressed: () async {
-                                                            final confirm = await showDialog<
-                                                              bool
-                                                            >(
-                                                              context: context,
-                                                              builder:
-                                                                  (
-                                                                    context,
-                                                                  ) => AlertDialog(
-                                                                    title: const Text(
-                                                                      'Konfirmasi',
-                                                                    ),
-                                                                    content: Text(
-                                                                      'Hapus MoU dengan judul ${mou.judul}?',
-                                                                    ),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () => Navigator.pop(
-                                                                              context,
-                                                                              false,
-                                                                            ),
-                                                                        child: const Text(
-                                                                          'Batal',
-                                                                        ),
-                                                                      ),
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () => Navigator.pop(
-                                                                              context,
-                                                                              true,
-                                                                            ),
-                                                                        child: const Text(
-                                                                          'Hapus',
-                                                                        ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
                                                             );
-                                                            if (confirm ==
-                                                                true) {
-                                                              try {
-                                                                await MouService.deleteMou(
-                                                                  mou.id
-                                                                      .toString(),
-                                                                );
-                                                                ScaffoldMessenger.of(
-                                                                  context,
-                                                                ).showSnackBar(
-                                                                  const SnackBar(
-                                                                    content: Text(
-                                                                      'Berhasil menghapus MoU',
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                                await _loadMou();
-                                                              } catch (e) {
-                                                                ScaffoldMessenger.of(
-                                                                  context,
-                                                                ).showSnackBar(
-                                                                  SnackBar(
-                                                                    content: Text(
-                                                                      'Gagal menghapus MoU: $e',
-                                                                    ),
-                                                                  ),
-                                                                );
-                                                              }
-                                                            }
-                                                          },
+                                                          } else {
+                                                            ScaffoldMessenger.of(
+                                                              context,
+                                                            ).showSnackBar(
+                                                              const SnackBar(
+                                                                content: Text(
+                                                                  'ID MoU tidak tersedia',
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }
+                                                        },
+                                                        child: Text(
+                                                          mou.keteranganText,
+                                                          style: const TextStyle(
+                                                            color: Colors.blue,
+                                                            decoration:
+                                                                TextDecoration
+                                                                    .underline,
+                                                          ),
                                                         ),
-                                                      ],
+                                                      ),
                                                     ),
-                                                  ),
-                                              ],
-                                            );
-                                          }).toList(),
+
+                                                  // DataCell(
+                                                  //   Text(mou.keteranganText),
+                                                  // ),
+                                                  if (isLoggedIn &&
+                                                      (role == 'admin' ||
+                                                          role == 'user'))
+                                                    DataCell(
+                                                      Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          IconButton(
+                                                            icon: const Icon(
+                                                              Icons.info,
+                                                              color:
+                                                                  Colors.teal,
+                                                            ),
+                                                            tooltip: 'Detail',
+                                                            onPressed: () {
+                                                              Navigator.pushNamed(
+                                                                context,
+                                                                '/detailmou',
+                                                                arguments:
+                                                                    mou.id
+                                                                        .toString(),
+                                                              );
+                                                            },
+                                                          ),
+
+                                                          // IconButton(
+                                                          //   icon: const Icon(
+                                                          //     Icons.track_changes,
+                                                          //     color: Colors.blue,
+                                                          //   ),
+                                                          //   tooltip:
+                                                          //       'Detail Progres',
+                                                          //   onPressed: () {
+                                                          //     Navigator.push(
+                                                          //       context,
+                                                          //       MaterialPageRoute(
+                                                          //         builder:
+                                                          //             (
+                                                          //               _,
+                                                          //             ) => DetailProgressPage(
+                                                          //               mouId:
+                                                          //                   mou.id!,
+                                                          //             ),
+                                                          //       ),
+                                                          //     );
+                                                          //   },
+                                                          // ),
+                                                          IconButton(
+                                                            icon: const Icon(
+                                                              Icons.edit,
+                                                              color:
+                                                                  Colors.orange,
+                                                            ),
+                                                            tooltip: 'Edit',
+                                                            onPressed: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (
+                                                                        context,
+                                                                      ) => UploadMoUPage(
+                                                                        mou:
+                                                                            mou,
+                                                                      ),
+                                                                ),
+                                                              ).then((value) {
+                                                                if (value ==
+                                                                    true) {
+                                                                  _loadMou();
+                                                                }
+                                                              });
+                                                            },
+                                                          ),
+
+                                                          IconButton(
+                                                            icon: const Icon(
+                                                              Icons.delete,
+                                                              color: Colors.red,
+                                                            ),
+                                                            tooltip: 'Hapus',
+                                                            onPressed: () async {
+                                                              final confirm = await showDialog<
+                                                                bool
+                                                              >(
+                                                                context:
+                                                                    context,
+                                                                builder:
+                                                                    (
+                                                                      context,
+                                                                    ) => AlertDialog(
+                                                                      title: const Text(
+                                                                        'Konfirmasi',
+                                                                      ),
+                                                                      content: Text(
+                                                                        'Hapus MoU dengan judul ${mou.judul}?',
+                                                                      ),
+                                                                      actions: [
+                                                                        TextButton(
+                                                                          onPressed:
+                                                                              () => Navigator.pop(
+                                                                                context,
+                                                                                false,
+                                                                              ),
+                                                                          child: const Text(
+                                                                            'Batal',
+                                                                          ),
+                                                                        ),
+                                                                        TextButton(
+                                                                          onPressed:
+                                                                              () => Navigator.pop(
+                                                                                context,
+                                                                                true,
+                                                                              ),
+                                                                          child: const Text(
+                                                                            'Hapus',
+                                                                          ),
+                                                                        ),
+                                                                      ],
+                                                                    ),
+                                                              );
+                                                              if (confirm ==
+                                                                  true) {
+                                                                try {
+                                                                  await MouService.deleteMou(
+                                                                    mou.id
+                                                                        .toString(),
+                                                                  );
+                                                                  ScaffoldMessenger.of(
+                                                                    context,
+                                                                  ).showSnackBar(
+                                                                    const SnackBar(
+                                                                      content: Text(
+                                                                        'Berhasil menghapus MoU',
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                  await _loadMou();
+                                                                } catch (e) {
+                                                                  ScaffoldMessenger.of(
+                                                                    context,
+                                                                  ).showSnackBar(
+                                                                    SnackBar(
+                                                                      content: Text(
+                                                                        'Gagal menghapus MoU: $e',
+                                                                      ),
+                                                                    ),
+                                                                  );
+                                                                }
+                                                              }
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                ],
+                                              );
+                                            }).toList(),
+                                      ),
                                     ),
+
+                                    //   ),
+                                    // ),
                                   ),
-                                  //   ),
-                                  // ),
+
                                   const SizedBox(height: 16),
                                   Row(
                                     mainAxisAlignment:

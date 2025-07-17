@@ -143,6 +143,11 @@ class _AddRolePageState extends State<AddRolePage> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
+                          // const SizedBox(height: 24),
+                          Text(
+                            widget.user == null ? 'Tambah Role' : 'Edit Role',
+                            style: CustomStyle.headline1,
+                          ),
                           const SizedBox(height: 24),
                           TextFormField(
                             controller: name,
@@ -186,12 +191,20 @@ class _AddRolePageState extends State<AddRolePage> {
                             items:
                                 ['admin', 'user', 'userpkl']
                                     .map(
-                                      (role) => DropdownMenuItem(
-                                        value: role,
-                                        child: Text(role),
+                                      (r) => DropdownMenuItem(
+                                        value: r,
+                                        child: Text(
+                                          User(
+                                            id: 0,
+                                            name: '',
+                                            email: '',
+                                            role: r,
+                                          ).displayRole,
+                                        ),
                                       ),
                                     )
                                     .toList(),
+
                             onChanged: (value) {
                               setState(() {
                                 role = value!;

@@ -23,11 +23,18 @@ class _PKSPageState extends State<PKSPage> {
   int currentPage = 0;
   String searchQuery = '';
   String selectedStatus = 'Semua';
+  final ScrollController _horizontalScrollController = ScrollController();
 
   @override
   void initState() {
     super.initState();
     _loadPks();
+  }
+
+  @override
+  void dispose() {
+    _horizontalScrollController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadPks() async {
@@ -116,7 +123,7 @@ class _PKSPageState extends State<PKSPage> {
                                         child: TextField(
                                           decoration:
                                               CustomStyle.searchInputDecoration(
-                                                labelText: 'Cari Judul PKS',
+                                                labelText: 'Cari judul PKS...',
                                                 prefixIcon: Icon(
                                                   Icons.search,
                                                   color: Colors.grey,
@@ -181,252 +188,358 @@ class _PKSPageState extends State<PKSPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 16),
-                                  SingleChildScrollView(
-                                    scrollDirection: Axis.horizontal,
 
-                                    child: DataTable(
-                                      headingRowColor:
-                                          MaterialStateProperty.all<Color>(
-                                            Colors.grey[300]!,
-                                          ),
-                                      headingTextStyle: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      border: TableBorder.all(
-                                        color: Colors.grey,
-                                      ),
-                                      columns: [
-                                        DataColumn(
-                                          label: Text(
-                                            'Nomor MoU',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Nomor PKS',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Judul',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Nama Unit',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Tanggal Mulai',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Tanggal Berakhir',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
-                                        ),
+                                  Scrollbar(
+                                    controller: _horizontalScrollController,
+                                    thumbVisibility: true,
+                                    trackVisibility: true,
+                                    interactive: true,
+                                    thickness: 4,
+                                    scrollbarOrientation:
+                                        ScrollbarOrientation.bottom,
+                                    child: SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
 
-                                        DataColumn(
-                                          label: Text(
-                                            'Status',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
+                                      child: DataTable(
+                                        columnSpacing: 12,
+                                        dataRowMinHeight: 40,
+                                        dataRowMaxHeight: 60,
+                                        headingRowColor:
+                                            MaterialStateProperty.all<Color>(
+                                              Colors.grey[300]!,
+                                            ),
+                                        headingTextStyle: const TextStyle(
+                                          fontWeight: FontWeight.bold,
                                         ),
-                                        DataColumn(
-                                          label: Text(
-                                            'Keterangan',
-                                            overflow: TextOverflow.ellipsis,
-                                            softWrap: false,
-                                          ),
+                                        border: TableBorder.all(
+                                          color: Colors.grey,
                                         ),
-                                        if (isLoggedIn &&
-                                            (role == 'admin' || role == 'user'))
+                                        columns: [
                                           DataColumn(
                                             label: Text(
-                                              'Aksi',
+                                              'Nomor MoU',
                                               overflow: TextOverflow.ellipsis,
                                               softWrap: false,
                                             ),
                                           ),
-                                      ],
-                                      rows:
-                                          displayedRows.map((pks) {
-                                            return DataRow(
-                                              cells: [
-                                                DataCell(Text(pks.nomorMou)),
-                                                DataCell(Text(pks.nomorPks)),
-                                                DataCell(Text(pks.judul)),
-                                                DataCell(Text(pks.namaUnit)),
-                                                DataCell(
-                                                  Text(
-                                                    DateFormat(
-                                                      'd MMMM yyyy',
-                                                      'id_ID',
-                                                    ).format(pks.tanggalMulai),
-                                                  ),
-                                                ),
-                                                DataCell(
-                                                  Text(
-                                                    DateFormat(
-                                                      'd MMMM yyyy',
-                                                      'id_ID',
-                                                    ).format(
-                                                      pks.tanggalBerakhir,
+                                          DataColumn(
+                                            label: Text(
+                                              'Nomor PKS',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Judul',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Nama Unit',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Tanggal Mulai',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          DataColumn(
+                                            label: Text(
+                                              'Tanggal Berakhir',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+
+                                          DataColumn(
+                                            label: Text(
+                                              'Status',
+                                              overflow: TextOverflow.ellipsis,
+                                              softWrap: false,
+                                            ),
+                                          ),
+                                          if (isLoggedIn &&
+                                              (role == 'admin' ||
+                                                  role == 'user'))
+                                            DataColumn(
+                                              label: Text(
+                                                'Keterangan',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                          if (isLoggedIn &&
+                                              (role == 'admin' ||
+                                                  role == 'user'))
+                                            DataColumn(
+                                              label: Text(
+                                                'Aksi',
+                                                overflow: TextOverflow.ellipsis,
+                                                softWrap: false,
+                                              ),
+                                            ),
+                                        ],
+                                        rows:
+                                            displayedRows.map((pks) {
+                                              return DataRow(
+                                                cells: [
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        pks.nomorMou,
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
                                                     ),
                                                   ),
-                                                ),
-                                                DataCell(Text(pks.statusText)),
-                                                DataCell(
-                                                  Text(pks.keteranganText),
-                                                ),
-                                                if (isLoggedIn &&
-                                                    (role == 'admin' ||
-                                                        role == 'user'))
                                                   DataCell(
-                                                    Row(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.info,
-                                                            color: Colors.teal,
-                                                          ),
-                                                          tooltip: 'Detail',
-                                                          onPressed: () {
-                                                            Navigator.pushNamed(
-                                                              context,
-                                                              '/detailpks',
-                                                              arguments:
-                                                                  pks.id
-                                                                      .toString(),
-                                                            );
-                                                          },
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        pks.nomorPks,
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 250,
+                                                      child: Text(
+                                                        pks.judul,
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 140,
+                                                      child: Text(
+                                                        pks.namaUnit,
+                                                        maxLines: 3,
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        DateFormat(
+                                                          'd MMMM yyyy',
+                                                          'id_ID',
+                                                        ).format(
+                                                          pks.tanggalMulai,
                                                         ),
-
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.edit,
-                                                            color:
-                                                                Colors.orange,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        DateFormat(
+                                                          'd MMMM yyyy',
+                                                          'id_ID',
+                                                        ).format(
+                                                          pks.tanggalBerakhir,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  DataCell(
+                                                    SizedBox(
+                                                      width: 100,
+                                                      child: Text(
+                                                        style:
+                                                            CustomStyle
+                                                                .bodyText2,
+                                                        pks.statusText,
+                                                        overflow:
+                                                            TextOverflow
+                                                                .ellipsis,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  if (isLoggedIn &&
+                                                      (role == 'admin' ||
+                                                          role == 'user'))
+                                                    DataCell(
+                                                      Text(pks.keteranganText),
+                                                    ),
+                                                  if (isLoggedIn &&
+                                                      (role == 'admin' ||
+                                                          role == 'user'))
+                                                    DataCell(
+                                                      Row(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          IconButton(
+                                                            icon: const Icon(
+                                                              Icons.info,
+                                                              color:
+                                                                  Colors.teal,
+                                                            ),
+                                                            tooltip: 'Detail',
+                                                            onPressed: () {
+                                                              Navigator.pushNamed(
+                                                                context,
+                                                                '/detailpks',
+                                                                arguments:
+                                                                    pks.id
+                                                                        .toString(),
+                                                              );
+                                                            },
                                                           ),
-                                                          tooltip: 'Edit',
-                                                          onPressed: () {
-                                                            Navigator.push(
-                                                              context,
-                                                              MaterialPageRoute(
+
+                                                          IconButton(
+                                                            icon: const Icon(
+                                                              Icons.edit,
+                                                              color:
+                                                                  Colors.orange,
+                                                            ),
+                                                            tooltip: 'Edit',
+                                                            onPressed: () {
+                                                              Navigator.push(
+                                                                context,
+                                                                MaterialPageRoute(
+                                                                  builder:
+                                                                      (
+                                                                        context,
+                                                                      ) => UploadPKSPage(
+                                                                        pks:
+                                                                            pks,
+                                                                      ),
+                                                                ),
+                                                              ).then((value) {
+                                                                if (value ==
+                                                                    true) {
+                                                                  _loadPks();
+                                                                }
+                                                              });
+                                                            },
+                                                          ),
+
+                                                          IconButton(
+                                                            icon: const Icon(
+                                                              Icons.delete,
+                                                              color: Colors.red,
+                                                            ),
+                                                            tooltip: 'Hapus',
+                                                            onPressed: () async {
+                                                              final confirm = await showDialog<
+                                                                bool
+                                                              >(
+                                                                context:
+                                                                    context,
                                                                 builder:
                                                                     (
                                                                       context,
-                                                                    ) => UploadPKSPage(
-                                                                      pks: pks,
+                                                                    ) => AlertDialog(
+                                                                      title: const Text(
+                                                                        'Konfirmasi',
+                                                                      ),
+                                                                      content: Text(
+                                                                        'Hapus PKS dengan judul ${pks.judul}?',
+                                                                      ),
+                                                                      actions: [
+                                                                        TextButton(
+                                                                          onPressed:
+                                                                              () => Navigator.pop(
+                                                                                context,
+                                                                                false,
+                                                                              ),
+                                                                          child: const Text(
+                                                                            'Batal',
+                                                                          ),
+                                                                        ),
+                                                                        TextButton(
+                                                                          onPressed:
+                                                                              () => Navigator.pop(
+                                                                                context,
+                                                                                true,
+                                                                              ),
+                                                                          child: const Text(
+                                                                            'Hapus',
+                                                                          ),
+                                                                        ),
+                                                                      ],
                                                                     ),
-                                                              ),
-                                                            ).then((value) {
-                                                              if (value ==
+                                                              );
+                                                              if (confirm ==
                                                                   true) {
-                                                                _loadPks();
-                                                              }
-                                                            });
-                                                          },
-                                                        ),
-
-                                                        IconButton(
-                                                          icon: const Icon(
-                                                            Icons.delete,
-                                                            color: Colors.red,
-                                                          ),
-                                                          tooltip: 'Hapus',
-                                                          onPressed: () async {
-                                                            final confirm = await showDialog<
-                                                              bool
-                                                            >(
-                                                              context: context,
-                                                              builder:
-                                                                  (
+                                                                try {
+                                                                  await PksService.deletePks(
+                                                                    pks.id
+                                                                        .toString(),
+                                                                  );
+                                                                  ScaffoldMessenger.of(
                                                                     context,
-                                                                  ) => AlertDialog(
-                                                                    title: const Text(
-                                                                      'Konfirmasi',
-                                                                    ),
-                                                                    content: Text(
-                                                                      'Hapus PKS dengan judul ${pks.judul}?',
-                                                                    ),
-                                                                    actions: [
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () => Navigator.pop(
-                                                                              context,
-                                                                              false,
-                                                                            ),
-                                                                        child: const Text(
-                                                                          'Batal',
-                                                                        ),
+                                                                  ).showSnackBar(
+                                                                    const SnackBar(
+                                                                      content: Text(
+                                                                        'Berhasil menghapus PKS',
                                                                       ),
-                                                                      TextButton(
-                                                                        onPressed:
-                                                                            () => Navigator.pop(
-                                                                              context,
-                                                                              true,
-                                                                            ),
-                                                                        child: const Text(
-                                                                          'Hapus',
-                                                                        ),
+                                                                    ),
+                                                                  );
+                                                                  await _loadPks();
+                                                                } catch (e) {
+                                                                  ScaffoldMessenger.of(
+                                                                    context,
+                                                                  ).showSnackBar(
+                                                                    SnackBar(
+                                                                      content: Text(
+                                                                        'Gagal menghapus PKS: $e',
                                                                       ),
-                                                                    ],
-                                                                  ),
-                                                            );
-                                                            if (confirm ==
-                                                                true) {
-                                                              try {
-                                                                await PksService.deletePks(
-                                                                  pks.id
-                                                                      .toString(),
-                                                                );
-                                                                ScaffoldMessenger.of(
-                                                                  context,
-                                                                ).showSnackBar(
-                                                                  const SnackBar(
-                                                                    content: Text(
-                                                                      'Berhasil menghapus PKS',
                                                                     ),
-                                                                  ),
-                                                                );
-                                                                await _loadPks();
-                                                              } catch (e) {
-                                                                ScaffoldMessenger.of(
-                                                                  context,
-                                                                ).showSnackBar(
-                                                                  SnackBar(
-                                                                    content: Text(
-                                                                      'Gagal menghapus PKS: $e',
-                                                                    ),
-                                                                  ),
-                                                                );
+                                                                  );
+                                                                }
                                                               }
-                                                            }
-                                                          },
-                                                        ),
-                                                      ],
+                                                            },
+                                                          ),
+                                                        ],
+                                                      ),
                                                     ),
-                                                  ),
-                                              ],
-                                            );
-                                          }).toList(),
+                                                ],
+                                              );
+                                            }).toList(),
+                                      ),
                                     ),
                                   ),
 
