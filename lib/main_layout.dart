@@ -48,7 +48,7 @@ class _MainLayoutState extends State<MainLayout> {
                       return ValueListenableBuilder<String?>(
                         valueListenable: AppState.token,
                         builder: (context, token, _) {
-                          print('Token aktif = $token');
+                          // print('Token aktif = $token');
                           return Drawer(
                             child: ListView(
                               padding: EdgeInsets.zero,
@@ -147,7 +147,7 @@ class _MainLayoutState extends State<MainLayout> {
                                 if (role == 'userpkl') ...[
                                   _buildDrawerItem(
                                     context,
-                                    'Pengajuan PKL',
+                                    'Praktek Kerja Lapangan',
                                     '/pkl',
                                     Icons.work,
                                   ),

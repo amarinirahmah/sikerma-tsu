@@ -20,9 +20,7 @@ class AppState {
     token.value = newToken;
     name.value = nameUser;
     email.value = emailUser;
-    print(
-      'AppState.loginAs => role: $newRole, token: $newToken, name: $nameUser',
-    );
+    print('AppState.loginAs => role: $newRole dan name: $nameUser');
   }
 
   static void logout() {
@@ -30,7 +28,7 @@ class AppState {
     role.value = 'guest';
     token.value = null;
     name.value = null;
-    print('AppState.logout => role: guest, token: null, name: null');
+    print('AppState.logout => role: guest dan name: null');
   }
 }
 

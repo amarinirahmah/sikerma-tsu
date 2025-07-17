@@ -18,54 +18,57 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _checkLogin() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('token');
-    final role = prefs.getString('role') ?? 'guest';
-    final name = prefs.getString('name') ?? '';
-    final email = prefs.getString('email') ?? '';
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('token');
+      final role = prefs.getString('role') ?? 'guest';
+      final name = prefs.getString('name') ?? '';
+      final email = prefs.getString('email') ?? '';
 
-    print('SplashScreen: token = $token, role = $role, name = $name');
-    // if (token != null && token.isNotEmpty) {
-    //   AppState.loginAs(role, token, name, email);
+      print('SplashScreen: role = $role, name = $name');
+      // if (token != null && token.isNotEmpty) {
+      //   AppState.loginAs(role, token, name, email);
 
-    //   final initial = widget.initialPath;
-    //   final isSafe =
-    //       initial != null &&
-    //       initial != '/' &&
-    //       initial != '/login' &&
-    //       initial != '/register' &&
-    //       initial != '/splash';
+      //   final initial = widget.initialPath;
+      //   final isSafe =
+      //       initial != null &&
+      //       initial != '/' &&
+      //       initial != '/login' &&
+      //       initial != '/register' &&
+      //       initial != '/splash';
 
-    //   if (isSafe) {
-    //     Navigator.pushReplacementNamed(context, initial);
-    //   } else if (role == 'admin' || role == 'user') {
-    //     Navigator.pushReplacementNamed(context, '/dashboard');
-    //   } else if (role == 'userpkl') {
-    //     Navigator.pushReplacementNamed(context, '/dashboard2');
-    //   } else {
-    //     Navigator.pushReplacementNamed(context, '/');
-    //   }
-    // }
+      //   if (isSafe) {
+      //     Navigator.pushReplacementNamed(context, initial);
+      //   } else if (role == 'admin' || role == 'user') {
+      //     Navigator.pushReplacementNamed(context, '/dashboard');
+      //   } else if (role == 'userpkl') {
+      //     Navigator.pushReplacementNamed(context, '/dashboard2');
+      //   } else {
+      //     Navigator.pushReplacementNamed(context, '/');
+      //   }
+      // }
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (token != null && token.isNotEmpty) {
+        AppState.loginAs(role, token, name, email);
+        print(
+          'SplashScreen: loginAs dipanggil dengan role=$role dan name=$name',
+        );
 
-    if (token != null && token.isNotEmpty) {
-      AppState.loginAs(role, token, name, email);
-      print(
-        'SplashScreen: loginAs dipanggil dengan role=$role dan token=$token, name=$name',
-      );
-
-      // Redirect sesuai role
-      if (role == 'admin' || role == 'user') {
-        Navigator.pushReplacementNamed(context, '/dashboard');
-      } else if (role == 'userpkl') {
-        Navigator.pushReplacementNamed(context, '/dashboard2');
+        // Redirect sesuai role
+        if (role == 'admin' || role == 'user') {
+          Navigator.pushReplacementNamed(context, '/dashboard');
+        } else if (role == 'userpkl') {
+          Navigator.pushReplacementNamed(context, '/dashboard2');
+        } else {
+          Navigator.pushReplacementNamed(context, '/');
+        }
       } else {
+        AppState.logout();
+        print('SplashScreen: logout dipanggil, set role=guest dan name=null');
         Navigator.pushReplacementNamed(context, '/');
       }
-    } else {
-      AppState.logout();
-      print(
-        'SplashScreen: logout dipanggil, set role=guest dan token=null, name=null',
-      );
+    } catch (e) {
+      print('SplashScreen: Error saat membaca SharedPreferences: $e');
       Navigator.pushReplacementNamed(context, '/');
     }
   }

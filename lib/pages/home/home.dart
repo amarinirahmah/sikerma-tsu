@@ -49,7 +49,7 @@ class _HomePageState extends State<HomePage> {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 1000),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
@@ -292,12 +292,16 @@ class _HomePageState extends State<HomePage> {
           const Text('Pertanyaan Umum (FAQ)', style: CustomStyle.headline1),
           const SizedBox(height: 20),
           _faqItem(
-            'Apa itu SiKERMA TSU?',
-            'SiKERMA TSU adalah sistem informasi kerja sama institusi di Tiga Serangkai University, termasuk pengajuan PKL dan pencatatan MoU/PKS.',
+            'Apa saja yang bisa dikelola lewat SiKERMA TSU?',
+            'Mulai dari manajemen dokumen MoU dan PKS hingga pengajuan PKL.',
           ),
           _faqItem(
             'Siapa saja yang bisa mengakses platform ini?',
             'Admin institusi, mitra kerja sama, serta siswa yang mengajukan PKL dapat menggunakan platform ini sesuai hak akses masing-masing.',
+          ),
+          _faqItem(
+            'Bagaimana proses kerja sama dilakukan di sistem ini?',
+            'Proses dimulai dari pengajuan MoU, dilanjutkan dengan pembuatan PKS, dan dipantau melalui progres kerja sama.',
           ),
           _faqItem(
             'Bagaimana cara mengajukan PKL?',

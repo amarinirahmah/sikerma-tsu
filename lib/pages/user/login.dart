@@ -277,13 +277,13 @@ class _LoginPageState extends State<LoginPage> {
               buttonLabel: 'Login',
               isLoading: isLoading,
               onSubmit: login,
-              footer: TextButton(
-                onPressed: () {
-                  Navigator.pushNamed(context, '/register');
-                },
-                style: CustomStyle.textButtonStyle2,
-                child: const Text("Belum punya akun? Register"),
-              ),
+              // footer: TextButton(
+              //   onPressed: () {
+              //     Navigator.pushNamed(context, '/register');
+              //   },
+              //   style: CustomStyle.textButtonStyle2,
+              //   child: const Text("Belum punya akun? Register"),
+              // ),
             ),
           ),
         ),

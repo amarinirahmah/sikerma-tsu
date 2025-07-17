@@ -129,12 +129,12 @@ class _RegisterPageState extends State<RegisterPage> {
               //   }
               // },
               onSubmit: _handleRegister,
-              footer: TextButton(
-                onPressed:
-                    () => Navigator.pushReplacementNamed(context, '/login'),
-                style: CustomStyle.textButtonStyle2,
-                child: const Text("Sudah punya akun? Login"),
-              ),
+              // footer: TextButton(
+              //   onPressed:
+              //       () => Navigator.pushReplacementNamed(context, '/login'),
+              //   style: CustomStyle.textButtonStyle2,
+              //   child: const Text("Sudah punya akun? Login"),
+              // ),
             ),
           ),
         ),

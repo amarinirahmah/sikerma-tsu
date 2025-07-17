@@ -4,6 +4,7 @@ import 'package:sikermatsu/main_layout.dart';
 import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/models/mou.dart';
 import 'package:sikermatsu/pages/mou/upload_mou.dart';
+import 'package:sikermatsu/pages/progres/detail_progres.dart';
 import '../../styles/style.dart';
 import 'package:intl/intl.dart';
 
@@ -280,8 +281,48 @@ class _MoUPageState extends State<MoUPage> {
                                                 ),
                                                 DataCell(Text(mou.statusText)),
                                                 DataCell(
-                                                  Text(mou.keteranganText),
+                                                  InkWell(
+                                                    onTap: () {
+                                                      if (mou.id != null) {
+                                                        Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder:
+                                                                (
+                                                                  _,
+                                                                ) => DetailProgressPage(
+                                                                  mouId:
+                                                                      mou.id!,
+                                                                ),
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        ScaffoldMessenger.of(
+                                                          context,
+                                                        ).showSnackBar(
+                                                          const SnackBar(
+                                                            content: Text(
+                                                              'ID MoU tidak tersedia',
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+                                                    },
+                                                    child: Text(
+                                                      mou.keteranganText,
+                                                      style: const TextStyle(
+                                                        color: Colors.blue,
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline,
+                                                      ),
+                                                    ),
+                                                  ),
                                                 ),
+
+                                                // DataCell(
+                                                //   Text(mou.keteranganText),
+                                                // ),
                                                 if (isLoggedIn &&
                                                     (role == 'admin' ||
                                                         role == 'user'))
@@ -306,6 +347,29 @@ class _MoUPageState extends State<MoUPage> {
                                                             );
                                                           },
                                                         ),
+
+                                                        // IconButton(
+                                                        //   icon: const Icon(
+                                                        //     Icons.track_changes,
+                                                        //     color: Colors.blue,
+                                                        //   ),
+                                                        //   tooltip:
+                                                        //       'Detail Progres',
+                                                        //   onPressed: () {
+                                                        //     Navigator.push(
+                                                        //       context,
+                                                        //       MaterialPageRoute(
+                                                        //         builder:
+                                                        //             (
+                                                        //               _,
+                                                        //             ) => DetailProgressPage(
+                                                        //               mouId:
+                                                        //                   mou.id!,
+                                                        //             ),
+                                                        //       ),
+                                                        //     );
+                                                        //   },
+                                                        // ),
                                                         IconButton(
                                                           icon: const Icon(
                                                             Icons.edit,

@@ -81,7 +81,7 @@ class AdminDashboardPage extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Center(
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 800),
+                constraints: const BoxConstraints(maxWidth: 1000),
                 child: FutureBuilder<Map<String, int>>(
                   future: fetchCounts(),
                   builder: (context, snapshot) {
@@ -105,7 +105,7 @@ class AdminDashboardPage extends StatelessWidget {
                             'Statistik Kerja Sama',
                             style: CustomStyle.headline1,
                           ),
-                          const SizedBox(height: 24),
+                          const SizedBox(height: 16),
                           Wrap(
                             spacing: 16,
                             runSpacing: 16,
@@ -211,7 +211,9 @@ class _StatCard extends StatelessWidget {
     return SizedBox(
       width: isNarrow ? screenWidth / 2 - 32 : 220,
       child: Card(
-        color: color.withOpacity(0.1),
+        // color: color.withOpacity(0.1),
+        color: Colors.white,
+
         elevation: 1,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
         child: Padding(

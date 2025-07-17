@@ -256,6 +256,29 @@ class _UploadPKLPageState extends State<UploadPKLPage> {
                                       ? 'Wajib diisi'
                                       : null,
                         ),
+                        // const SizedBox(height: 16),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.orange.shade50,
+                            border: Border.all(color: Colors.orange),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              Icon(Icons.info_outline, color: Colors.orange),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  'Perhatian: Penulisan nama sekolah harus sesuai resmi. Contoh yang benar: "SMKN 1 Surakarta", bukan "SMKN 1 Solo".',
+                                  style: TextStyle(color: Colors.black87),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         const SizedBox(height: 16),
 
                         TextFormField(

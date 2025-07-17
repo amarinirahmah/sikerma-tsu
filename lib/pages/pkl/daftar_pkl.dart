@@ -158,7 +158,7 @@ class _RegisterPKLPageState extends State<RegisterPKLPage> {
                               opacity: showScrollHint ? 1.0 : 0.0,
                               duration: const Duration(milliseconds: 300),
                               child: Text(
-                                'Geser ke kanan untuk melihat semua langkah...',
+                                'Geser ke samping untuk melihat semua langkah...',
                                 style: TextStyle(
                                   color: Colors.grey.shade600,
                                   fontSize: 12,
@@ -171,7 +171,7 @@ class _RegisterPKLPageState extends State<RegisterPKLPage> {
                       ElevatedButton.icon(
                         onPressed:
                             () => Navigator.pushNamed(context, '/register'),
-                        icon: const Icon(Icons.app_registration),
+                        icon: const Icon(Icons.assignment),
                         label: const Text('Daftar Sebagai Siswa PKL'),
                         style: CustomStyle.baseButtonStyle,
                       ),
