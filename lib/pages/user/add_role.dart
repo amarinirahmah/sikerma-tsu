@@ -145,7 +145,7 @@ class _AddRolePageState extends State<AddRolePage> {
                         children: [
                           // const SizedBox(height: 24),
                           Text(
-                            widget.user == null ? 'Tambah Role' : 'Edit Role',
+                            widget.user == null ? 'Tambah User' : 'Edit User',
                             style: CustomStyle.headline1,
                           ),
                           const SizedBox(height: 24),
