@@ -18,9 +18,15 @@ class _HomePageState extends State<HomePage> {
   int _currentPage = 0;
 
   final List<String> _imageList = [
-    'assets/images/image-placeholder.jpg',
-    'assets/images/image-placeholder.jpg',
-    'assets/images/image-placeholder.jpg',
+    'assets/images/sekolah-alam-aminah.jpeg',
+    'assets/images/mou-paud-banaran.jpeg',
+    'assets/images/pkl.jpeg',
+    'assets/images/tsu-jci-2.jpeg',
+    'assets/images/kampung-inggris-laweyan-2.jpeg',
+    'assets/images/janti.jpeg',
+    // 'assets/images/image-placeholder.jpg',
+    // 'assets/images/image-placeholder.jpg',
+    // 'assets/images/image-placeholder.jpg',
   ];
 
   @override
@@ -390,11 +396,11 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
     );
-  } //Badan Pengembangan Usaha Kampus (BPUK)
+  }
 
   Widget _buildFeatureCards() {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
       child: Column(
         children: [
           SelectableText(
