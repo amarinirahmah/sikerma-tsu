@@ -5,8 +5,10 @@ import 'package:sikermatsu/core/app_state.dart';
 import 'package:sikermatsu/models/mou.dart';
 import 'package:sikermatsu/pages/mou/upload_mou.dart';
 import 'package:sikermatsu/pages/progres/detail_progres.dart';
+import 'package:sikermatsu/helpers/print_report_mou.dart';
 import '../../styles/style.dart';
 import 'package:intl/intl.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class MoUPage extends StatefulWidget {
   const MoUPage({super.key});
@@ -25,6 +27,17 @@ class _MoUPageState extends State<MoUPage> {
   String searchQuery = '';
   String selectedStatus = 'Semua';
   final ScrollController _horizontalScrollController = ScrollController();
+  DateTime? startDate;
+  DateTime? endDate;
+
+  //   final dummyData = List.generate(50, (index) => {
+  //   'nomorMou': 'MOU-${index + 1}',
+  //   'nama': 'Mitra $index',
+  //   'judul': 'Judul MoU yang sangat panjang dan detail nomor $index',
+  //   'tanggalMulai': DateTime.now().subtract(Duration(days: index * 10)).toIso8601String(),
+  //   'tanggalBerakhir': DateTime.now().add(Duration(days: (index + 1) * 10)).toIso8601String(),
+  //   'statusText': 'Aktif',
+  // });
 
   @override
   void initState() {
@@ -65,10 +78,52 @@ class _MoUPageState extends State<MoUPage> {
             );
             final matchesStatus =
                 selectedStatus == 'Semua' || mou.statusText == selectedStatus;
-            return matchesSearch && matchesStatus;
+
+            bool matchesDate = true;
+            if (startDate != null) {
+              matchesDate &=
+                  mou.tanggalMulai.isAfter(startDate!) ||
+                  mou.tanggalMulai.isAtSameMomentAs(startDate!);
+            }
+            if (endDate != null) {
+              matchesDate &=
+                  mou.tanggalMulai.isBefore(endDate!) ||
+                  mou.tanggalMulai.isAtSameMomentAs(endDate!);
+            }
+            return matchesSearch && matchesStatus && matchesDate;
           }).toList();
       currentPage = 0;
     });
+  }
+
+  void _pickStartDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: startDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        startDate = picked;
+        _applyFilter();
+      });
+    }
+  }
+
+  void _pickEndDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: endDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        endDate = picked;
+        _applyFilter();
+      });
+    }
   }
 
   @override
@@ -110,7 +165,103 @@ class _MoUPageState extends State<MoUPage> {
                                     'Daftar MoU',
                                     style: CustomStyle.headline1,
                                   ),
+                                  if (isLoggedIn &&
+                                      (role == 'admin' || role == 'user')) ...[
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Filter berdasarkan periode waktu',
+                                      style: CustomStyle.hintText,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: [
+                                        OutlinedButton.icon(
+                                          onPressed: _pickStartDate,
+                                          style:
+                                              CustomStyle.outlinedButtonStyle,
+                                          icon: const Icon(
+                                            Icons.calendar_today,
+                                            size: 18,
+                                          ),
+                                          label: Text(
+                                            startDate == null
+                                                ? 'Mulai Periode'
+                                                : DateFormat(
+                                                  'd MMM yyyy',
+                                                  'id_ID',
+                                                ).format(startDate!),
+                                            style: CustomStyle.dateTextStyle,
+                                          ),
+                                        ),
+
+                                        OutlinedButton.icon(
+                                          onPressed: _pickEndDate,
+                                          style:
+                                              CustomStyle.outlinedButtonStyle,
+                                          icon: const Icon(
+                                            Icons.calendar_today,
+                                            size: 18,
+                                          ),
+                                          label: Text(
+                                            endDate == null
+                                                ? 'Akhir Periode'
+                                                : DateFormat(
+                                                  'd MMM yyyy',
+                                                  'id_ID',
+                                                ).format(endDate!),
+                                            style: CustomStyle.dateTextStyle,
+                                          ),
+                                        ),
+
+                                        ElevatedButton.icon(
+                                          icon: const Icon(Icons.refresh),
+                                          label: const Text("Reset"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.grey[200],
+                                            foregroundColor: Colors.grey,
+                                            elevation: 0,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              startDate = null;
+                                              endDate = null;
+                                              _applyFilter();
+                                            });
+                                          },
+                                        ),
+                                        CetakLaporanMoUButton(
+                                          displayedRows:
+                                              filteredMou
+                                                  .map(
+                                                    (mou) => {
+                                                      'nomorMou': mou.nomorMou,
+                                                      'nama': mou.nama,
+                                                      'judul': mou.judul,
+                                                      'tanggalMulai':
+                                                          mou.tanggalMulai,
+                                                      'tanggalBerakhir':
+                                                          mou.tanggalBerakhir,
+                                                      'statusText':
+                                                          mou.statusText,
+                                                    },
+                                                  )
+                                                  .toList(),
+                                          judulLaporan:
+                                              startDate != null &&
+                                                      endDate != null
+                                                  ? 'Laporan MoU Periode ${DateFormat('d MMM yyyy', 'id_ID').format(startDate!)} - ${DateFormat('d MMM yyyy', 'id_ID').format(endDate!)}'
+                                                  : 'Laporan MoU',
+
+                                          // judulLaporan:
+                                          //     'Laporan MoU (${startDate != null && endDate != null ? "${DateFormat('d MMM yyyy', 'id_ID').format(startDate!)} - ${DateFormat('d MMM yyyy', 'id_ID').format(endDate!)}" : "Semua"})',
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                   const SizedBox(height: 16),
+
                                   Row(
                                     children: [
                                       Expanded(

@@ -71,7 +71,7 @@ class CustomStyle {
     fontSize: 14,
     fontWeight: FontWeight.w400,
     color: textColorSecondary,
-    // fontStyle: FontStyle.italic,
+    fontStyle: FontStyle.italic,
   );
 
   // Input decoration for TextFormField (used for forms & search)

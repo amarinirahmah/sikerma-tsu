@@ -6,6 +6,7 @@ import 'package:sikermatsu/models/pks.dart';
 import 'package:sikermatsu/pages/pks/upload_pks.dart';
 import '../../styles/style.dart';
 import 'package:intl/intl.dart';
+import 'package:sikermatsu/helpers/print_report_pks.dart';
 
 class PKSPage extends StatefulWidget {
   const PKSPage({super.key});
@@ -24,6 +25,8 @@ class _PKSPageState extends State<PKSPage> {
   String searchQuery = '';
   String selectedStatus = 'Semua';
   final ScrollController _horizontalScrollController = ScrollController();
+  DateTime? startDate;
+  DateTime? endDate;
 
   @override
   void initState() {
@@ -63,19 +66,52 @@ class _PKSPageState extends State<PKSPage> {
             );
             final matchesStatus =
                 selectedStatus == 'Semua' || pks.statusText == selectedStatus;
-            return matchesSearch && matchesStatus;
+            bool matchesDate = true;
+            if (startDate != null) {
+              matchesDate &=
+                  pks.tanggalMulai.isAfter(startDate!) ||
+                  pks.tanggalMulai.isAtSameMomentAs(startDate!);
+            }
+            if (endDate != null) {
+              matchesDate &=
+                  pks.tanggalMulai.isBefore(endDate!) ||
+                  pks.tanggalMulai.isAtSameMomentAs(endDate!);
+            }
+            return matchesSearch && matchesStatus && matchesDate;
           }).toList();
       currentPage = 0;
     });
   }
 
-  // Widget buildHeaderField(String text) {
-  //   return Container(
-  //     color: Colors.grey[300],
-  //     padding: const EdgeInsets.all(8),
-  //     child: Text(text, style: const TextStyle(fontWeight: FontWeight.bold)),
-  //   );
-  // }
+  void _pickStartDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: startDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        startDate = picked;
+        _applyFilter();
+      });
+    }
+  }
+
+  void _pickEndDate() async {
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: endDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+    if (picked != null) {
+      setState(() {
+        endDate = picked;
+        _applyFilter();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +152,104 @@ class _PKSPageState extends State<PKSPage> {
                                     'Daftar PKS',
                                     style: CustomStyle.headline1,
                                   ),
+
+                                  if (isLoggedIn &&
+                                      (role == 'admin' || role == 'user')) ...[
+                                    const SizedBox(height: 16),
+                                    Text(
+                                      'Filter berdasarkan periode waktu',
+                                      style: CustomStyle.hintText,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Wrap(
+                                      spacing: 8,
+                                      runSpacing: 8,
+                                      children: [
+                                        OutlinedButton.icon(
+                                          onPressed: _pickStartDate,
+                                          style:
+                                              CustomStyle.outlinedButtonStyle,
+                                          icon: const Icon(
+                                            Icons.calendar_today,
+                                            size: 18,
+                                          ),
+                                          label: Text(
+                                            startDate == null
+                                                ? 'Mulai Periode'
+                                                : DateFormat(
+                                                  'd MMM yyyy',
+                                                  'id_ID',
+                                                ).format(startDate!),
+                                            style: CustomStyle.dateTextStyle,
+                                          ),
+                                        ),
+
+                                        OutlinedButton.icon(
+                                          onPressed: _pickEndDate,
+                                          style:
+                                              CustomStyle.outlinedButtonStyle,
+                                          icon: const Icon(
+                                            Icons.calendar_today,
+                                            size: 18,
+                                          ),
+                                          label: Text(
+                                            endDate == null
+                                                ? 'Akhir Periode'
+                                                : DateFormat(
+                                                  'd MMM yyyy',
+                                                  'id_ID',
+                                                ).format(endDate!),
+                                            style: CustomStyle.dateTextStyle,
+                                          ),
+                                        ),
+
+                                        ElevatedButton.icon(
+                                          icon: const Icon(Icons.refresh),
+                                          label: const Text("Reset"),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.grey[200],
+                                            foregroundColor: Colors.grey,
+                                            elevation: 0,
+                                          ),
+                                          onPressed: () {
+                                            setState(() {
+                                              startDate = null;
+                                              endDate = null;
+                                              _applyFilter();
+                                            });
+                                          },
+                                        ),
+                                        CetakLaporanPKSButton(
+                                          displayedRows:
+                                              filteredPks
+                                                  .map(
+                                                    (pks) => {
+                                                      'nomorMou': pks.nomorMou,
+                                                      'nomorPks': pks.nomorPks,
+                                                      'judul': pks.judul,
+                                                      'namaUnit': pks.namaUnit,
+                                                      'tanggalMulai':
+                                                          pks.tanggalMulai,
+                                                      'tanggalBerakhir':
+                                                          pks.tanggalBerakhir,
+                                                      'statusText':
+                                                          pks.statusText,
+                                                    },
+                                                  )
+                                                  .toList(),
+                                          judulLaporan:
+                                              startDate != null &&
+                                                      endDate != null
+                                                  ? 'Laporan PKS Periode ${DateFormat('d MMM yyyy', 'id_ID').format(startDate!)} - ${DateFormat('d MMM yyyy', 'id_ID').format(endDate!)}'
+                                                  : 'Laporan PKS',
+
+                                          // judulLaporan:
+                                          //     'Laporan MoU (${startDate != null && endDate != null ? "${DateFormat('d MMM yyyy', 'id_ID').format(startDate!)} - ${DateFormat('d MMM yyyy', 'id_ID').format(endDate!)}" : "Semua"})',
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+
                                   const SizedBox(height: 16),
                                   Row(
                                     children: [
